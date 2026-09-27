@@ -5,7 +5,7 @@ sidebar_label: Upgrading
 
 # Upgrading
 
-What changes between releases of `rtcamp/wp-framework`, and what a consuming
+What changes between releases of `rtcamp/wp-primitives`, and what a consuming
 plugin or theme has to do about it. [`CHANGELOG.md`](../CHANGELOG.md) is the
 complete per-release record; this page carries only the entries that require a
 code change on the consumer side.
@@ -30,7 +30,7 @@ Read this page and the changelog before widening a constraint across a major.
 ## Upgrade routine
 
 ```bash
-composer update rtcamp/wp-framework
+composer update rtcamp/wp-primitives
 composer lint && composer analyse   # in the consuming package
 ```
 

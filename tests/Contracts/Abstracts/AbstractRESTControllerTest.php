@@ -6,15 +6,15 @@
  * on rest_api_init, the endpoint dispatches, and the base register_routes()
  * throws to force subclass implementation.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractRESTController;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractRESTController;
+use rtCamp\WPPrimitives\Tests\TestCase;
 use WP_REST_Request;
 
 final class AbstractRESTControllerTest extends TestCase {

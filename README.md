@@ -1,4 +1,4 @@
-<h1 align="center">wp-framework</h1>
+<h1 align="center">wp-primitives</h1>
 
 <p align="center">
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-GPL--2.0--or--later-blue.svg" alt="License: GPL-2.0-or-later"></a>
@@ -8,14 +8,14 @@
 
 <p align="center">
   A shared PHP base for WordPress projects, distributed as a Composer package
-  (<code>rtcamp/wp-framework</code>). It ships the contracts, loaders, and
+  (<code>rtcamp/wp-primitives</code>). It ships the contracts, loaders, and
   utilities that plugins and themes boot through — so you write intent instead
   of registration boilerplate.
 </p>
 
 ---
 
-`wp-framework` is a **library, not a plugin**. It ships contracts (interfaces,
+`wp-primitives` is a **library, not a plugin**. It ships contracts (interfaces,
 abstracts, traits) plus concrete loaders and utilities; consuming plugins and
 themes build their features on top. It has **zero Composer runtime dependencies**.
 
@@ -34,26 +34,26 @@ Not on public Packagist — add the repository to the consuming project's
 ```json
 {
 	"repositories": [
-		{ "type": "vcs", "url": "https://github.com/rtCamp/wp-framework" }
+		{ "type": "vcs", "url": "https://github.com/rtCamp/wp-primitives" }
 	]
 }
 ```
 
 ```bash
-composer require rtcamp/wp-framework:^1.0
+composer require rtcamp/wp-primitives:^1.0
 ```
 
 (The `repositories` entry is unnecessary when the project already resolves this
 package through an rtCamp-hosted Composer registry.)
 
-PSR-4 autoloading: `rtCamp\WPFramework\` → `inc/`.
+PSR-4 autoloading: `rtCamp\WPPrimitives\` → `inc/`.
 
 ## Quick look
 
 ```php
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractPostType;
-use rtCamp\WPFramework\Contracts\Traits\Loader;
-use rtCamp\WPFramework\Contracts\Traits\Singleton;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractPostType;
+use rtCamp\WPPrimitives\Contracts\Traits\Loader;
+use rtCamp\WPPrimitives\Contracts\Traits\Singleton;
 
 final class ArticlePostType extends AbstractPostType {
 	public static function get_slug(): string    { return 'article'; }

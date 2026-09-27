@@ -10,13 +10,13 @@
  * Each consuming package (a theme, a plugin) loads its own subclass with a
  * distinct context, so their components and asset handles never collide.
  *
- * @package rtCamp\WPFramework
+ * @package rtCamp\WPPrimitives
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework;
+namespace rtCamp\WPPrimitives;
 
 /**
  * Class ComponentLoader
@@ -107,7 +107,7 @@ class ComponentLoader {
 	 * @return string Context slug.
 	 */
 	protected function get_context(): string {
-		return 'wp-framework';
+		return 'wp-primitives';
 	}
 
 	/**
@@ -274,7 +274,7 @@ class ComponentLoader {
 				$caller ?? __METHOD__, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This is a function name, not rendered output.
 				sprintf(
 					/* translators: %s: Component name. */
-					esc_html__( 'Component "%s" could not be resolved.', 'wp-framework' ),
+					esc_html__( 'Component "%s" could not be resolved.', 'wp-primitives' ),
 					esc_html( $name )
 				),
 				'1.0.0'

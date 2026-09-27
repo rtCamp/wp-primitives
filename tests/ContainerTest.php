@@ -2,16 +2,16 @@
 /**
  * Container tests.
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests;
+namespace rtCamp\WPPrimitives\Tests;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use rtCamp\WPFramework\Container;
+use rtCamp\WPPrimitives\Container;
 use stdClass;
 
 final class ContainerTest extends TestCase {

@@ -1,12 +1,12 @@
 {
-	"name": "rtcamp/wp-framework",
+	"name": "rtcamp/wp-primitives",
 	"description": "Shared PHP utilities for rtCamp WordPress projects",
 	"type": "library",
 	"license": "GPL-2.0-or-later",
-	"homepage": "https://github.com/rtCamp/wp-framework",
+	"homepage": "https://github.com/rtCamp/wp-primitives",
 	"support": {
-		"issues": "https://github.com/rtCamp/wp-framework/issues",
-		"source": "https://github.com/rtCamp/wp-framework"
+		"issues": "https://github.com/rtCamp/wp-primitives/issues",
+		"source": "https://github.com/rtCamp/wp-primitives"
 	},
 	"require": {
 		"php": ">=8.2"
@@ -25,12 +25,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"rtCamp\\WPFramework\\": "inc/"
+			"rtCamp\\WPPrimitives\\": "inc/"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"rtCamp\\WPFramework\\Tests\\": "tests/"
+			"rtCamp\\WPPrimitives\\Tests\\": "tests/"
 		}
 	},
 	"config": {

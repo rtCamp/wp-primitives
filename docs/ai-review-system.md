@@ -20,31 +20,31 @@ How GitHub Copilot code-review instructions and AI-agent guidance are authored, 
 
 | File | Repo | Role |
 |---|---|---|
-| `ai/framework-php.instructions.md` | framework | Canonical framework + WordPress review rules. Single source of truth. |
+| `ai/primitives-php.instructions.md` | framework | Canonical framework + WordPress review rules. Single source of truth. |
 | `bin/sync-ai-instructions.js` | framework | One tool, run by the consumer via `npm run sync-ai`. Refreshes each package's framework rules from its vendored copy, then projects every package's instructions to the `wp-content` root. `--check` for a CI drift gate; `--root DIR` forces the `wp-content` root instead of detecting it from the current directory. |
 | `.github/copilot-instructions.md` | each package | Repo-wide overview + review conduct (skeleton-authored). |
 | `.github/instructions/structure.instructions.md` | each package | Package layout + wiring (skeleton-authored, carries the package's names). |
-| `.github/instructions/framework-php.instructions.md` | each package | Generated from the package's vendored framework. Banner-marked; do not hand-edit. |
+| `.github/instructions/primitives-php.instructions.md` | each package | Generated from the package's vendored framework. Banner-marked; do not hand-edit. |
 | `AGENTS.md` | each package | Tool-agnostic brief for coding agents. Inlines key principles + points to `.github/`. |
 | `CLAUDE.md` | each package | Thin; defers to `AGENTS.md`, holds any Claude-only overrides. |
 
 ## Data flow
 
 ```
-framework  ai/framework-php.instructions.md   (edit rules here)
+framework  ai/primitives-php.instructions.md   (edit rules here)
    |
    |  composer require/update  ->  lands in each package's vendor/
    v
-plugins/<slug>/vendor/rtcamp/wp-framework/ai/framework-php.instructions.md
+plugins/<slug>/vendor/rtcamp/wp-primitives/ai/primitives-php.instructions.md
    |
    |  npm run sync-ai (chained from npm run init)  ->  bin/sync-ai-instructions.js
    |     step 1 (refresh): copy vendored rules into the package's .github/instructions/
    |     step 2 (project): walk up to the wp-content root, write every package's
    |                       instructions with applyTo re-scoped to that root
    v
-plugins/<slug>/.github/instructions/{framework-php,structure}.instructions.md   (committed)
+plugins/<slug>/.github/instructions/{primitives-php,structure}.instructions.md   (committed)
 wp-content/.github/instructions/
-   framework-php.instructions.md        applyTo: plugins/a/**/*.php,plugins/b/**/*.php,themes/c/**/*.php   (MERGED)
+   primitives-php.instructions.md        applyTo: plugins/a/**/*.php,plugins/b/**/*.php,themes/c/**/*.php   (MERGED)
    <slug>-structure.instructions.md     applyTo: plugins/<slug>/inc/**                                      (per package)
 ```
 
@@ -73,13 +73,13 @@ The framework repo itself has its **own** `.github/` with framework-*development
 - **Assemble a project**: drop packages into `wp-content/{plugins,themes}/`, then `composer install` and `npm install && npm run init`. `init` sets names and runs `sync-ai`, which refreshes each package's framework rules and writes the wp-content root `.github/`.
 - **Add another plugin later**: run `npm run sync-ai`; it discovers the new package, refreshes it, and merges it into the projected output.
 - **Remove a plugin**: run `npm run sync-ai` after removing it; the merged `applyTo` globs are recomputed and now-orphaned generated files are pruned (only files carrying the `GENERATED` banner are deleted).
-- **Change a shared rule**: edit `ai/framework-php.instructions.md` in the framework, publish, then in the project run `composer update` + `npm run sync-ai`.
+- **Change a shared rule**: edit `ai/primitives-php.instructions.md` in the framework, publish, then in the project run `composer update` + `npm run sync-ai`.
 - **Change a package-specific rule**: edit that package's `.github/instructions/structure.instructions.md`, then `npm run sync-ai`.
 - **CI gate**: `npm run sync-ai -- --check` fails the build if the committed instructions are stale. Copilot reads instructions from the **base branch**, so keeping `main` current is what matters.
 
 ## Constraints & guards
 
-- **~4000 characters per instruction file**: Copilot only reads the first ~4000. The banner is appended after the rules so it never eats the window; the tool warns (STDERR) when the rules themselves exceed it. Keep `ai/framework-php.instructions.md` lean.
+- **~4000 characters per instruction file**: Copilot only reads the first ~4000. The banner is appended after the rules so it never eats the window; the tool warns (STDERR) when the rules themselves exceed it. Keep `ai/primitives-php.instructions.md` lean.
 - **`applyTo` accepts comma-separated globs**: relied on by the merge.
 - Generated files carry a `GENERATED` banner; never hand-edit them. Edit the source in the framework (shared rules) or the skeleton (structure).
 - Third-party plugins in `wp-content` are not governed by these rules; exclude them from review via Copilot content-exclusion settings if needed.

@@ -2,18 +2,18 @@
 /**
  * Singleton trait tests.
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests;
+namespace rtCamp\WPPrimitives\Tests;
 
-use rtCamp\WPFramework\Tests\Fixtures\BareSingleton;
-use rtCamp\WPFramework\Tests\Fixtures\FlakySingleton;
-use rtCamp\WPFramework\Tests\Fixtures\ReentrantSingleton;
-use rtCamp\WPFramework\Tests\Fixtures\SingletonExample;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Tests\Fixtures\BareSingleton;
+use rtCamp\WPPrimitives\Tests\Fixtures\FlakySingleton;
+use rtCamp\WPPrimitives\Tests\Fixtures\ReentrantSingleton;
+use rtCamp\WPPrimitives\Tests\Fixtures\SingletonExample;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class SingletonTest extends TestCase {
 

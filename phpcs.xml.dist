@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="rtcamp/wp-framework">
-    <description>PHPCS rules for rtcamp/wp-framework — WordPress-Core + Extra + Docs + VIP Minimum + PHP 8.2+ compatibility.</description>
+<ruleset name="rtcamp/wp-primitives">
+    <description>PHPCS rules for rtcamp/wp-primitives — WordPress-Core + Extra + Docs + VIP Minimum + PHP 8.2+ compatibility.</description>
 
     <!-- What to scan. Production source only; tests are exercised by PHPUnit. -->
     <file>inc</file>

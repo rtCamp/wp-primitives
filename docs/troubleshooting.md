@@ -38,7 +38,7 @@ one you get is deliberate:
 | `_doing_it_wrong`: *Asset manifest "…" is invalid; the file modification time will be used as the version.* | `app.asset.php` exists but doesn't return an array. | Regenerate the build. Harmless otherwise — registration continues with a `filemtime()` version. |
 | `_doing_it_wrong`: *Block manifest file is missing. Blocks will not be registered.* | `register_block_manifest()` got a manifest path that doesn't resolve under the base dir. | Pass the path **relative to the base dir**, e.g. `build/blocks-manifest.php`. |
 | Script registers but never loads | Registration is not enqueueing. | Call `wp_enqueue_script()` with the handle. `ComponentLoader` does this for component assets; `AssetLoader` never does. |
-| Handles collide with another package | `HANDLE_PREFIX` left at its `wp-framework-` default. | Override the constant in the consumer's `AssetLoader` subclass. |
+| Handles collide with another package | `HANDLE_PREFIX` left at its `wp-primitives-` default. | Override the constant in the consumer's `AssetLoader` subclass. |
 | `RuntimeException: Acme\Components requires an AssetLoader: inject one via the constructor or override get_asset_loader().` | The `ComponentLoader` subclass was constructed with no asset loader — typical when the framework `Loader` instantiates it with no arguments. | Build one in the subclass constructor, or override `get_asset_loader()` to resolve a shared instance lazily. |
 | `_doing_it_wrong`: *Component "Foo" could not be resolved.* | No `Foo/Foo.php` under any layer of the hierarchy, **or the name was rejected**: names must match `^[A-Za-z0-9_-]+$` and be ≤128 characters. A slash or `..` is refused outright — that check is a security boundary, not a convenience. | Fix the path or the name. |
 | A theme override isn't picked up | The render passed `allow_override => false`, or the override sits in a layer the loader doesn't search (a plugin-owned loader searches child → parent → package; a theme's own loader collapses the redundant layers). | Drop the option, or place the file in a searched layer. |
@@ -69,7 +69,7 @@ one you get is deliberate:
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `Class "rtCamp\WPFramework\…" not found` | The consumer's `vendor/autoload.php` was never required, or the package resolved from a stale `vendor/`. | Require the autoloader in the plugin/theme entry point; `composer update rtcamp/wp-framework`. |
+| `Class "rtCamp\WPPrimitives\…" not found` | The consumer's `vendor/autoload.php` was never required, or the package resolved from a stale `vendor/`. | Require the autoloader in the plugin/theme entry point; `composer update rtcamp/wp-primitives`. |
 | Composer can't find the package | It is not on public Packagist. | Add the VCS `repositories` entry — see [getting-started.md](getting-started.md#install). |
 | A missing abstract method only surfaces at runtime | The subclass doesn't implement everything the abstract declares. | Run PHPStan in the consuming package; it catches contract breaks before a request does. |
 

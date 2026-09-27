@@ -1,11 +1,22 @@
 # Changelog
 
-All notable changes to `rtcamp/wp-framework` are documented here.
+All notable changes to `rtcamp/wp-primitives` are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+
+- **BREAKING: renamed the package from `rtcamp/wp-framework` to `rtcamp/wp-primitives`.**
+  The PHP namespace moves from `rtCamp\WPFramework\` to `rtCamp\WPPrimitives\`, the
+  repository moves to `rtCamp/wp-primitives`, and the AI rules file shipped to consumers
+  is renamed from `ai/framework-php.instructions.md` to `ai/primitives-php.instructions.md`
+  (synced into consumers as `.github/instructions/primitives-php.instructions.md`).
+  Consumers must move to a `^2.0` constraint; `^1.0` continues to resolve from the
+  existing `v1.0.0` / `v1.0.1` tags, which keep the old package name.
+  Reason: `10up/wp-framework` occupies the same name in the same category on Packagist.
 
 ### Documentation
 
@@ -79,6 +90,6 @@ Initial release. Requires PHP 8.2+.
 - Reference documentation under `docs/`, a GPL-2.0-or-later `LICENSE.md`, and a
   WordPress integration test suite running against `@wordpress/env`.
 
-[Unreleased]: https://github.com/rtCamp/wp-framework/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/rtCamp/wp-framework/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/rtCamp/wp-framework/releases/tag/v1.0.0
+[Unreleased]: https://github.com/rtCamp/wp-primitives/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/rtCamp/wp-primitives/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/rtCamp/wp-primitives/releases/tag/v1.0.0

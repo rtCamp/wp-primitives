@@ -2,15 +2,15 @@
 /**
  * Encryptor tests.
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Utils;
+namespace rtCamp\WPPrimitives\Tests\Utils;
 
-use rtCamp\WPFramework\Tests\TestCase;
-use rtCamp\WPFramework\Utils\Encryptor;
+use rtCamp\WPPrimitives\Tests\TestCase;
+use rtCamp\WPPrimitives\Utils\Encryptor;
 
 /**
  * Tests for Encryptor.

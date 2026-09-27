@@ -2,13 +2,13 @@
 /**
  * FeatureSelector utility.
  *
- * @package rtCamp\WPFramework\Utils
+ * @package rtCamp\WPPrimitives\Utils
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Utils;
+namespace rtCamp\WPPrimitives\Utils;
 
 /**
  * Feature-flag registry for a single package.
@@ -115,7 +115,7 @@ class FeatureSelector {
 					__METHOD__,
 					sprintf(
 						/* translators: 1: slug being registered. 2: already-registered slug it collides with. 3: shared normalized key. */
-						esc_html__( 'Feature flag "%1$s" collides with already-registered "%2$s" (both normalize to "%3$s"); keeping the first registration.', 'wp-framework' ),
+						esc_html__( 'Feature flag "%1$s" collides with already-registered "%2$s" (both normalize to "%3$s"); keeping the first registration.', 'wp-primitives' ),
 						esc_html( $slug ),
 						esc_html( $this->flag_keys[ $flag_key ] ),
 						esc_html( $flag_key )
@@ -177,7 +177,7 @@ class FeatureSelector {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: flag slug that was not registered. */
-					esc_html__( 'Feature flag "%s" is not registered; enable() ignored.', 'wp-framework' ),
+					esc_html__( 'Feature flag "%s" is not registered; enable() ignored.', 'wp-primitives' ),
 					esc_html( $flag )
 				),
 				'1.0.0'
@@ -208,7 +208,7 @@ class FeatureSelector {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: flag slug that was not registered. */
-					esc_html__( 'Feature flag "%s" is not registered; disable() ignored.', 'wp-framework' ),
+					esc_html__( 'Feature flag "%s" is not registered; disable() ignored.', 'wp-primitives' ),
 					esc_html( $flag )
 				),
 				'1.0.0'

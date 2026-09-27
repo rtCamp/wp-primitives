@@ -6,15 +6,15 @@
  * registered and that do_shortcode() renders through the callback with the
  * default attributes merged.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractShortcode;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractShortcode;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class AbstractShortcodeTest extends TestCase {
 

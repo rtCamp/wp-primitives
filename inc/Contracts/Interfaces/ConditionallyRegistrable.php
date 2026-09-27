@@ -10,13 +10,13 @@
  * Classes that always register can keep implementing the plain Registrable
  * interface instead; this one is strictly opt-in.
  *
- * @package rtCamp\WPFramework\Contracts\Interfaces
+ * @package rtCamp\WPPrimitives\Contracts\Interfaces
  * @since 1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Contracts\Interfaces;
+namespace rtCamp\WPPrimitives\Contracts\Interfaces;
 
 /**
  * Interface - ConditionallyRegistrable

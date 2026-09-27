@@ -6,17 +6,17 @@
  * the abstract get_slug() / get_feature_registry() are the moving parts.
  * Tests use anonymous classes throughout so each scenario is self-contained.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractFeature;
-use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
-use rtCamp\WPFramework\Tests\TestCase;
-use rtCamp\WPFramework\Utils\FeatureSelector;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractFeature;
+use rtCamp\WPPrimitives\Contracts\Interfaces\ConditionallyRegistrable;
+use rtCamp\WPPrimitives\Tests\TestCase;
+use rtCamp\WPPrimitives\Utils\FeatureSelector;
 
 /**
  * Tests for AbstractFeature.

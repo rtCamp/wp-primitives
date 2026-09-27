@@ -7,7 +7,7 @@
  * The framework is a library — there is no plugin or theme to activate; tests
  * instantiate its classes directly once WordPress is loaded.
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );

@@ -2,13 +2,13 @@
 /**
  * Cache utility.
  *
- * @package rtCamp\WPFramework\Utils
+ * @package rtCamp\WPPrimitives\Utils
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Utils;
+namespace rtCamp\WPPrimitives\Utils;
 
 /**
  * Class - Cache
@@ -27,7 +27,7 @@ namespace rtCamp\WPFramework\Utils;
  * Designed to be a service: construct it with the package's slug, register an
  * instance as Shareable in a consumer's container, or extend it to change the
  * namespacing by overriding the {@see Cache::resolve_group()} seam (the same
- * pattern as {@see \rtCamp\WPFramework\ComponentLoader::get_context()}).
+ * pattern as {@see \rtCamp\WPPrimitives\ComponentLoader::get_context()}).
  *
  * Centralises calls to `wp_cache_get`, `wp_cache_set`, `wp_cache_delete`, and
  * `wp_cache_flush_group` so consumers have a single typed API and one place to

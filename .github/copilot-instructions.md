@@ -1,14 +1,14 @@
-# Copilot instructions — wp-framework
+# Copilot instructions — wp-primitives
 
-`rtcamp/wp-framework`: shared base contracts (interfaces, abstracts, traits) and small utilities consumed via Composer by every rtCamp plugin/theme skeleton. **Zero runtime dependencies.** PHP 8.2+.
+`rtcamp/wp-primitives`: shared base contracts (interfaces, abstracts, traits) and small utilities consumed via Composer by every rtCamp plugin/theme skeleton. **Zero runtime dependencies.** PHP 8.2+.
 
-This repo defines the framework itself. The rules for *consuming* it live in `ai/framework-php.instructions.md` (shipped to consumers); keep it in sync when contracts change.
+This repo defines the framework itself. The rules for *consuming* it live in `ai/primitives-php.instructions.md` (shipped to consumers); keep it in sync when contracts change.
 
 Detailed rules: `.github/instructions/php.instructions.md`.
 
 ## Stack
 
-- PHP 8.2+, PSR-4 `rtCamp\WPFramework\` → `inc/`; tests `rtCamp\WPFramework\Tests\` → `tests/`.
+- PHP 8.2+, PSR-4 `rtCamp\WPPrimitives\` → `inc/`; tests `rtCamp\WPPrimitives\Tests\` → `tests/`.
 - PHPUnit; PHPCS (WordPress-Core/Extra/Docs + VIPCS); PHPStan. Zero errors before merge.
 - `require` in `composer.json` holds **only** `php`. Everything else is `require-dev`.
 
@@ -16,7 +16,7 @@ Detailed rules: `.github/instructions/php.instructions.md`.
 
 - **TDD**: failing PHPUnit test first (`tests/` mirrors `inc/`), then code.
 - **`inc/Contracts/` is public API.** Interfaces, abstracts and their method signatures are consumed by every plugin/theme: a signature change breaks all of them. Treat changes as breaking.
-- When you change a contract, update `ai/framework-php.instructions.md` so the consumer review rules stay accurate.
+- When you change a contract, update `ai/primitives-php.instructions.md` so the consumer review rules stay accurate.
 - No runtime dependencies. Prefer official WordPress / PHP stdlib.
 
 ## Review conduct

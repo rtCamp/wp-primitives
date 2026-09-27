@@ -7,16 +7,16 @@
  * rather than stubbed globals, and incorrect-usage notices via
  * WP_UnitTestCase::setExpectedIncorrectUsage().
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests;
+namespace rtCamp\WPPrimitives\Tests;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use rtCamp\WPFramework\AssetLoader;
+use rtCamp\WPPrimitives\AssetLoader;
 
 final class AssetLoaderTest extends TestCase {
 
@@ -36,7 +36,7 @@ final class AssetLoaderTest extends TestCase {
 		$GLOBALS['wp_styles']  = null;
 		$this->reset_script_modules();
 
-		$this->temp_dir = sys_get_temp_dir() . '/wp-framework-asset-loader-' . str_replace( '.', '', uniqid( '', true ) );
+		$this->temp_dir = sys_get_temp_dir() . '/wp-primitives-asset-loader-' . str_replace( '.', '', uniqid( '', true ) );
 		mkdir( $this->temp_dir, 0777, true );
 
 		$this->loader = new AssetLoader( $this->temp_dir, $this->base_url, 'assets/build' );
@@ -188,20 +188,20 @@ final class AssetLoaderTest extends TestCase {
 		// (which reads the block.json), so both paths register the same block.
 		$this->write_asset(
 			'build/blocks/example/block.json',
-			'{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wp-framework/example","title":"Example","category":"widgets"}'
+			'{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wp-primitives/example","title":"Example","category":"widgets"}'
 		);
 		$this->write_asset(
 			'build/blocks-manifest.php',
-			'<?php return ["example" => ["name" => "wp-framework/example", "title" => "Example", "category" => "widgets", "apiVersion" => 3]];'
+			'<?php return ["example" => ["name" => "wp-primitives/example", "title" => "Example", "category" => "widgets", "apiVersion" => 3]];'
 		);
 
 		$this->loader->register_block_manifest( 'build/blocks', 'build/blocks-manifest.php' );
 
 		$this->assertTrue(
-			\WP_Block_Type_Registry::get_instance()->is_registered( 'wp-framework/example' )
+			\WP_Block_Type_Registry::get_instance()->is_registered( 'wp-primitives/example' )
 		);
 
-		\WP_Block_Type_Registry::get_instance()->unregister( 'wp-framework/example' );
+		\WP_Block_Type_Registry::get_instance()->unregister( 'wp-primitives/example' );
 	}
 
 	public function test_missing_block_manifest_warns_and_skips_registration(): void {
@@ -210,7 +210,7 @@ final class AssetLoaderTest extends TestCase {
 		$this->loader->register_block_manifest( 'build/blocks', 'build/blocks-manifest.php' );
 
 		$this->assertFalse(
-			\WP_Block_Type_Registry::get_instance()->is_registered( 'wp-framework/example' )
+			\WP_Block_Type_Registry::get_instance()->is_registered( 'wp-primitives/example' )
 		);
 	}
 

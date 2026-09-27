@@ -100,7 +100,7 @@ methods to supply the name, description, and callback. It standardises the
 The command itself is a plain static class:
 
 ```php
-use rtCamp\WPFramework\Contracts\Interfaces\CLICommand;
+use rtCamp\WPPrimitives\Contracts\Interfaces\CLICommand;
 
 final class ReindexCommand implements CLICommand {
     public static function get_name(): string {
@@ -127,7 +127,7 @@ place for the `WP_CLI` check — the loader then skips the class entirely outsid
 WP-CLI instead of the class guarding itself:
 
 ```php
-use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\ConditionallyRegistrable;
 
 final class CliCommands implements ConditionallyRegistrable {
     /** @var array<int, class-string<CLICommand>> */

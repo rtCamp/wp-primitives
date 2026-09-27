@@ -9,21 +9,21 @@
  *   - Shareable → instance cached, retrievable via get_shared()
  *   - A class that is both Shareable and Registrable gets both treatments
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests;
+namespace rtCamp\WPPrimitives\Tests;
 
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use rtCamp\WPFramework\Tests\Fixtures\ConditionalAllowed;
-use rtCamp\WPFramework\Tests\Fixtures\CountingRegistrable;
-use rtCamp\WPFramework\Tests\Fixtures\ConditionalDenied;
-use rtCamp\WPFramework\Tests\Fixtures\LoaderRunner;
-use rtCamp\WPFramework\Tests\Fixtures\PlainRegistrable;
-use rtCamp\WPFramework\Tests\Fixtures\ShareableRegistrable;
+use rtCamp\WPPrimitives\Tests\Fixtures\ConditionalAllowed;
+use rtCamp\WPPrimitives\Tests\Fixtures\CountingRegistrable;
+use rtCamp\WPPrimitives\Tests\Fixtures\ConditionalDenied;
+use rtCamp\WPPrimitives\Tests\Fixtures\LoaderRunner;
+use rtCamp\WPPrimitives\Tests\Fixtures\PlainRegistrable;
+use rtCamp\WPPrimitives\Tests\Fixtures\ShareableRegistrable;
 
 final class LoaderTest extends TestCase {
 

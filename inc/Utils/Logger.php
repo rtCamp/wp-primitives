@@ -2,13 +2,13 @@
 /**
  * Logger utility.
  *
- * @package rtCamp\WPFramework\Utils
+ * @package rtCamp\WPPrimitives\Utils
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Utils;
+namespace rtCamp\WPPrimitives\Utils;
 
 /**
  * PSR-3-style logger that writes to error_log() — but only when logging is enabled.
@@ -39,7 +39,7 @@ namespace rtCamp\WPFramework\Utils;
  * gate on an env var or feature flag instead of `WP_DEBUG`, or to force logging on for a
  * specific subsystem. Internal calls go through `$this` so such overrides take effect.
  *
- * @package rtCamp\WPFramework\Utils
+ * @package rtCamp\WPPrimitives\Utils
  * @since   1.0.0
  */
 class Logger {

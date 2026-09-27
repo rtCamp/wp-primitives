@@ -11,17 +11,17 @@
  * $wp_filter wholesale after every test. Tests use anonymous classes
  * throughout so each scenario is self-contained.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractAbility;
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractAbilityRegistrar;
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractAbility;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractAbilityRegistrar;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 /**
  * Tests for AbstractAbilityRegistrar.
