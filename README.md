@@ -40,7 +40,7 @@ Not on public Packagist — add the repository to the consuming project's
 ```
 
 ```bash
-composer require rtcamp/wp-primitives:^1.0
+composer require rtcamp/wp-primitives:^2.0
 ```
 
 (The `repositories` entry is unnecessary when the project already resolves this

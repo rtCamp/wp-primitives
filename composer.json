@@ -58,6 +58,11 @@
 		"test": "Run the PHPUnit test suite.",
 		"check": "Run lint + analyse + test in sequence. Exit code 0 if all green."
 	},
+	"extra": {
+		"branch-alias": {
+			"dev-main": "2.0.x-dev"
+		}
+	},
 	"minimum-stability": "stable",
 	"prefer-stable": true
 }

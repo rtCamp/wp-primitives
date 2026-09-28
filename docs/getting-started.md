@@ -36,15 +36,15 @@ consuming project's `composer.json` first, then require it:
 ```
 
 ```bash
-composer require rtcamp/wp-primitives:^1.0
+composer require rtcamp/wp-primitives:^2.0
 ```
 
 If the project is already wired to an rtCamp-hosted Composer registry that
 serves this package, the `repositories` entry is unnecessary and
-`composer require rtcamp/wp-primitives:^1.0` is enough on its own.
+`composer require rtcamp/wp-primitives:^2.0` is enough on its own.
 
 Pin with a caret constraint. `inc/Contracts/` is the public API and the project
-follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), so `^1.0`
+follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), so `^2.0`
 accepts additive releases and refuses the next major. Read
 [upgrading.md](upgrading.md) before moving across a major.
 
