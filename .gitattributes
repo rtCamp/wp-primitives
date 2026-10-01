@@ -29,6 +29,7 @@
 /docs               export-ignore
 /AGENTS.md          export-ignore
 /CONTRIBUTING.md    export-ignore
+/SECURITY.md        export-ignore
 
 # Ship on purpose: README.md and LICENSE.md, inc/, plus ai/ and
 # bin/sync-ai-instructions.js, which consumers run from vendor/ via `npm run sync-ai`.
