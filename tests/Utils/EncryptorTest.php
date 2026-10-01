@@ -137,6 +137,34 @@ final class EncryptorTest extends TestCase {
 		$this->assertSame( '', $encryptor->decrypt( $encrypted ) );
 	}
 
+	/**
+	 * An Encryptor that behaves as if the OpenSSL extension were missing.
+	 */
+	private function encryptor_without_openssl(): Encryptor {
+		return new class( self::KEY ) extends Encryptor {
+			protected function is_openssl_available(): bool {
+				return false;
+			}
+		};
+	}
+
+	public function test_encrypt_fails_closed_without_openssl(): void {
+		$encryptor = $this->encryptor_without_openssl();
+		$this->setExpectedIncorrectUsage( Encryptor::class . '::encrypt' );
+
+		$this->assertFalse( $encryptor->encrypt( 'secret' ) );
+	}
+
+	public function test_decrypt_fails_closed_without_openssl(): void {
+		$encrypted = $this->encryptor()->encrypt( 'secret' );
+		$this->assertIsString( $encrypted );
+
+		$encryptor = $this->encryptor_without_openssl();
+		$this->setExpectedIncorrectUsage( Encryptor::class . '::decrypt' );
+
+		$this->assertFalse( $encryptor->decrypt( $encrypted ) );
+	}
+
 	public function test_key_seam_can_be_overridden_by_a_subclass(): void {
 		// A subclass can source the key from anywhere via the key() seam, while
 		// reusing the crypto unchanged.
