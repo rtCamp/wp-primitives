@@ -125,6 +125,14 @@ class Encryptor {
 			return false;
 		}
 
+		// A valid payload always carries a full IV and a full-length tag. Reject
+		// anything shorter before it reaches OpenSSL: GCM verifies a truncated tag
+		// at its truncated length, so a 13-byte payload (IV + 1 tag byte, empty
+		// ciphertext) would decrypt to '' for 1 in 256 forged tags.
+		if ( strlen( $decoded_value ) < static::IV_LENGTH + static::TAG_LENGTH ) {
+			return false;
+		}
+
 		$iv         = substr( $decoded_value, 0, static::IV_LENGTH );
 		$tag        = substr( $decoded_value, static::IV_LENGTH, static::TAG_LENGTH );
 		$ciphertext = substr( $decoded_value, static::IV_LENGTH + static::TAG_LENGTH );

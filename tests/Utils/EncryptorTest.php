@@ -90,6 +90,53 @@ final class EncryptorTest extends TestCase {
 		$this->assertFalse( $encryptor->decrypt( $tampered ) );
 	}
 
+	public function test_decrypt_rejects_a_truncated_tag_for_every_tag_value(): void {
+		// Regression: a payload holding only the IV plus a 1-byte "tag" left the
+		// ciphertext empty, and OpenSSL authenticates a truncated GCM tag at its
+		// truncated length, so 1 of these 256 forgeries decrypted to ''. Every
+		// candidate must be rejected now, not just most of them.
+		$encryptor = $this->encryptor();
+		$iv        = str_repeat( "\x01", 12 );
+
+		for ( $byte = 0; $byte < 256; $byte++ ) {
+			$forged = base64_encode( $iv . chr( $byte ) );
+
+			$this->assertFalse( $encryptor->decrypt( $forged ), sprintf( 'Tag byte 0x%02x was accepted.', $byte ) );
+		}
+	}
+
+	/**
+	 * @dataProvider data_short_payload_lengths
+	 *
+	 * @param int $length Decoded payload length, shorter than IV + tag.
+	 */
+	public function test_decrypt_rejects_payloads_shorter_than_iv_plus_tag( int $length ): void {
+		$this->assertFalse( $this->encryptor()->decrypt( base64_encode( str_repeat( 'x', $length ) ) ) );
+	}
+
+	/**
+	 * @return array<string, array{int}>
+	 */
+	public function data_short_payload_lengths(): array {
+		return [
+			'empty'               => [ 0 ],
+			'shorter than the IV' => [ 5 ],
+			'IV only'             => [ 12 ],
+			'IV plus partial tag' => [ 27 ],
+		];
+	}
+
+	public function test_empty_plaintext_roundtrips(): void {
+		// The smallest legitimate payload is IV + full tag with no ciphertext;
+		// the length guard must still let it through.
+		$encryptor = $this->encryptor();
+		$encrypted = $encryptor->encrypt( '' );
+
+		$this->assertIsString( $encrypted );
+		$this->assertSame( 28, strlen( (string) base64_decode( $encrypted, true ) ) );
+		$this->assertSame( '', $encryptor->decrypt( $encrypted ) );
+	}
+
 	public function test_key_seam_can_be_overridden_by_a_subclass(): void {
 		// A subclass can source the key from anywhere via the key() seam, while
 		// reusing the crypto unchanged.
