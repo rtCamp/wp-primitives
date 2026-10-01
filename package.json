@@ -12,6 +12,6 @@
     "test:php:coverage": "wp-env run tests-cli --env-cwd=wp-content/wp-primitives-rt -- vendor/bin/phpunit -c phpunit.xml.dist --coverage-html coverage"
   },
   "devDependencies": {
-    "@wordpress/env": "11.7.0"
+    "@wordpress/env": "11.16.0"
   }
 }
