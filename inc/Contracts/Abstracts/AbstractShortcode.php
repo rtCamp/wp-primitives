@@ -42,8 +42,8 @@ abstract class AbstractShortcode implements Registrable {
 	/**
 	 * Shortcode callback wrapper. Parses attributes and delegates to render().
 	 *
-	 * @param array|string $atts    Shortcode attributes.
-	 * @param string|null  $content Enclosed content (if any).
+	 * @param array<string, mixed>|string $atts    Shortcode attributes. WordPress passes an empty string when the tag has none.
+	 * @param string|null                 $content Enclosed content (if any).
 	 *
 	 * @return string Rendered shortcode output.
 	 */

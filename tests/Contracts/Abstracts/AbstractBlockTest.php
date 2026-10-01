@@ -72,6 +72,38 @@ final class AbstractBlockTest extends TestCase {
 		$this->assertSame( '<div class="wpf-block">rendered</div>', $output );
 	}
 
+	public function test_block_dir_without_block_json_falls_back_to_the_block_name(): void {
+		// Regression: an unbuilt block directory used to reach register_block_type()
+		// as a "block name", so WordPress rejected it with a namespace-prefix
+		// notice and nothing was registered. WP_UnitTestCase fails the test on any
+		// unexpected _doing_it_wrong(), so the absence of a notice is asserted too.
+		$dir = sys_get_temp_dir() . '/wpf-unbuilt-' . str_replace( '.', '', uniqid( '', true ) );
+		mkdir( $dir, 0777, true );
+
+		$block = new class( $dir ) extends AbstractBlock {
+			public function __construct( private string $dir ) {}
+
+			public static function get_name(): string {
+				return 'wp-primitives-test/block';
+			}
+
+			public function render( array $attributes, string $content, \WP_Block $block ): string {
+				return 'fallback';
+			}
+
+			protected function get_block_dir(): ?string {
+				return $this->dir;
+			}
+		};
+
+		$block->register_block();
+		rmdir( $dir );
+
+		$type = WP_Block_Type_Registry::get_instance()->get_registered( self::BLOCK_NAME );
+		$this->assertNotNull( $type, 'the block must still register by name' );
+		$this->assertSame( [ $block, 'render' ], $type->render_callback );
+	}
+
 	public function test_register_block_uses_block_dir_when_provided(): void {
 		$dir = sys_get_temp_dir() . '/wpf-block-' . str_replace( '.', '', uniqid( '', true ) );
 		mkdir( $dir, 0777, true );

@@ -1,12 +1,28 @@
 {
 	"name": "rtcamp/wp-primitives",
-	"description": "Shared PHP utilities for rtCamp WordPress projects",
+	"description": "Contracts, loaders and utilities for building WordPress plugins and themes on a shared, tested base.",
+	"keywords": [
+		"wordpress",
+		"wordpress-plugin",
+		"wordpress-theme",
+		"framework",
+		"library",
+		"rtcamp"
+	],
 	"type": "library",
 	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "rtCamp",
+			"email": "support@rtcamp.com",
+			"homepage": "https://rtcamp.com"
+		}
+	],
 	"homepage": "https://github.com/rtCamp/wp-primitives",
 	"support": {
 		"issues": "https://github.com/rtCamp/wp-primitives/issues",
-		"source": "https://github.com/rtCamp/wp-primitives"
+		"source": "https://github.com/rtCamp/wp-primitives",
+		"docs": "https://opensource.rtcamp.com/wp-primitives/"
 	},
 	"require": {
 		"php": ">=8.2"
@@ -60,7 +76,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-main": "2.0.x-dev"
+			"dev-main": "2.x-dev"
 		}
 	},
 	"minimum-stability": "stable",

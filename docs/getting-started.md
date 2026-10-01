@@ -21,8 +21,14 @@ APIs. `Encryptor` additionally requires the OpenSSL PHP extension when used.
 
 ## Install
 
-The package is not published on public Packagist. Add the repository to the
-consuming project's `composer.json` first, then require it:
+```bash
+composer require rtcamp/wp-primitives:^2.0
+```
+
+The package is published on [Packagist](https://packagist.org/packages/rtcamp/wp-primitives),
+so `composer require` is all a consumer needs. To install from GitHub instead (a
+development branch, a fork, or a project that does not use Packagist), add the
+repository to the consuming project's `composer.json` first:
 
 ```json
 {
@@ -34,14 +40,6 @@ consuming project's `composer.json` first, then require it:
   ]
 }
 ```
-
-```bash
-composer require rtcamp/wp-primitives:^2.0
-```
-
-If the project is already wired to an rtCamp-hosted Composer registry that
-serves this package, the `repositories` entry is unnecessary and
-`composer require rtcamp/wp-primitives:^2.0` is enough on its own.
 
 Pin with a caret constraint. `inc/Contracts/` is the public API and the project
 follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), so `^2.0`

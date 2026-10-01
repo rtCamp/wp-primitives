@@ -70,7 +70,7 @@ one you get is deliberate:
 | Symptom | Cause | Fix |
 |---|---|---|
 | `Class "rtCamp\WPPrimitives\…" not found` | The consumer's `vendor/autoload.php` was never required, or the package resolved from a stale `vendor/`. | Require the autoloader in the plugin/theme entry point; `composer update rtcamp/wp-primitives`. |
-| Composer can't find the package | It is not on public Packagist. | Add the VCS `repositories` entry — see [getting-started.md](getting-started.md#install). |
+| Composer can't find the package | The project installs from GitHub without a `repositories` entry. | Add the VCS entry from [getting-started.md](getting-started.md#install). |
 | A missing abstract method only surfaces at runtime | The subclass doesn't implement everything the abstract declares. | Run PHPStan in the consuming package; it catches contract breaks before a request does. |
 
 Still stuck? The classes are small and heavily commented — `Loader::load()` in

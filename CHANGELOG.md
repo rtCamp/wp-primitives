@@ -7,26 +7,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-01
+
+### Added
+
+- `AbstractAbility` and `AbstractAbilityRegistrar`, base classes for the WordPress
+  6.9 Abilities API (#76). Abilities default to a fail-closed `manage_options`
+  permission check and opt in to REST or MCP exposure through `meta()`; a
+  registrar registers its category idempotently, so several registrars can share
+  one. Both are inert on WordPress older than 6.9.
+- A protected `Encryptor::is_openssl_available()` seam, so the fail-closed
+  "OpenSSL missing" path of `encrypt()` and `decrypt()` is covered by tests.
+
+### Security
+
+- `Encryptor::decrypt()` now rejects any payload shorter than the IV plus a
+  full-length authentication tag. OpenSSL verifies a truncated GCM tag at its
+  truncated length, so a forged 13-byte payload (IV plus one tag byte, empty
+  ciphertext) decrypted to `''` for 1 in 256 tag values instead of failing.
+
+### Fixed
+
+- `Transients` now hashes a namespaced key longer than WordPress' 172-character
+  transient name limit to `h:<md5>`. Such names were truncated by the options
+  table, so the value was never found again on the next request (or, just past the
+  limit, its expiry was silently dropped). Keys within the limit are unchanged.
+- `AbstractBlock` registers by block name when the build directory has no
+  `block.json` (a fresh clone, or before `npm run build`). It used to pass the
+  directory to `register_block_type()`, which raised a "Block type names must
+  contain a namespace prefix" notice on every request and registered nothing.
+- `sync-ai` also finds packages in site repositories that commit only the root
+  instructions projection, by detecting packages that vendor
+  `rtcamp/wp-primitives`. Before, such repositories got "Nothing to do" and kept
+  the legacy root file after upgrading.
+- `sync-ai` prunes only the legacy files it generated and logs the real path of
+  each file it removes.
+
 ### Changed
 
-- **BREAKING: renamed the package from `rtcamp/wp-framework` to `rtcamp/wp-primitives`.**
-  The PHP namespace moves from `rtCamp\WPFramework\` to `rtCamp\WPPrimitives\`, the
-  repository moves to `rtCamp/wp-primitives`, and the AI rules file shipped to consumers
-  is renamed from `ai/framework-php.instructions.md` to `ai/primitives-php.instructions.md`
-  (synced into consumers as `.github/instructions/primitives-php.instructions.md`).
-  Consumers must move to a `^2.0` constraint; `^1.0` continues to resolve from the
-  existing `v1.0.0` / `v1.0.1` tags, which keep the old package name.
+- **BREAKING: the package is now `rtcamp/wp-primitives`** (previously
+  `rtcamp/wp-framework`). Require `rtcamp/wp-primitives:^2.0`. Existing installs keep
+  working from their `composer.lock`, but `composer update` no longer resolves the old
+  name. The new name also changes these defaults:
+  - PHP namespace: `rtCamp\WPPrimitives\`.
+  - `AssetLoader::HANDLE_PREFIX`: `wp-primitives-`. Default asset handles change, so
+    handles referenced by string in `wp_add_inline_script()`, `wp_localize_script()`,
+    dependency arrays or dequeue calls must be updated. Override the constant to keep
+    the 1.x handles.
+  - `ComponentLoader::get_context()`: `wp-primitives`. Subclasses that do not override
+    it get `wp-primitives/component_*` hooks (`before_render`, `after_render`,
+    `asset_handle`, `should_enqueue`) and `wp-primitives-component-*` asset handles.
+    Override `get_context()` to keep the 1.x names.
+  - Text domain of the 22 translated strings in `inc/`: `wp-primitives`. No
+    translation files ship with this package; retarget any you maintain.
+  - AI rules file: `ai/primitives-php.instructions.md`, synced into consumers as
+    `.github/instructions/primitives-php.instructions.md`.
 
-- **BREAKING: `AssetLoader::HANDLE_PREFIX` default changes from `wp-framework-` to
-  `wp-primitives-`.** Any consumer that did not override the constant will see every
-  default asset handle change, so `wp_add_inline_script()`, `wp_localize_script()`,
-  dependency arrays and dequeue calls that referenced a `wp-framework-*` handle by
-  string must be updated. Override `HANDLE_PREFIX` in your subclass to keep the old
-  handles.
-- **BREAKING: the gettext text domain changes from `wp-framework` to `wp-primitives`**
-  across the 23 translated strings in `inc/`. No `.pot`, `.po` or `.mo` files ship with
-  this package, so nothing in-repo breaks, but any consumer shipping translations for
-  the old domain must retarget them.
+### Build
+
+- Dist archives (Packagist and GitHub zipballs) no longer include `docs/`,
+  `AGENTS.md`, `CONTRIBUTING.md` or `composer.lock`. `ai/` and
+  `bin/sync-ai-instructions.js` still ship, because consumers run them from
+  `vendor/` via `npm run sync-ai`.
+- CI runs on Node 24 (Node 20 reached end of life in April 2026), PHPStan runs at
+  level 6, the documentation action is pinned to a commit, and checkouts no longer
+  persist credentials. Dependabot auto-merge uses GitHub's documented
+  `pull_request` pattern instead of a `workflow_run` trigger with a spoofable
+  `github.actor` check.
 
 ### Documentation
 
@@ -36,8 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `docs/upgrading.md` (versioning promise and the 1.0.0 → 1.0.1 `Singleton`
   migration) and `docs/troubleshooting.md` (symptom → cause for the framework's
   exceptions, `_doing_it_wrong()` notices, and silent no-ops).
-- Documented the real install path: the package is not on public Packagist, so
-  the consumer needs a VCS `repositories` entry and a `^2.0` constraint.
+- Install docs are Packagist-first (`composer require rtcamp/wp-primitives:^2.0`),
+  with a VCS `repositories` fallback for installing straight from GitHub.
 - Added a worked WP-CLI example to `docs/contracts.md`, the only contract that
   had none, and a quick-look snippet to the README.
 - Corrected the `Loader::load()` snippet in `docs/architecture.md` to match the
@@ -100,6 +147,7 @@ Initial release. Requires PHP 8.2+.
 - Reference documentation under `docs/`, a GPL-2.0-or-later `LICENSE.md`, and a
   WordPress integration test suite running against `@wordpress/env`.
 
-[Unreleased]: https://github.com/rtCamp/wp-primitives/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/rtCamp/wp-primitives/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/rtCamp/wp-primitives/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/rtCamp/wp-primitives/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rtCamp/wp-primitives/releases/tag/v1.0.0

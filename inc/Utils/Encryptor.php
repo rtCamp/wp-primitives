@@ -69,7 +69,7 @@ class Encryptor {
 	 * @throws \RuntimeException If no encryption key is available.
 	 */
 	public function encrypt( string $raw_value ): string|false {
-		if ( ! extension_loaded( 'openssl' ) ) {
+		if ( ! $this->is_openssl_available() ) {
 			_doing_it_wrong(
 				__METHOD__,
 				'OpenSSL extension is not loaded. Encryption cannot proceed.',
@@ -105,7 +105,7 @@ class Encryptor {
 	 * @throws \RuntimeException If no encryption key is available.
 	 */
 	public function decrypt( string $raw_value ): string|false {
-		if ( ! extension_loaded( 'openssl' ) ) {
+		if ( ! $this->is_openssl_available() ) {
 			_doing_it_wrong(
 				__METHOD__,
 				'OpenSSL extension is not loaded. Decryption cannot proceed.',
@@ -125,6 +125,14 @@ class Encryptor {
 			return false;
 		}
 
+		// A valid payload always carries a full IV and a full-length tag. Reject
+		// anything shorter before it reaches OpenSSL: GCM verifies a truncated tag
+		// at its truncated length, so a 13-byte payload (IV + 1 tag byte, empty
+		// ciphertext) would decrypt to '' for 1 in 256 forged tags.
+		if ( strlen( $decoded_value ) < static::IV_LENGTH + static::TAG_LENGTH ) {
+			return false;
+		}
+
 		$iv         = substr( $decoded_value, 0, static::IV_LENGTH );
 		$tag        = substr( $decoded_value, static::IV_LENGTH, static::TAG_LENGTH );
 		$ciphertext = substr( $decoded_value, static::IV_LENGTH + static::TAG_LENGTH );
@@ -137,6 +145,19 @@ class Encryptor {
 			$iv,
 			$tag
 		);
+	}
+
+	/**
+	 * Whether the OpenSSL extension is available.
+	 *
+	 * A seam rather than an inline extension_loaded() call so the "no OpenSSL"
+	 * path, which makes encrypt() and decrypt() fail closed, can be exercised by
+	 * a subclass in tests.
+	 *
+	 * @return bool True when OpenSSL can be used.
+	 */
+	protected function is_openssl_available(): bool {
+		return extension_loaded( 'openssl' );
 	}
 
 	/**

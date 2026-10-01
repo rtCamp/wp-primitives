@@ -28,8 +28,14 @@ Requirements:
 
 ## Install
 
-Not on public Packagist — add the repository to the consuming project's
-`composer.json`, then require it with a caret constraint:
+```bash
+composer require rtcamp/wp-primitives:^2.0
+```
+
+The package is published on [Packagist](https://packagist.org/packages/rtcamp/wp-primitives),
+so no extra configuration is needed. To install straight from GitHub instead (a
+branch, a fork, or a project that does not use Packagist), add a VCS repository
+before requiring it:
 
 ```json
 {
@@ -38,13 +44,6 @@ Not on public Packagist — add the repository to the consuming project's
 	]
 }
 ```
-
-```bash
-composer require rtcamp/wp-primitives:^2.0
-```
-
-(The `repositories` entry is unnecessary when the project already resolves this
-package through an rtCamp-hosted Composer registry.)
 
 PSR-4 autoloading: `rtCamp\WPPrimitives\` → `inc/`.
 
