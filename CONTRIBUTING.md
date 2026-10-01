@@ -1,6 +1,6 @@
-# Contributing to wp-framework
+# Contributing to wp-primitives
 
-Thanks for your interest in improving `rtcamp/wp-framework`. This is a
+Thanks for your interest in improving `rtcamp/wp-primitives`. This is a
 **library** — a shared PHP base consumed as a Composer package by rtCamp
 WordPress plugins and themes — so its public contract (`inc/Contracts/`) is
 treated as stable and changes to it are considered breaking.
@@ -58,7 +58,7 @@ contract-change, and documentation guidance.
 - [ ] `composer lint`, `composer analyse`, and `npm run test:php` pass.
 - [ ] New/changed behavior is covered by tests.
 - [ ] Any change to `inc/Contracts/` is flagged as breaking in the PR description.
-- [ ] Contract changes are reflected in `ai/framework-php.instructions.md`.
+- [ ] Contract changes are reflected in `ai/primitives-php.instructions.md`.
 - [ ] User-visible behavior is reflected in `README.md` or `docs/`.
 - [ ] A `CHANGELOG.md` entry is added under `## [Unreleased]`.
 - [ ] Commits follow [Conventional Commits](https://www.conventionalcommits.org/).

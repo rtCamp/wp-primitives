@@ -2,15 +2,15 @@
 /**
  * FeatureSelector utility tests.
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Utils;
+namespace rtCamp\WPPrimitives\Tests\Utils;
 
-use rtCamp\WPFramework\Tests\TestCase;
-use rtCamp\WPFramework\Utils\FeatureSelector;
+use rtCamp\WPPrimitives\Tests\TestCase;
+use rtCamp\WPPrimitives\Utils\FeatureSelector;
 
 /**
  * Tests for FeatureSelector.
@@ -80,7 +80,7 @@ final class FeatureSelectorTest extends TestCase {
 	}
 
 	public function test_register_keeps_first_registration_and_warns_on_duplicate(): void {
-		$this->setExpectedIncorrectUsage( 'rtCamp\WPFramework\Utils\FeatureSelector::register' );
+		$this->setExpectedIncorrectUsage( 'rtCamp\WPPrimitives\Utils\FeatureSelector::register' );
 
 		$this->selector->register( [ 'my-flag' => [ 'name' => 'Original' ] ] );
 		$this->selector->register( [ 'my-flag' => [ 'name' => 'Updated' ] ] );
@@ -90,7 +90,7 @@ final class FeatureSelectorTest extends TestCase {
 	}
 
 	public function test_register_warns_on_slugs_that_normalize_to_the_same_key(): void {
-		$this->setExpectedIncorrectUsage( 'rtCamp\WPFramework\Utils\FeatureSelector::register' );
+		$this->setExpectedIncorrectUsage( 'rtCamp\WPPrimitives\Utils\FeatureSelector::register' );
 
 		$this->selector->register( [ 'beta-search' ] );
 		$this->selector->register( [ 'beta search' ] ); // Normalizes to the same key.
@@ -136,14 +136,14 @@ final class FeatureSelectorTest extends TestCase {
 	public function test_enable_refuses_and_warns_for_an_unregistered_flag(): void {
 		// A typo'd toggle is a programming error: nothing is persisted, and the
 		// caller is flagged loudly rather than silently believing it took effect.
-		$this->setExpectedIncorrectUsage( 'rtCamp\WPFramework\Utils\FeatureSelector::enable' );
+		$this->setExpectedIncorrectUsage( 'rtCamp\WPPrimitives\Utils\FeatureSelector::enable' );
 
 		$this->assertFalse( $this->selector->enable( 'drak-mode' ) );
 		$this->assertFalse( get_option( 'my_plugin_features', false ) );
 	}
 
 	public function test_disable_refuses_and_warns_for_an_unregistered_flag(): void {
-		$this->setExpectedIncorrectUsage( 'rtCamp\WPFramework\Utils\FeatureSelector::disable' );
+		$this->setExpectedIncorrectUsage( 'rtCamp\WPPrimitives\Utils\FeatureSelector::disable' );
 
 		$this->assertFalse( $this->selector->disable( 'drak-mode' ) );
 		$this->assertFalse( get_option( 'my_plugin_features', false ) );

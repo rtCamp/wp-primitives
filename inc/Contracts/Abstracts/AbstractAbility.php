@@ -2,13 +2,13 @@
 /**
  * Abstract Ability.
  *
- * @package rtCamp\WPFramework\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Contracts\Abstracts;
 
 /**
  * Class AbstractAbility

@@ -5,7 +5,7 @@ sidebar_label: Maintainer guide
 
 # Maintainer guide
 
-This guide covers work on `rtcamp/wp-framework` itself. For consuming the
+This guide covers work on `rtcamp/wp-primitives` itself. For consuming the
 library, start with [getting-started.md](getting-started.md).
 
 ## Local environment
@@ -56,7 +56,7 @@ npm run wp-env stop
 
 - Follow TDD: add a failing test, then implement the behavior.
 - Mirror `inc/` under `tests/` for new classes and traits.
-- Extend `rtCamp\WPFramework\Tests\TestCase` for code that calls WordPress APIs.
+- Extend `rtCamp\WPPrimitives\Tests\TestCase` for code that calls WordPress APIs.
 - A pure-logic test may extend `PHPUnit\Framework\TestCase`.
 - Exercise actual WordPress registrations and registries rather than mocking
   WordPress functions.
@@ -74,7 +74,7 @@ Before editing, identify which surface is affected:
   plugins and themes. Signature changes here are breaking.
 - `inc/` contains the container and concrete asset/render loaders.
 - `inc/Utils/` contains reusable services and utilities.
-- `ai/framework-php.instructions.md` is shipped to consumers as their canonical
+- `ai/primitives-php.instructions.md` is shipped to consumers as their canonical
   framework and WordPress review guidance.
 - `bin/sync-ai-instructions.js` refreshes and projects those instructions in
   consuming repositories.
@@ -90,7 +90,7 @@ For every behavior change:
 For a change under `inc/Contracts/`, also:
 
 - call out the compatibility impact in the pull request;
-- update `ai/framework-php.instructions.md` when consumer guidance or the
+- update `ai/primitives-php.instructions.md` when consumer guidance or the
   documented contract changes;
 - check every abstract subclass signature and every documented example affected
   by the change.
@@ -100,7 +100,7 @@ limited to PHP. Development-only tooling belongs in `require-dev`.
 
 ## Adding a class, interface, or trait
 
-- Use PSR-4 paths: `rtCamp\WPFramework\` maps to `inc/`.
+- Use PSR-4 paths: `rtCamp\WPPrimitives\` maps to `inc/`.
 - Add `declare( strict_types = 1 );`.
 - Fully type parameters and return values.
 - Add `@package` and `@since` documentation.

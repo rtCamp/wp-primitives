@@ -8,14 +8,14 @@
  * constructing. The early assignment is the trait's documented re-entrancy
  * guard; this fixture pins that the property stays protected and assignable.
  *
- * @package rtCamp\WPFramework\Tests\Fixtures
+ * @package rtCamp\WPPrimitives\Tests\Fixtures
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Fixtures;
+namespace rtCamp\WPPrimitives\Tests\Fixtures;
 
-use rtCamp\WPFramework\Contracts\Traits\Singleton;
+use rtCamp\WPPrimitives\Contracts\Traits\Singleton;
 
 /**
  * Class - ReentrantSingleton

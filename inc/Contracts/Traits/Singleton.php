@@ -5,13 +5,13 @@
  * Singletons are an ANTI-PATTERN. Use with caution and only when necessary.
  * In most cases, it's better to use dependency injection.
  *
- * @package rtCamp\WPFramework\Contracts\Traits
+ * @package rtCamp\WPPrimitives\Contracts\Traits
  * @since 1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Contracts\Traits;
+namespace rtCamp\WPPrimitives\Contracts\Traits;
 
 /**
  * Singleton trait.
@@ -69,7 +69,7 @@ trait Singleton {
 			__FUNCTION__,
 			sprintf(
 				// translators: %s: Class name.
-				esc_html__( 'The %s class should not be cloned.', 'wp-framework' ),
+				esc_html__( 'The %s class should not be cloned.', 'wp-primitives' ),
 				esc_html( static::class ),
 			),
 			'1.0.0'
@@ -84,7 +84,7 @@ trait Singleton {
 			__FUNCTION__,
 			sprintf(
 				// translators: %s: Class name.
-				esc_html__( 'De-serializing instances of %s is not allowed.', 'wp-framework' ),
+				esc_html__( 'De-serializing instances of %s is not allowed.', 'wp-primitives' ),
 				esc_html( static::class ),
 			),
 			'1.0.0'

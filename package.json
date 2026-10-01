@@ -1,5 +1,5 @@
 {
-  "name": "wp-framework",
+  "name": "wp-primitives",
   "version": "0.0.1",
   "description": "Tooling for the rtCamp WordPress framework: wp-env integration test harness.",
   "private": true,
@@ -7,9 +7,9 @@
   "license": "GPL-2.0-or-later",
   "scripts": {
     "wp-env": "wp-env",
-    "pretest:php": "wp-env run tests-cli --env-cwd=wp-content/wp-framework-rt -- composer install --no-interaction",
-    "test:php": "wp-env run tests-cli --env-cwd=wp-content/wp-framework-rt -- vendor/bin/phpunit -c phpunit.xml.dist",
-    "test:php:coverage": "wp-env run tests-cli --env-cwd=wp-content/wp-framework-rt -- vendor/bin/phpunit -c phpunit.xml.dist --coverage-html coverage"
+    "pretest:php": "wp-env run tests-cli --env-cwd=wp-content/wp-primitives-rt -- composer install --no-interaction",
+    "test:php": "wp-env run tests-cli --env-cwd=wp-content/wp-primitives-rt -- vendor/bin/phpunit -c phpunit.xml.dist",
+    "test:php:coverage": "wp-env run tests-cli --env-cwd=wp-content/wp-primitives-rt -- vendor/bin/phpunit -c phpunit.xml.dist --coverage-html coverage"
   },
   "devDependencies": {
     "@wordpress/env": "11.7.0"

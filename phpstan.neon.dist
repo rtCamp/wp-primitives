@@ -1,4 +1,4 @@
-# PHPStan configuration — wp-framework
+# PHPStan configuration — wp-primitives
 # Docs: https://phpstan.org/config-reference
 
 includes:

@@ -29,26 +29,26 @@ consuming project's `composer.json` first, then require it:
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/rtCamp/wp-framework"
+      "url": "https://github.com/rtCamp/wp-primitives"
     }
   ]
 }
 ```
 
 ```bash
-composer require rtcamp/wp-framework:^1.0
+composer require rtcamp/wp-primitives:^2.0
 ```
 
 If the project is already wired to an rtCamp-hosted Composer registry that
 serves this package, the `repositories` entry is unnecessary and
-`composer require rtcamp/wp-framework:^1.0` is enough on its own.
+`composer require rtcamp/wp-primitives:^2.0` is enough on its own.
 
 Pin with a caret constraint. `inc/Contracts/` is the public API and the project
-follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), so `^1.0`
+follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), so `^2.0`
 accepts additive releases and refuses the next major. Read
 [upgrading.md](upgrading.md) before moving across a major.
 
-Composer exposes framework classes through the `rtCamp\WPFramework\` namespace.
+Composer exposes framework classes through the `rtCamp\WPPrimitives\` namespace.
 The consuming plugin or theme remains responsible for requiring its own Composer
 autoload file and starting its entry class.
 
@@ -63,7 +63,7 @@ declare( strict_types = 1 );
 
 namespace Acme\Example;
 
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
 
 final class ContentFilters implements Registrable {
  public function register_hooks(): void {
@@ -91,7 +91,7 @@ declare( strict_types = 1 );
 
 namespace Acme\Example;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractModule;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractModule;
 
 final class ContentModule extends AbstractModule {
  protected function get_classes(): array {
@@ -119,8 +119,8 @@ declare( strict_types = 1 );
 
 namespace Acme\Example;
 
-use rtCamp\WPFramework\Contracts\Traits\Loader;
-use rtCamp\WPFramework\Contracts\Traits\Singleton;
+use rtCamp\WPPrimitives\Contracts\Traits\Loader;
+use rtCamp\WPPrimitives\Contracts\Traits\Singleton;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -158,8 +158,8 @@ Classes are not retained by default. Add the `Shareable` marker only when anothe
 class must retrieve the exact instance that was loaded:
 
 ```php
-use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
-use rtCamp\WPFramework\Utils\Cache;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
+use rtCamp\WPPrimitives\Utils\Cache;
 
 final class PluginCache extends Cache implements Shareable {
  public function __construct() {

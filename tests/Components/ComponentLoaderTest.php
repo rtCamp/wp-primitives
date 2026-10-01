@@ -8,23 +8,23 @@
  * hooks are captured with a real add_action() recorder, and incorrect usage
  * via WP_UnitTestCase::setExpectedIncorrectUsage().
  *
- * @package rtCamp\WPFramework\Tests\Components
+ * @package rtCamp\WPPrimitives\Tests\Components
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Components;
+namespace rtCamp\WPPrimitives\Tests\Components;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use rtCamp\WPFramework\AssetLoader;
-use rtCamp\WPFramework\ComponentLoader;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\AssetLoader;
+use rtCamp\WPPrimitives\ComponentLoader;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class ComponentLoaderTest extends TestCase {
 
-	private const STYLE_HANDLE  = 'wp-framework-component-alert-style';
-	private const SCRIPT_HANDLE = 'wp-framework-component-alert-script';
+	private const STYLE_HANDLE  = 'wp-primitives-component-alert-style';
+	private const SCRIPT_HANDLE = 'wp-primitives-component-alert-script';
 
 	private string $temp_dir;
 
@@ -48,7 +48,7 @@ final class ComponentLoaderTest extends TestCase {
 	public function set_up(): void {
 		parent::set_up();
 
-		$this->temp_dir   = sys_get_temp_dir() . '/wp-framework-component-loader-' . str_replace( '.', '', uniqid( '', true ) );
+		$this->temp_dir   = sys_get_temp_dir() . '/wp-primitives-component-loader-' . str_replace( '.', '', uniqid( '', true ) );
 		$this->parent_dir = $this->temp_dir . '/parent-theme';
 		$this->child_dir  = $this->temp_dir . '/child-theme';
 
@@ -63,12 +63,12 @@ final class ComponentLoaderTest extends TestCase {
 		$GLOBALS['wp_scripts'] = null;
 		$GLOBALS['wp_styles']  = null;
 
-		TestComponentLoader::$test_context = 'wp-framework';
+		TestComponentLoader::$test_context = 'wp-primitives';
 
 		// Record the render actions so tests can assert they fired.
 		$this->rendered_hooks = [];
 		foreach ( [ 'before', 'after' ] as $phase ) {
-			$hook = "wp-framework/component_{$phase}_render";
+			$hook = "wp-primitives/component_{$phase}_render";
 			add_action(
 				$hook,
 				function () use ( $hook ): void {
@@ -115,14 +115,14 @@ final class ComponentLoaderTest extends TestCase {
 		);
 
 		$this->assertSame(
-			[ 'wp-framework/component_before_render', 'wp-framework/component_after_render' ],
+			[ 'wp-primitives/component_before_render', 'wp-primitives/component_after_render' ],
 			$this->rendered_hooks
 		);
 	}
 
 	public function test_render_hooks_are_isolated_per_loader_context(): void {
 		// The point of namespacing the hooks is that one package's listeners do not
-		// fire for another's loader. Asserting only the default `wp-framework`
+		// fire for another's loader. Asserting only the default `wp-primitives`
 		// names would pass even if the context were ignored entirely.
 		$this->write_parent_component( 'alert', '<?php echo "alert";' );
 
@@ -155,7 +155,7 @@ final class ComponentLoaderTest extends TestCase {
 	public function test_default_context_listeners_do_not_fire_for_another_context(): void {
 		$this->write_parent_component( 'alert', '<?php echo "alert";' );
 
-		// set_up() already registered recorders on the default `wp-framework`
+		// set_up() already registered recorders on the default `wp-primitives`
 		// hooks; a loader in another context must leave them untouched.
 		TestComponentLoader::$test_context = 'other-package';
 		$other                             = new TestComponentLoader( $this->theme_asset_loader() );
@@ -338,7 +338,7 @@ final class ComponentLoaderTest extends TestCase {
 		$this->write_parent_asset( 'css/components/alert.css', '.alert{}' );
 
 		add_filter(
-			'wp-framework/component_should_enqueue',
+			'wp-primitives/component_should_enqueue',
 			static fn ( bool $enqueue, string $name, string $type ): bool => 'style' === $type ? false : $enqueue,
 			10,
 			3
@@ -355,7 +355,7 @@ final class ComponentLoaderTest extends TestCase {
 		$this->write_parent_asset( 'css/components/alert.css', '.alert{}' );
 
 		add_filter(
-			'wp-framework/component_asset_handle',
+			'wp-primitives/component_asset_handle',
 			static fn ( string $handle, string $name, string $type ): string => "custom-{$name}-{$type}",
 			10,
 			3
@@ -490,7 +490,7 @@ final class ComponentLoaderTest extends TestCase {
 }
 
 class TestComponentLoader extends ComponentLoader {
-	public static string $test_context = 'wp-framework';
+	public static string $test_context = 'wp-primitives';
 
 	protected function get_context(): string {
 		return self::$test_context;

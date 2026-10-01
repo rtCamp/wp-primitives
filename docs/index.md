@@ -3,9 +3,9 @@ sidebar_position: 1
 sidebar_label: Overview
 ---
 
-# wp-framework
+# wp-primitives
 
-`rtcamp/wp-framework` is the shared PHP base that every rtCamp plugin and theme
+`rtcamp/wp-primitives` is the shared PHP base that every rtCamp plugin and theme
 skeleton is built on. It is a Composer **library**, not a plugin: it ships a set
 of contracts (interfaces, abstracts, traits) plus concrete loaders and
 utilities, and the skeletons consume it through `vendor/`.

@@ -2,7 +2,7 @@
 	"core": null,
 	"phpVersion": "8.2",
 	"mappings": {
-		"wp-content/wp-framework-rt": "."
+		"wp-content/wp-primitives-rt": "."
 	},
 	"env": {
 		"tests": {

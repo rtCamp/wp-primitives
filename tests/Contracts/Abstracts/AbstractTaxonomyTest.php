@@ -2,15 +2,15 @@
 /**
  * AbstractTaxonomy tests.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractTaxonomy;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractTaxonomy;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class AbstractTaxonomyTest extends TestCase {
 

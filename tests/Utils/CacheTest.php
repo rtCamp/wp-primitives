@@ -2,15 +2,15 @@
 /**
  * Cache utility tests.
  *
- * @package rtCamp\WPFramework\Tests\Utils
+ * @package rtCamp\WPPrimitives\Tests\Utils
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Utils;
+namespace rtCamp\WPPrimitives\Tests\Utils;
 
-use rtCamp\WPFramework\Tests\TestCase;
-use rtCamp\WPFramework\Utils\Cache;
+use rtCamp\WPPrimitives\Tests\TestCase;
+use rtCamp\WPPrimitives\Utils\Cache;
 
 /**
  * Tests for Cache.

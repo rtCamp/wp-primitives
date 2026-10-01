@@ -1,11 +1,32 @@
 # Changelog
 
-All notable changes to `rtcamp/wp-framework` are documented here.
+All notable changes to `rtcamp/wp-primitives` are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+
+- **BREAKING: renamed the package from `rtcamp/wp-framework` to `rtcamp/wp-primitives`.**
+  The PHP namespace moves from `rtCamp\WPFramework\` to `rtCamp\WPPrimitives\`, the
+  repository moves to `rtCamp/wp-primitives`, and the AI rules file shipped to consumers
+  is renamed from `ai/framework-php.instructions.md` to `ai/primitives-php.instructions.md`
+  (synced into consumers as `.github/instructions/primitives-php.instructions.md`).
+  Consumers must move to a `^2.0` constraint; `^1.0` continues to resolve from the
+  existing `v1.0.0` / `v1.0.1` tags, which keep the old package name.
+
+- **BREAKING: `AssetLoader::HANDLE_PREFIX` default changes from `wp-framework-` to
+  `wp-primitives-`.** Any consumer that did not override the constant will see every
+  default asset handle change, so `wp_add_inline_script()`, `wp_localize_script()`,
+  dependency arrays and dequeue calls that referenced a `wp-framework-*` handle by
+  string must be updated. Override `HANDLE_PREFIX` in your subclass to keep the old
+  handles.
+- **BREAKING: the gettext text domain changes from `wp-framework` to `wp-primitives`**
+  across the 23 translated strings in `inc/`. No `.pot`, `.po` or `.mo` files ship with
+  this package, so nothing in-repo breaks, but any consumer shipping translations for
+  the old domain must retarget them.
 
 ### Documentation
 
@@ -16,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   migration) and `docs/troubleshooting.md` (symptom → cause for the framework's
   exceptions, `_doing_it_wrong()` notices, and silent no-ops).
 - Documented the real install path: the package is not on public Packagist, so
-  the consumer needs a VCS `repositories` entry and a `^1.0` constraint.
+  the consumer needs a VCS `repositories` entry and a `^2.0` constraint.
 - Added a worked WP-CLI example to `docs/contracts.md`, the only contract that
   had none, and a quick-look snippet to the README.
 - Corrected the `Loader::load()` snippet in `docs/architecture.md` to match the
@@ -79,6 +100,6 @@ Initial release. Requires PHP 8.2+.
 - Reference documentation under `docs/`, a GPL-2.0-or-later `LICENSE.md`, and a
   WordPress integration test suite running against `@wordpress/env`.
 
-[Unreleased]: https://github.com/rtCamp/wp-framework/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/rtCamp/wp-framework/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/rtCamp/wp-framework/releases/tag/v1.0.0
+[Unreleased]: https://github.com/rtCamp/wp-primitives/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/rtCamp/wp-primitives/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/rtCamp/wp-primitives/releases/tag/v1.0.0

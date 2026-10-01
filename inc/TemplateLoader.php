@@ -33,13 +33,13 @@
  *   $templates->render( 'content', 'card', [ 'title' => 'Hello' ] ); // echo
  *   $html = $templates->get( 'content', 'card', [ 'title' => 'Hello' ] ); // string
  *
- * @package rtCamp\WPFramework
+ * @package rtCamp\WPPrimitives
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework;
+namespace rtCamp\WPPrimitives;
 
 /**
  * Class TemplateLoader

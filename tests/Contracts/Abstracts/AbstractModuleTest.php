@@ -6,17 +6,17 @@
  * it delegates to the Registrable classes from get_classes() via the Loader
  * trait. Verified with the shared Loader fixtures.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractModule;
-use rtCamp\WPFramework\Tests\Fixtures\PlainRegistrable;
-use rtCamp\WPFramework\Tests\Fixtures\ShareableRegistrable;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractModule;
+use rtCamp\WPPrimitives\Tests\Fixtures\PlainRegistrable;
+use rtCamp\WPPrimitives\Tests\Fixtures\ShareableRegistrable;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class AbstractModuleTest extends TestCase {
 

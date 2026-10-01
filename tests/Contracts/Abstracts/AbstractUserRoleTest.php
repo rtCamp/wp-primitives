@@ -6,15 +6,15 @@
  * role registration — capabilities applied, version stored, gating on the
  * stored version, and full removal.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractUserRole;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractUserRole;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class AbstractUserRoleTest extends TestCase {
 
