@@ -72,6 +72,46 @@ final class FeatureSelectorTest extends TestCase {
 		$this->assertSame( '', $features['bare-flag']['description'] );
 	}
 
+	public function test_register_resolves_closure_metadata_only_when_read(): void {
+		$calls = 0;
+
+		$this->selector->register(
+			[
+				'lazy-flag' => [
+					'name'        => static function () use ( &$calls ): string {
+						++$calls;
+						return 'Lazy Flag';
+					},
+					'description' => static fn (): string => 'Read on demand.',
+				],
+			]
+		);
+
+		$this->assertSame( 0, $calls );
+
+		$features = $this->selector->get_features();
+
+		$this->assertSame( 1, $calls );
+		$this->assertSame( 'Lazy Flag', $features['lazy-flag']['name'] );
+		$this->assertSame( 'Read on demand.', $features['lazy-flag']['description'] );
+	}
+
+	public function test_register_does_not_call_strings_that_name_a_function(): void {
+		$this->selector->register(
+			[
+				'date-flag' => [
+					'name'        => 'date',
+					'description' => 'phpinfo',
+				],
+			]
+		);
+
+		$features = $this->selector->get_features();
+
+		$this->assertSame( 'date', $features['date-flag']['name'] );
+		$this->assertSame( 'phpinfo', $features['date-flag']['description'] );
+	}
+
 	public function test_register_accepts_a_bare_slug_string(): void {
 		$this->selector->register( 'single-flag' );
 

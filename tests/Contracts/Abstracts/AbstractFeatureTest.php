@@ -114,6 +114,47 @@ final class AbstractFeatureTest extends TestCase {
 		$this->assertSame( 'Enables the widget.', $registry->get_features()['my-flag']['description'] );
 	}
 
+	public function test_name_and_description_are_read_when_the_registry_is_read(): void {
+		$registry = new FeatureSelector( 'test' );
+		$feature  = new class( $registry ) extends AbstractFeature {
+			public int $reads = 0;
+
+			public function __construct(
+				private readonly FeatureSelector $registry
+			) {
+				parent::__construct();
+			}
+
+			protected function get_slug(): string {
+				return 'lazy-flag';
+			}
+
+			protected function get_feature_registry(): FeatureSelector {
+				return $this->registry;
+			}
+
+			protected function get_name(): string {
+				++$this->reads;
+				return 'Lazy Flag';
+			}
+
+			protected function get_description(): string {
+				++$this->reads;
+				return 'Read on demand.';
+			}
+
+			public function register_hooks(): void {}
+		};
+
+		$this->assertSame( 0, $feature->reads );
+
+		$meta = $registry->get_features()['lazy-flag'];
+
+		$this->assertSame( 2, $feature->reads );
+		$this->assertSame( 'Lazy Flag', $meta['name'] );
+		$this->assertSame( 'Read on demand.', $meta['description'] );
+	}
+
 	public function test_can_register_returns_true_when_flag_is_enabled(): void {
 		$registry = new FeatureSelector( 'test' );
 		$feature  = $this->make_feature( $registry, 'my-flag' );

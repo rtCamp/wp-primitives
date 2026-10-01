@@ -68,13 +68,17 @@ abstract class AbstractFeature implements ConditionallyRegistrable {
 
 	/**
 	 * Constructor. Self-registers the flag into the shared registry with metadata.
+	 *
+	 * Name and description are passed as closures, so their translations load when
+	 * the settings page reads them rather than at construction, which can run
+	 * before init.
 	 */
 	public function __construct() {
 		$this->get_feature_registry()->register(
 			[
 				$this->get_slug() => [
-					'name'        => $this->get_name(),
-					'description' => $this->get_description(),
+					'name'        => fn (): string => $this->get_name(),
+					'description' => fn (): string => $this->get_description(),
 				],
 			]
 		);
