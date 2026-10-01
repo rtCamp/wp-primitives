@@ -7,18 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-10-02
+
 ### Added
 
 - `FeatureSelector::register()` accepts a closure for a flag's `name` or
-  `description`. `get_features()` calls it when the metadata is read.
+  `description` (#102). `get_features()` calls it when the metadata is read, so
+  translated text is built only when it is shown.
+
+### Changed
+
+- `FeatureSelector::$registered` can now hold those closures. A subclass that
+  reads the property directly should call `get_features()` instead, which still
+  returns strings.
 
 ### Fixed
 
-- `AbstractFeature` no longer reads a feature's name and description when it is
-  constructed. It registers them as closures, so a feature that translates them
-  with `__()` no longer triggers the WordPress 6.7+ "translation loading was
-  triggered too early" notice when it is constructed before `init`. That notice
-  broke wp-admin login in environments that display notices.
+- `AbstractFeature` no longer calls `get_name()` and `get_description()` in its
+  constructor (#102). It registers them as closures, so a feature that translates
+  them with `__()` and is constructed before `init` no longer triggers the
+  WordPress 6.7+ `_load_textdomain_just_in_time` notice. Where notices are
+  displayed, as in wp-env, that notice broke wp-admin login.
 
 ## [2.0.0] - 2026-10-01
 
@@ -160,7 +169,8 @@ Initial release. Requires PHP 8.2+.
 - Reference documentation under `docs/`, a GPL-2.0-or-later `LICENSE.md`, and a
   WordPress integration test suite running against `@wordpress/env`.
 
-[Unreleased]: https://github.com/rtCamp/wp-primitives/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/rtCamp/wp-primitives/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/rtCamp/wp-primitives/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/rtCamp/wp-primitives/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/rtCamp/wp-primitives/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rtCamp/wp-primitives/releases/tag/v1.0.0
