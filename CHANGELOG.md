@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-10-01
+
 ### Added
 
 - `AbstractAbility` and `AbstractAbilityRegistrar`, base classes for the WordPress
@@ -43,26 +45,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **BREAKING: renamed the package from `rtcamp/wp-framework` to `rtcamp/wp-primitives`.**
-  The PHP namespace moves from `rtCamp\WPFramework\` to `rtCamp\WPPrimitives\`, the
-  repository moves to `rtCamp/wp-primitives`, and the AI rules file shipped to consumers
-  is renamed from `ai/framework-php.instructions.md` to `ai/primitives-php.instructions.md`
-  (synced into consumers as `.github/instructions/primitives-php.instructions.md`).
-  Consumers must move to a `^2.0` constraint. Existing installs keep working from
-  their `composer.lock`, but once this release is on `main`, `composer update` no
-  longer resolves `rtcamp/wp-framework`; move to `rtcamp/wp-primitives:^2.0` to keep
-  receiving updates.
-
-- **BREAKING: `AssetLoader::HANDLE_PREFIX` default changes from `wp-framework-` to
-  `wp-primitives-`.** Any consumer that did not override the constant will see every
-  default asset handle change, so `wp_add_inline_script()`, `wp_localize_script()`,
-  dependency arrays and dequeue calls that referenced a `wp-framework-*` handle by
-  string must be updated. Override `HANDLE_PREFIX` in your subclass to keep the old
-  handles.
-- **BREAKING: the gettext text domain changes from `wp-framework` to `wp-primitives`**
-  across the 23 translated strings in `inc/`. No `.pot`, `.po` or `.mo` files ship with
-  this package, so nothing in-repo breaks, but any consumer shipping translations for
-  the old domain must retarget them.
+- **BREAKING: the package is now `rtcamp/wp-primitives`** (previously
+  `rtcamp/wp-framework`). Require `rtcamp/wp-primitives:^2.0`. Existing installs keep
+  working from their `composer.lock`, but `composer update` no longer resolves the old
+  name. The new name also changes these defaults:
+  - PHP namespace: `rtCamp\WPPrimitives\`.
+  - `AssetLoader::HANDLE_PREFIX`: `wp-primitives-`. Default asset handles change, so
+    handles referenced by string in `wp_add_inline_script()`, `wp_localize_script()`,
+    dependency arrays or dequeue calls must be updated. Override the constant to keep
+    the 1.x handles.
+  - `ComponentLoader::get_context()`: `wp-primitives`. Subclasses that do not override
+    it get `wp-primitives/component_*` hooks (`before_render`, `after_render`,
+    `asset_handle`, `should_enqueue`) and `wp-primitives-component-*` asset handles.
+    Override `get_context()` to keep the 1.x names.
+  - Text domain of the 22 translated strings in `inc/`: `wp-primitives`. No
+    translation files ship with this package; retarget any you maintain.
+  - AI rules file: `ai/primitives-php.instructions.md`, synced into consumers as
+    `.github/instructions/primitives-php.instructions.md`.
 
 ### Build
 
@@ -148,6 +147,7 @@ Initial release. Requires PHP 8.2+.
 - Reference documentation under `docs/`, a GPL-2.0-or-later `LICENSE.md`, and a
   WordPress integration test suite running against `@wordpress/env`.
 
-[Unreleased]: https://github.com/rtCamp/wp-primitives/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/rtCamp/wp-primitives/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/rtCamp/wp-primitives/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/rtCamp/wp-primitives/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rtCamp/wp-primitives/releases/tag/v1.0.0
