@@ -126,6 +126,16 @@ final class TimerTest extends TestCase {
 		$this->timer->lap( 'stopped_lap', 'too_late' );
 	}
 
+	public function test_lap_empty_label_warns_and_records_nothing(): void {
+		$this->setExpectedIncorrectUsage( Timer::class . '::lap' );
+
+		$this->timer->start( 'lap_target' );
+		$this->timer->lap( '', 'split' );
+
+		$data = $this->timer->get( 'lap_target' );
+		$this->assertEmpty( $data['laps'], 'an empty label must not record a lap on any timer' );
+	}
+
 	public function test_lap_empty_name_warns_and_records_nothing(): void {
 		$this->setExpectedIncorrectUsage( Timer::class . '::lap' );
 
