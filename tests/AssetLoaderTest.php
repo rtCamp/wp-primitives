@@ -204,6 +204,28 @@ final class AssetLoaderTest extends TestCase {
 		\WP_Block_Type_Registry::get_instance()->unregister( 'wp-primitives/example' );
 	}
 
+	public function test_legacy_fallback_ignores_a_manifest_that_is_not_an_array(): void {
+		// Only the 6.5 to 6.7 fallback reads the manifest itself; on 6.8+ core
+		// does, so the guard under test only exists on older cores.
+		if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
+			$this->markTestSkipped( 'The per-block fallback only runs on WordPress < 6.8.' );
+		}
+
+		$this->write_asset(
+			'build/blocks/example/block.json',
+			'{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wp-primitives/example","title":"Example","category":"widgets"}'
+		);
+		// A manifest that evaluates to something other than an array.
+		$this->write_asset( 'build/blocks-manifest.php', '<?php return "not-a-manifest";' );
+
+		$this->loader->register_block_manifest( 'build/blocks', 'build/blocks-manifest.php' );
+
+		$this->assertFalse(
+			\WP_Block_Type_Registry::get_instance()->is_registered( 'wp-primitives/example' ),
+			'a malformed manifest must register nothing rather than fatal'
+		);
+	}
+
 	public function test_missing_block_manifest_warns_and_skips_registration(): void {
 		$this->setExpectedIncorrectUsage( AssetLoader::class );
 
