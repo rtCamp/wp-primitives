@@ -2,10 +2,10 @@
 
 ## Supported versions
 
-| Version | Package | Supported |
-|---|---|---|
-| 2.x | `rtcamp/wp-primitives` | Yes |
-| 1.0.x | `rtcamp/wp-framework` (the pre-rename name) | No further releases; upgrade to 2.x |
+| Version | Supported |
+|---|---|
+| 2.x | Yes |
+| 1.0.x | No further releases; upgrade to 2.x |
 
 ## Reporting a vulnerability
 

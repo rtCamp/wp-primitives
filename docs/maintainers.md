@@ -173,7 +173,5 @@ A release is therefore a tag on `main`:
    webhook delivery under the repository's Settings > Webhooks.
 
 Never move, delete or re-push a published tag: consumers and Packagist have
-already resolved it. Fix forward with a patch release instead. The `v1.0.x`
-tags are the last releases under the old `rtcamp/wp-framework` name and stay
-untouched for consumers still on `^1.0`.
+already resolved it. Fix forward with a patch release instead.
 

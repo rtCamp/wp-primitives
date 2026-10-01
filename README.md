@@ -45,9 +45,6 @@ before requiring it:
 }
 ```
 
-Upgrading from `rtcamp/wp-framework` 1.x? The package was renamed in 2.0.0; follow
-[docs/upgrading.md](docs/upgrading.md#10x--200-package-rename).
-
 PSR-4 autoloading: `rtCamp\WPPrimitives\` → `inc/`.
 
 ## Quick look
