@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `AbstractAbility` and `AbstractAbilityRegistrar`, base classes for the WordPress
+  6.9 Abilities API (#76). Abilities default to a fail-closed `manage_options`
+  permission check and opt in to REST or MCP exposure through `meta()`; a
+  registrar registers its category idempotently, so several registrars can share
+  one. Both are inert on WordPress older than 6.9.
+- A protected `Encryptor::is_openssl_available()` seam, so the fail-closed
+  "OpenSSL missing" path of `encrypt()` and `decrypt()` is covered by tests.
+
+### Security
+
+- `Encryptor::decrypt()` now rejects any payload shorter than the IV plus a
+  full-length authentication tag. OpenSSL verifies a truncated GCM tag at its
+  truncated length, so a forged 13-byte payload (IV plus one tag byte, empty
+  ciphertext) decrypted to `''` for 1 in 256 tag values instead of failing.
+
+### Fixed
+
+- `Transients` now hashes a namespaced key longer than WordPress' 172-character
+  transient name limit to `h:<md5>`. Such names were truncated by the options
+  table, so the value was never found again on the next request (or, just past the
+  limit, its expiry was silently dropped). Keys within the limit are unchanged.
+
 ### Changed
 
 - **BREAKING: renamed the package from `rtcamp/wp-framework` to `rtcamp/wp-primitives`.**
@@ -28,6 +52,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   this package, so nothing in-repo breaks, but any consumer shipping translations for
   the old domain must retarget them.
 
+### Build
+
+- Dist archives (Packagist and GitHub zipballs) no longer include `docs/`,
+  `AGENTS.md`, `CONTRIBUTING.md` or `composer.lock`. `ai/` and
+  `bin/sync-ai-instructions.js` still ship, because consumers run them from
+  `vendor/` via `npm run sync-ai`.
+- CI runs on Node 24 (Node 20 reached end of life in April 2026), PHPStan runs at
+  level 6, the documentation action is pinned to a commit, and checkouts no longer
+  persist credentials. Dependabot auto-merge uses GitHub's documented
+  `pull_request` pattern instead of a `workflow_run` trigger with a spoofable
+  `github.actor` check.
+
 ### Documentation
 
 - Added implementor getting-started and maintainer workflow guides; corrected
@@ -36,8 +72,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `docs/upgrading.md` (versioning promise and the 1.0.0 → 1.0.1 `Singleton`
   migration) and `docs/troubleshooting.md` (symptom → cause for the framework's
   exceptions, `_doing_it_wrong()` notices, and silent no-ops).
-- Documented the real install path: the package is not on public Packagist, so
-  the consumer needs a VCS `repositories` entry and a `^2.0` constraint.
+- Install docs are Packagist-first (`composer require rtcamp/wp-primitives:^2.0`),
+  with a VCS `repositories` fallback for installing straight from GitHub.
 - Added a worked WP-CLI example to `docs/contracts.md`, the only contract that
   had none, and a quick-look snippet to the README.
 - Corrected the `Loader::load()` snippet in `docs/architecture.md` to match the
