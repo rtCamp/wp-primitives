@@ -36,6 +36,15 @@ namespace rtCamp\WPPrimitives\Utils;
 class Transients {
 
 	/**
+	 * Longest transient name WordPress can store.
+	 *
+	 * A DB-backed transient is two option rows, `_transient_{name}` and
+	 * `_transient_timeout_{name}`, and `option_name` is varchar(191), so the name
+	 * itself must be 172 characters or fewer (see set_transient()).
+	 */
+	protected const MAX_NAME_LENGTH = 172;
+
+	/**
 	 * Construct a Transients wrapper bound to a key prefix.
 	 *
 	 * @param string $prefix Per-instance namespace prepended to every key. A
@@ -92,14 +101,23 @@ class Transients {
 	 * `( 'mod', 'a_b' )` and `( 'mod_a', 'b' )` would both collapse to `mod_a_b` and
 	 * silently target the same WordPress transient.
 	 *
+	 * A namespaced key longer than {@see Transients::MAX_NAME_LENGTH} is replaced by
+	 * `h:<md5 of the namespaced key>`. WordPress cannot store such a name: the
+	 * option rows are truncated, so the value is never found again (or, just past
+	 * the limit, its expiry is silently lost). Keys within the limit are unchanged,
+	 * and a hashed key can never equal an unhashed one, which always starts with
+	 * digits.
+	 *
 	 * Protected override seam (mirrors {@see Cache::resolve_group()}): subclass to
-	 * change the namespacing scheme — for instance a multisite / site-transient variant.
+	 * change the namespacing scheme, for instance a multisite / site-transient variant.
 	 *
 	 * @param string $key Logical key supplied by the caller.
 	 *
 	 * @return string Fully namespaced key passed to WordPress's transient API.
 	 */
 	protected function resolve_key( string $key ): string {
-		return strlen( $this->prefix ) . ':' . $this->prefix . '_' . $key;
+		$name = strlen( $this->prefix ) . ':' . $this->prefix . '_' . $key;
+
+		return strlen( $name ) > static::MAX_NAME_LENGTH ? 'h:' . md5( $name ) : $name;
 	}
 }

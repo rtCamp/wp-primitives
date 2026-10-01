@@ -73,6 +73,55 @@ final class TransientsTest extends TestCase {
 		$this->assertSame( 'two', $two->get( 'y' ) );
 	}
 
+	public function test_over_long_key_still_round_trips_through_the_database(): void {
+		// Regression: a namespaced name past 172 characters was truncated by the
+		// options table, so once the in-request option cache was gone (a new request)
+		// the value could never be read back. Flushing the object cache simulates that.
+		$store = new Transients( 'rt_long' );
+		$key   = str_repeat( 'k', 200 );
+
+		$this->assertTrue( $store->set( $key, 'long-value', HOUR_IN_SECONDS ) );
+
+		wp_cache_flush();
+
+		$this->assertSame( 'long-value', $store->get( $key ) );
+		$this->assertTrue( $store->delete( $key ) );
+		$this->assertFalse( $store->get( $key ) );
+	}
+
+	public function test_over_long_keys_stay_distinct_and_within_the_limit(): void {
+		$store = new Transients( 'rt_long_distinct' );
+		$first = str_repeat( 'a', 180 ) . '-one';
+		$other = str_repeat( 'a', 180 ) . '-two';
+
+		$store->set( $first, 'one' );
+		$store->set( $other, 'two' );
+		wp_cache_flush();
+
+		$this->assertSame( 'one', $store->get( $first ) );
+		$this->assertSame( 'two', $store->get( $other ) );
+
+		$resolve = new \ReflectionMethod( Transients::class, 'resolve_key' );
+		$name    = $resolve->invoke( $store, $first );
+
+		$this->assertLessThanOrEqual( 172, strlen( $name ) );
+		$this->assertStringStartsWith( 'h:', $name );
+	}
+
+	public function test_key_at_the_limit_is_not_hashed(): void {
+		// '5:rt_ok_' is 8 characters, so a 164-character key lands exactly on 172.
+		$store   = new Transients( 'rt_ok' );
+		$key     = str_repeat( 'k', 164 );
+		$resolve = new \ReflectionMethod( Transients::class, 'resolve_key' );
+
+		$this->assertSame( '5:rt_ok_' . $key, $resolve->invoke( $store, $key ) );
+
+		$store->set( $key, 'at-limit', HOUR_IN_SECONDS );
+		wp_cache_flush();
+
+		$this->assertSame( 'at-limit', $store->get( $key ) );
+	}
+
 	public function test_value_is_stored_under_the_namespaced_key(): void {
 		( new Transients( 'rt_ns' ) )->set( 'thing', 'v' );
 
