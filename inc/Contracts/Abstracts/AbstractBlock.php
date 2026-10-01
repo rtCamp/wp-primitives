@@ -52,6 +52,13 @@ abstract class AbstractBlock implements Registrable {
 
 	/**
 	 * Register the block type with WordPress.
+	 *
+	 * Registers from get_block_dir() when that directory holds a block.json, and
+	 * by name otherwise. A configured directory without a block.json (a fresh
+	 * clone or a CI run before `npm run build`, or a deploy that lost its build)
+	 * falls back to registering by name: the server-side render still works, and
+	 * WordPress no longer receives the directory path as a block name, which it
+	 * rejected with a "must contain a namespace prefix" notice on every request.
 	 */
 	public function register_block(): void {
 		$args = $this->get_block_args();
@@ -60,7 +67,7 @@ abstract class AbstractBlock implements Registrable {
 		$args['render_callback'] = [ $this, 'render' ];
 		$block_dir               = $this->get_block_dir();
 
-		if ( $block_dir ) {
+		if ( $block_dir && file_exists( trailingslashit( $block_dir ) . 'block.json' ) ) {
 			register_block_type( $block_dir, $args );
 		} else {
 			register_block_type( static::get_name(), $args );
