@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `FeatureSelector::register()` accepts a closure for a flag's `name` or
+  `description`. `get_features()` calls it when the metadata is read.
+
+### Fixed
+
+- `AbstractFeature` no longer reads a feature's name and description when it is
+  constructed. It registers them as closures, so a feature that translates them
+  with `__()` no longer triggers the WordPress 6.7+ "translation loading was
+  triggered too early" notice when it is constructed before `init`. That notice
+  broke wp-admin login in environments that display notices.
+
 ## [2.0.0] - 2026-10-01
 
 ### Added
