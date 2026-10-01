@@ -70,9 +70,25 @@ cannot cross it.
 
 4. Retarget any translations from the `wp-framework` text domain to `wp-primitives`.
 
-5. Run `npm run sync-ai`. It now writes
-   `.github/instructions/primitives-php.instructions.md` and deletes the superseded
-   `framework-php.instructions.md`.
+5. If the consumer has its own `bin/sync-ai.js` wrapper (every package scaffolded
+   from the 1.x skeletons does), point it at the new path:
+
+   ```diff
+   -const script = 'vendor/rtcamp/wp-framework/bin/sync-ai-instructions.js';
+   +const script = 'vendor/rtcamp/wp-primitives/bin/sync-ai-instructions.js';
+   ```
+
+   Otherwise `npm run sync-ai` reports the framework as "not installed yet" and
+   silently skips.
+
+6. Run `composer install` in every package, then `npm run sync-ai` from any one of
+   them. It writes `.github/instructions/primitives-php.instructions.md` and deletes
+   the superseded `framework-php.instructions.md` copies the old sync generated.
+   In a site repository (one wp-content root holding several packages) this also
+   works when only the root projection was committed: packages are discovered
+   through their vendored `rtcamp/wp-primitives`, not only through an existing
+   `.github/instructions/` directory. Hand-written instruction files are never
+   deleted.
 
 Projects that are not ready can stay on `^1.0`, which continues to resolve from the
 `v1.0.0` and `v1.0.1` tags. Those tags are immutable and still declare the old package

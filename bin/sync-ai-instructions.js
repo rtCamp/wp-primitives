@@ -90,8 +90,13 @@ const discoverPackages = ( root ) => {
 		}
 		fs.readdirSync( container ).forEach( ( slug ) => {
 			const base = path.join( container, slug );
-			if ( fs.existsSync( path.join( base, '.github', 'instructions' ) ) ) {
-				found.push( { type, slug, base, dir: path.join( base, '.github', 'instructions' ) } );
+			const dir = path.join( base, '.github', 'instructions' );
+			// A package qualifies when it already carries instructions or when it vendors
+			// the framework, because refreshPackage() creates its .github/instructions/ on
+			// the first run. Site repos often commit only the root projection, so a fresh
+			// checkout has no per-package directory and would otherwise be skipped forever.
+			if ( fs.existsSync( dir ) || fs.existsSync( path.join( base, FRAMEWORK_SRC ) ) ) {
+				found.push( { type, slug, base, dir } );
 			}
 		} );
 	} );
@@ -219,6 +224,11 @@ const refreshPackage = ( base, relRoot ) => {
 const projectToRoot = ( root, packages ) => {
 	const groups = new Map();
 	packages.forEach( ( { type, slug, dir } ) => {
+		// Under --check a package discovered through its vendored framework has no
+		// directory yet; refreshPackage() has already reported that as drift.
+		if ( ! fs.existsSync( dir ) ) {
+			return;
+		}
 		const prefix = `${ type }/${ slug }`;
 		fs.readdirSync( dir )
 			.filter( ( f ) => f.endsWith( '.instructions.md' ) )
@@ -277,7 +287,7 @@ const main = () => {
 	} else {
 		const packages = discoverPackages( root );
 		if ( 0 === packages.length ) {
-			console.log( color.yellow( 'No packages with .github/instructions/ under plugins/ or themes/. Nothing to do.' ) );
+			console.log( color.yellow( 'No package under plugins/ or themes/ has .github/instructions/ or a vendored rtcamp/wp-primitives. Run `composer install` in each package, then re-run. Nothing to do.' ) );
 			process.exit( 0 );
 		}
 		packages.forEach( ( p ) => refreshPackage( p.base, root ) );
