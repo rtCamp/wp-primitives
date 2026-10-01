@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (synced into consumers as `.github/instructions/primitives-php.instructions.md`).
   Consumers must move to a `^2.0` constraint; `^1.0` continues to resolve from the
   existing `v1.0.0` / `v1.0.1` tags, which keep the old package name.
-  Reason: `10up/wp-framework` occupies the same name in the same category on Packagist.
 
 - **BREAKING: `AssetLoader::HANDLE_PREFIX` default changes from `wp-framework-` to
   `wp-primitives-`.** Any consumer that did not override the constant will see every
