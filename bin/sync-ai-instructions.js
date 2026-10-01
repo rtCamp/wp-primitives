@@ -195,11 +195,13 @@ const refreshPackage = ( base, relRoot ) => {
 	writeIfChanged( dest, withMarker( fs.readFileSync( src, 'utf8' ) ), relRoot, 'refresh' );
 
 	// Migration from <2.0: drop the superseded filename so it is not projected to the root
-	// and so Copilot does not read two copies of the same rules.
+	// and so Copilot does not read two copies of the same rules. Only a copy the old
+	// sync generated (it carries LEGACY_MARKER) is removed; a hand-written file that
+	// happens to share the name is left alone, matching the root prune below.
 	const legacy = path.join( base, '.github', 'instructions', LEGACY_INSTRUCTION_FILE );
-	if ( fs.existsSync( legacy ) ) {
+	if ( fs.existsSync( legacy ) && fs.readFileSync( legacy, 'utf8' ).includes( LEGACY_MARKER ) ) {
 		drift = true;
-		log.push( color.red( `  prune  ${ relRoot }/.github/instructions/${ LEGACY_INSTRUCTION_FILE }` ) );
+		log.push( color.red( `  prune  ${ path.relative( relRoot, legacy ) }` ) );
 		if ( ! isCheck ) {
 			fs.unlinkSync( legacy );
 		}
