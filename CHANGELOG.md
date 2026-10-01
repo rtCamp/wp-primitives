@@ -30,6 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   transient name limit to `h:<md5>`. Such names were truncated by the options
   table, so the value was never found again on the next request (or, just past the
   limit, its expiry was silently dropped). Keys within the limit are unchanged.
+- `AbstractBlock` registers by block name when the build directory has no
+  `block.json` (a fresh clone, or before `npm run build`). It used to pass the
+  directory to `register_block_type()`, which raised a "Block type names must
+  contain a namespace prefix" notice on every request and registered nothing.
+- `sync-ai` also finds packages in site repositories that commit only the root
+  instructions projection, by detecting packages that vendor
+  `rtcamp/wp-primitives`. Before, such repositories got "Nothing to do" and kept
+  the legacy root file after upgrading.
+- `sync-ai` prunes only the legacy files it generated and logs the real path of
+  each file it removes.
 
 ### Changed
 
@@ -38,8 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   repository moves to `rtCamp/wp-primitives`, and the AI rules file shipped to consumers
   is renamed from `ai/framework-php.instructions.md` to `ai/primitives-php.instructions.md`
   (synced into consumers as `.github/instructions/primitives-php.instructions.md`).
-  Consumers must move to a `^2.0` constraint; `^1.0` continues to resolve from the
-  existing `v1.0.0` / `v1.0.1` tags, which keep the old package name.
+  Consumers must move to a `^2.0` constraint. Existing installs keep working from
+  their `composer.lock`, but once this release is on `main`, `composer update` no
+  longer resolves `rtcamp/wp-framework`; move to `rtcamp/wp-primitives:^2.0` to keep
+  receiving updates.
 
 - **BREAKING: `AssetLoader::HANDLE_PREFIX` default changes from `wp-framework-` to
   `wp-primitives-`.** Any consumer that did not override the constant will see every
