@@ -1,6 +1,8 @@
 name: Feature request
 description: Suggest a new contract, abstract, utility or behaviour.
 type: Feature
+labels:
+  - "Type: Feature"
 body:
   - type: markdown
     attributes:
