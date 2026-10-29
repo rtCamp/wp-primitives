@@ -1,0 +1,70 @@
+name: Feature request
+description: Suggest a new contract, abstract, utility or behaviour.
+type: Feature
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Thanks for the suggestion. Please search
+        [existing issues](https://github.com/rtCamp/wp-primitives/issues?q=is%3Aissue)
+        first.
+  - type: markdown
+    attributes:
+      value: >-
+        `inc/Contracts/` is public API: every rtCamp plugin and theme consumes
+        it, so changing a signature there is a breaking change. The package also
+        keeps zero Composer runtime dependencies.
+        [CONTRIBUTING.md](https://github.com/rtCamp/wp-primitives/blob/main/CONTRIBUTING.md)
+        explains how to build it yourself.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - "Contracts (inc/Contracts/: interfaces, abstracts, traits)"
+        - "Container and loaders (Container, AssetLoader, ComponentLoader, TemplateLoader)"
+        - "Utilities (inc/Utils/)"
+        - "AI instructions and sync tool (ai/, bin/)"
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: What you are building on the package, and what stops you today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: The class, method or signature you have in mind. A short code sketch of how a plugin or theme would use it helps.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Workarounds you use now, or other designs you ruled out.
+    validations:
+      required: false
+  - type: dropdown
+    id: compatibility
+    attributes:
+      label: Compatibility
+      description: How the change affects plugins and themes on 2.x.
+      options:
+        - "Additive: a new class, method or optional parameter"
+        - "Breaking: changes an existing signature or behaviour under inc/Contracts/"
+        - Not sure
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
