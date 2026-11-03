@@ -11,14 +11,14 @@
  * construction: the source URL is built from the base URL and the dependency +
  * version metadata is read from the sibling `*.asset.php` manifest on disk.
  *
- * @package rtCamp\WPFramework
+ * @package rtCamp\WPPrimitives
  *
  * @since 1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework;
+namespace rtCamp\WPPrimitives;
 
 /**
  * Class AssetLoader
@@ -30,7 +30,7 @@ class AssetLoader {
 	 * Default asset handle prefix. Subclasses override this constant to namespace
 	 * their handles; handle() reads it via late static binding.
 	 */
-	public const HANDLE_PREFIX = 'wp-framework-';
+	public const HANDLE_PREFIX = 'wp-primitives-';
 
 	/**
 	 * Base directory path (plugin or theme root). Readable by subclasses that
@@ -78,7 +78,7 @@ class AssetLoader {
 
 	/**
 	 * Prefix a short name with HANDLE_PREFIX to form an asset handle. With the
-	 * default prefix, handle( 'frontend' ) returns 'wp-framework-frontend'.
+	 * default prefix, handle( 'frontend' ) returns 'wp-primitives-frontend'.
 	 * Subclasses namespace their handles by overriding the HANDLE_PREFIX
 	 * constant; uniqueness is the caller's responsibility (pass distinct names).
 	 *
@@ -203,7 +203,7 @@ class AssetLoader {
 		if ( ! file_exists( $manifest_path ) ) {
 			_doing_it_wrong(
 				static::class,
-				esc_html__( 'Block manifest file is missing. Blocks will not be registered.', 'wp-framework' ),
+				esc_html__( 'Block manifest file is missing. Blocks will not be registered.', 'wp-primitives' ),
 				'1.0.0'
 			);
 			return;
@@ -359,7 +359,7 @@ class AssetLoader {
 				static::class,
 				sprintf(
 					/* translators: 1: The asset filename. 2: The asset extension. */
-					esc_html__( 'Asset file "%1$s.%2$s" is missing. The asset will not be registered.', 'wp-framework' ),
+					esc_html__( 'Asset file "%1$s.%2$s" is missing. The asset will not be registered.', 'wp-primitives' ),
 					esc_html( $filename ),
 					esc_html( $extension )
 				),
@@ -389,7 +389,7 @@ class AssetLoader {
 					static::class,
 					sprintf(
 						/* translators: %s: The asset manifest path. */
-						esc_html__( 'Asset manifest "%s" is invalid; the file modification time will be used as the version.', 'wp-framework' ),
+						esc_html__( 'Asset manifest "%s" is invalid; the file modification time will be used as the version.', 'wp-primitives' ),
 						esc_html( $manifest_file )
 					),
 					'1.0.0'

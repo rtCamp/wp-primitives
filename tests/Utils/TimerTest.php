@@ -2,15 +2,15 @@
 /**
  * Timer utility tests.
  *
- * @package rtCamp\WPFramework\Tests\Utils
+ * @package rtCamp\WPPrimitives\Tests\Utils
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Utils;
+namespace rtCamp\WPPrimitives\Tests\Utils;
 
-use rtCamp\WPFramework\Tests\TestCase;
-use rtCamp\WPFramework\Utils\Timer;
+use rtCamp\WPPrimitives\Tests\TestCase;
+use rtCamp\WPPrimitives\Utils\Timer;
 
 /**
  * Tests for Timer.
@@ -124,6 +124,16 @@ final class TimerTest extends TestCase {
 		$this->timer->start( 'stopped_lap' );
 		$this->timer->stop( 'stopped_lap' );
 		$this->timer->lap( 'stopped_lap', 'too_late' );
+	}
+
+	public function test_lap_empty_label_warns_and_records_nothing(): void {
+		$this->setExpectedIncorrectUsage( Timer::class . '::lap' );
+
+		$this->timer->start( 'lap_target' );
+		$this->timer->lap( '', 'split' );
+
+		$data = $this->timer->get( 'lap_target' );
+		$this->assertEmpty( $data['laps'], 'an empty label must not record a lap on any timer' );
 	}
 
 	public function test_lap_empty_name_warns_and_records_nothing(): void {

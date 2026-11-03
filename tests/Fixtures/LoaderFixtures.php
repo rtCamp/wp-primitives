@@ -5,17 +5,17 @@
  * Multiple classes per file — explicitly required from bootstrap.php
  * since PSR-4 cannot autoload them.
  *
- * @package rtCamp\WPFramework\Tests\Fixtures
+ * @package rtCamp\WPPrimitives\Tests\Fixtures
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Fixtures;
+namespace rtCamp\WPPrimitives\Tests\Fixtures;
 
-use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
-use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
-use rtCamp\WPFramework\Contracts\Traits\Loader;
+use rtCamp\WPPrimitives\Contracts\Interfaces\ConditionallyRegistrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
+use rtCamp\WPPrimitives\Contracts\Traits\Loader;
 
 /**
  * Public wrapper around the Loader trait so tests can call load() and

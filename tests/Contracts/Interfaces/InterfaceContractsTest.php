@@ -6,19 +6,19 @@
  * accidentally changed by a refactor. These are cheap and catch the
  * most common breakage (renames, missing methods, inheritance changes).
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Interfaces
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Interfaces
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Interfaces;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Interfaces;
 
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use rtCamp\WPFramework\Contracts\Interfaces\CLICommand;
-use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
-use rtCamp\WPFramework\Contracts\Interfaces\Shareable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\CLICommand;
+use rtCamp\WPPrimitives\Contracts\Interfaces\ConditionallyRegistrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
 
 final class InterfaceContractsTest extends TestCase {
 

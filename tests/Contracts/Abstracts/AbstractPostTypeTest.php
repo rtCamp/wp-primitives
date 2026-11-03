@@ -6,15 +6,15 @@
  * get_custom_options() override merge) and the real WordPress registration:
  * register() actually registers the post type and associates its taxonomies.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractPostType;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractPostType;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class AbstractPostTypeTest extends TestCase {
 

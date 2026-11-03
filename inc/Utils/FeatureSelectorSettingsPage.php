@@ -2,15 +2,15 @@
 /**
  * FeatureSelectorSettingsPage utility.
  *
- * @package rtCamp\WPFramework\Utils
+ * @package rtCamp\WPPrimitives\Utils
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Utils;
+namespace rtCamp\WPPrimitives\Utils;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractSettingsPage;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractSettingsPage;
 
 /**
  * Admin settings page for a FeatureSelector registry.
@@ -116,13 +116,13 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 		$context = $this->get_selector()->get_context();
 
 		if ( '' === $context ) {
-			return __( 'Features', 'wp-framework' );
+			return __( 'Features', 'wp-primitives' );
 		}
 
 		$package = ucwords( str_replace( [ '-', '_' ], ' ', $context ) );
 
 		/* translators: %s: package name derived from the selector's context. */
-		return sprintf( __( '%s Features', 'wp-framework' ), $package );
+		return sprintf( __( '%s Features', 'wp-primitives' ), $package );
 	}
 
 	/**
@@ -281,7 +281,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 				<?php checked( $this->get_selector()->is_enabled( $args['slug'] ) ); ?>
 				<?php disabled( $is_locked ); ?>
 			/>
-			<?php esc_html_e( 'Enable', 'wp-framework' ); ?>
+			<?php esc_html_e( 'Enable', 'wp-primitives' ); ?>
 		</label>
 		<?php if ( '' !== $args['description'] ) : ?>
 			<p class="description"><?php echo esc_html( $args['description'] ); ?></p>
@@ -291,7 +291,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 				<?php
 				printf(
 					/* translators: %s: PHP constant name. */
-					esc_html__( 'This setting is locked because the constant %s is defined.', 'wp-framework' ),
+					esc_html__( 'This setting is locked because the constant %s is defined.', 'wp-primitives' ),
 					esc_html( $constant_name )
 				);
 				?>

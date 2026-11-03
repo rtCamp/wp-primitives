@@ -7,12 +7,12 @@
  * tests need repeatedly: pointing the theme hierarchy at fixture directories
  * and reading back the real script/style/module registries.
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests;
+namespace rtCamp\WPPrimitives\Tests;
 
 use WP_UnitTestCase;
 

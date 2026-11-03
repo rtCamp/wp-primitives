@@ -7,14 +7,14 @@
  * filters (TestCase::set_theme_dirs), and rendering is asserted through real
  * load_template() output rather than a stub call log.
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests;
+namespace rtCamp\WPPrimitives\Tests;
 
-use rtCamp\WPFramework\TemplateLoader;
+use rtCamp\WPPrimitives\TemplateLoader;
 
 /**
  * Class TemplateLoaderTest

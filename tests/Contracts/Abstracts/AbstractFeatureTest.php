@@ -6,17 +6,17 @@
  * the abstract get_slug() / get_feature_registry() are the moving parts.
  * Tests use anonymous classes throughout so each scenario is self-contained.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractFeature;
-use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
-use rtCamp\WPFramework\Tests\TestCase;
-use rtCamp\WPFramework\Utils\FeatureSelector;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractFeature;
+use rtCamp\WPPrimitives\Contracts\Interfaces\ConditionallyRegistrable;
+use rtCamp\WPPrimitives\Tests\TestCase;
+use rtCamp\WPPrimitives\Utils\FeatureSelector;
 
 /**
  * Tests for AbstractFeature.
@@ -112,6 +112,47 @@ final class AbstractFeatureTest extends TestCase {
 		$this->make_feature( $registry, 'my-flag', '', 'Enables the widget.' );
 
 		$this->assertSame( 'Enables the widget.', $registry->get_features()['my-flag']['description'] );
+	}
+
+	public function test_name_and_description_are_read_when_the_registry_is_read(): void {
+		$registry = new FeatureSelector( 'test' );
+		$feature  = new class( $registry ) extends AbstractFeature {
+			public int $reads = 0;
+
+			public function __construct(
+				private readonly FeatureSelector $registry
+			) {
+				parent::__construct();
+			}
+
+			protected function get_slug(): string {
+				return 'lazy-flag';
+			}
+
+			protected function get_feature_registry(): FeatureSelector {
+				return $this->registry;
+			}
+
+			protected function get_name(): string {
+				++$this->reads;
+				return 'Lazy Flag';
+			}
+
+			protected function get_description(): string {
+				++$this->reads;
+				return 'Read on demand.';
+			}
+
+			public function register_hooks(): void {}
+		};
+
+		$this->assertSame( 0, $feature->reads );
+
+		$meta = $registry->get_features()['lazy-flag'];
+
+		$this->assertSame( 2, $feature->reads );
+		$this->assertSame( 'Lazy Flag', $meta['name'] );
+		$this->assertSame( 'Read on demand.', $meta['description'] );
 	}
 
 	public function test_can_register_returns_true_when_flag_is_enabled(): void {

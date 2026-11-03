@@ -2,13 +2,13 @@
 /**
  * FeatureSelector utility.
  *
- * @package rtCamp\WPFramework\Utils
+ * @package rtCamp\WPPrimitives\Utils
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Utils;
+namespace rtCamp\WPPrimitives\Utils;
 
 /**
  * Feature-flag registry for a single package.
@@ -49,9 +49,10 @@ namespace rtCamp\WPFramework\Utils;
 class FeatureSelector {
 
 	/**
-	 * Registered flags keyed by slug.
+	 * Registered flags keyed by slug. Name and description may still be closures;
+	 * get_features() resolves them.
 	 *
-	 * @var array<string, array{slug: string, name: string, description: string}>
+	 * @var array<string, array{slug: string, name: string|\Closure(): string, description: string|\Closure(): string}>
 	 */
 	protected array $registered = [];
 
@@ -88,13 +89,15 @@ class FeatureSelector {
 	 *
 	 * Accepts a single slug string, a list of slugs, or a slug => metadata map —
 	 * or any mix of the three. Valid metadata keys: name (defaults to the slug),
-	 * description. Malformed entries are silently skipped.
+	 * description. Either may be a closure returning the string, so translated
+	 * text is only built when get_features() reads it, not at registration.
+	 * Malformed entries are silently skipped.
 	 *
 	 * First registration wins. Collision is checked on the normalized flag key
 	 * so two slugs that normalize identically ("beta-search" and "beta search")
 	 * are treated as duplicates and the second is rejected via _doing_it_wrong().
 	 *
-	 * @param array<int|string, string|array{name?: string, description?: string}>|string $features Flags to register.
+	 * @param array<int|string, string|array{name?: string|\Closure(): string, description?: string|\Closure(): string}>|string $features Flags to register.
 	 */
 	public function register( array|string $features ): void {
 		foreach ( (array) $features as $key => $value ) {
@@ -115,7 +118,7 @@ class FeatureSelector {
 					__METHOD__,
 					sprintf(
 						/* translators: 1: slug being registered. 2: already-registered slug it collides with. 3: shared normalized key. */
-						esc_html__( 'Feature flag "%1$s" collides with already-registered "%2$s" (both normalize to "%3$s"); keeping the first registration.', 'wp-framework' ),
+						esc_html__( 'Feature flag "%1$s" collides with already-registered "%2$s" (both normalize to "%3$s"); keeping the first registration.', 'wp-primitives' ),
 						esc_html( $slug ),
 						esc_html( $this->flag_keys[ $flag_key ] ),
 						esc_html( $flag_key )
@@ -177,7 +180,7 @@ class FeatureSelector {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: flag slug that was not registered. */
-					esc_html__( 'Feature flag "%s" is not registered; enable() ignored.', 'wp-framework' ),
+					esc_html__( 'Feature flag "%s" is not registered; enable() ignored.', 'wp-primitives' ),
 					esc_html( $flag )
 				),
 				'1.0.0'
@@ -208,7 +211,7 @@ class FeatureSelector {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: flag slug that was not registered. */
-					esc_html__( 'Feature flag "%s" is not registered; disable() ignored.', 'wp-framework' ),
+					esc_html__( 'Feature flag "%s" is not registered; disable() ignored.', 'wp-primitives' ),
 					esc_html( $flag )
 				),
 				'1.0.0'
@@ -230,12 +233,21 @@ class FeatureSelector {
 	}
 
 	/**
-	 * Return full metadata for every registered flag.
+	 * Return full metadata for every registered flag, with closures resolved.
 	 *
 	 * @return array<string, array{slug: string, name: string, description: string}>
 	 */
 	public function get_features(): array {
-		return $this->registered;
+		$resolve = static fn ( string|\Closure $value ): string => $value instanceof \Closure ? (string) $value() : $value;
+
+		return array_map(
+			static fn ( array $meta ): array => [
+				'slug'        => $meta['slug'],
+				'name'        => $resolve( $meta['name'] ),
+				'description' => $resolve( $meta['description'] ),
+			],
+			$this->registered
+		);
 	}
 
 	/**

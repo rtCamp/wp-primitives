@@ -2,23 +2,23 @@
 /**
  * Tests for AssetLoader::handle() and the overridable HANDLE_PREFIX constant.
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests;
+namespace rtCamp\WPPrimitives\Tests;
 
 use PHPUnit\Framework\TestCase;
-use rtCamp\WPFramework\AssetLoader;
+use rtCamp\WPPrimitives\AssetLoader;
 
 final class AssetLoaderHandleTest extends TestCase {
 
 	public function test_handle_applies_the_default_prefix(): void {
 		$loader = new AssetLoader( '', '', 'assets' );
 
-		$this->assertSame( 'wp-framework-frontend', $loader->handle( 'frontend' ) );
-		$this->assertSame( 'wp-framework-my-script', $loader->handle( 'my-script' ) );
+		$this->assertSame( 'wp-primitives-frontend', $loader->handle( 'frontend' ) );
+		$this->assertSame( 'wp-primitives-my-script', $loader->handle( 'my-script' ) );
 	}
 
 	public function test_subclass_prefix_wins_via_late_static_binding(): void {

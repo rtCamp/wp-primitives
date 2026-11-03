@@ -4,15 +4,15 @@
  *
  * Class to be extended by all shortcodes. Handles registration and provides a clean render interface.
  *
- * @package rtCamp\WPFramework\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since 1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
 
 /**
  * Class - AbstractShortcode
@@ -42,8 +42,8 @@ abstract class AbstractShortcode implements Registrable {
 	/**
 	 * Shortcode callback wrapper. Parses attributes and delegates to render().
 	 *
-	 * @param array|string $atts    Shortcode attributes.
-	 * @param string|null  $content Enclosed content (if any).
+	 * @param array<string, mixed>|string $atts    Shortcode attributes. WordPress passes an empty string when the tag has none.
+	 * @param string|null                 $content Enclosed content (if any).
 	 *
 	 * @return string Rendered shortcode output.
 	 */

@@ -2,16 +2,16 @@
 /**
  * Abstract Feature.
  *
- * @package rtCamp\WPFramework\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Interfaces\ConditionallyRegistrable;
-use rtCamp\WPFramework\Utils\FeatureSelector;
+use rtCamp\WPPrimitives\Contracts\Interfaces\ConditionallyRegistrable;
+use rtCamp\WPPrimitives\Utils\FeatureSelector;
 
 /**
  * Class AbstractFeature
@@ -68,13 +68,17 @@ abstract class AbstractFeature implements ConditionallyRegistrable {
 
 	/**
 	 * Constructor. Self-registers the flag into the shared registry with metadata.
+	 *
+	 * Name and description are passed as closures, so their translations load when
+	 * the settings page reads them rather than at construction, which can run
+	 * before init.
 	 */
 	public function __construct() {
 		$this->get_feature_registry()->register(
 			[
 				$this->get_slug() => [
-					'name'        => $this->get_name(),
-					'description' => $this->get_description(),
+					'name'        => fn (): string => $this->get_name(),
+					'description' => fn (): string => $this->get_description(),
 				],
 			]
 		);

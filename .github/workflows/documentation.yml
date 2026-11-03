@@ -2,7 +2,6 @@ name: Documentation
 
 on:
   push:
-    # Temporary deployment test branch; remove after verification.
     branches: [main]
     paths:
       - 'docs/**'
@@ -44,7 +43,10 @@ jobs:
 
       - name: Build documentation
         id: docs
-        uses: rtCamp/action-docusaurus-build@codex/documentation-workflow
+        # Pinned to a commit: the action's code only lives on the unmerged
+        # codex/documentation-workflow branch (rtCamp/action-docusaurus-build#1).
+        # Move to a release tag once that PR merges and is tagged.
+        uses: rtCamp/action-docusaurus-build@b671d6800c68a74da8913edb9321422fe8afaedc # codex/documentation-workflow, 2026-09-17
         with:
           site-title: ${{ vars.DOCS_SITE_TITLE }}
           site-config: ${{ vars.DOCS_SITE_CONFIG }}
@@ -78,4 +80,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

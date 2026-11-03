@@ -2,13 +2,13 @@
 /**
  * Timer utility.
  *
- * @package rtCamp\WPFramework\Utils
+ * @package rtCamp\WPPrimitives\Utils
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Utils;
+namespace rtCamp\WPPrimitives\Utils;
 
 /**
  * Class - Timer
@@ -61,7 +61,7 @@ class Timer {
 		if ( '' === $label ) {
 			_doing_it_wrong(
 				__METHOD__,
-				esc_html__( 'Timer label must not be empty.', 'wp-framework' ),
+				esc_html__( 'Timer label must not be empty.', 'wp-primitives' ),
 				'1.0.0'
 			);
 			return;
@@ -72,7 +72,7 @@ class Timer {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: timer label. */
-					esc_html__( 'Timer "%s" has already been started.', 'wp-framework' ),
+					esc_html__( 'Timer "%s" has already been started.', 'wp-primitives' ),
 					esc_html( $label )
 				),
 				'1.0.0'
@@ -104,7 +104,7 @@ class Timer {
 		if ( '' === $label ) {
 			_doing_it_wrong(
 				__METHOD__,
-				esc_html__( 'Timer label must not be empty.', 'wp-framework' ),
+				esc_html__( 'Timer label must not be empty.', 'wp-primitives' ),
 				'1.0.0'
 			);
 			return 0.0;
@@ -115,7 +115,7 @@ class Timer {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: timer label. */
-					esc_html__( 'Timer "%s" was never started.', 'wp-framework' ),
+					esc_html__( 'Timer "%s" was never started.', 'wp-primitives' ),
 					esc_html( $label )
 				),
 				'1.0.0'
@@ -128,7 +128,7 @@ class Timer {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: timer label. */
-					esc_html__( 'Timer "%s" has already been stopped.', 'wp-framework' ),
+					esc_html__( 'Timer "%s" has already been stopped.', 'wp-primitives' ),
 					esc_html( $label )
 				),
 				'1.0.0'
@@ -157,7 +157,7 @@ class Timer {
 		if ( '' === $label ) {
 			_doing_it_wrong(
 				__METHOD__,
-				esc_html__( 'Timer label must not be empty.', 'wp-framework' ),
+				esc_html__( 'Timer label must not be empty.', 'wp-primitives' ),
 				'1.0.0'
 			);
 			return;
@@ -166,7 +166,7 @@ class Timer {
 		if ( '' === $name ) {
 			_doing_it_wrong(
 				__METHOD__,
-				esc_html__( 'Lap name must not be empty.', 'wp-framework' ),
+				esc_html__( 'Lap name must not be empty.', 'wp-primitives' ),
 				'1.0.0'
 			);
 			return;
@@ -177,7 +177,7 @@ class Timer {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: timer label. */
-					esc_html__( 'Timer "%s" was never started.', 'wp-framework' ),
+					esc_html__( 'Timer "%s" was never started.', 'wp-primitives' ),
 					esc_html( $label )
 				),
 				'1.0.0'
@@ -190,7 +190,7 @@ class Timer {
 				__METHOD__,
 				sprintf(
 					/* translators: %s: timer label. */
-					esc_html__( 'Timer "%s" has already been stopped.', 'wp-framework' ),
+					esc_html__( 'Timer "%s" has already been stopped.', 'wp-primitives' ),
 					esc_html( $label )
 				),
 				'1.0.0'

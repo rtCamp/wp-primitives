@@ -1,12 +1,28 @@
 {
-	"name": "rtcamp/wp-framework",
-	"description": "Shared PHP utilities for rtCamp WordPress projects",
+	"name": "rtcamp/wp-primitives",
+	"description": "Contracts, loaders and utilities for building WordPress plugins and themes on a shared, tested base.",
+	"keywords": [
+		"wordpress",
+		"wordpress-plugin",
+		"wordpress-theme",
+		"framework",
+		"library",
+		"rtcamp"
+	],
 	"type": "library",
 	"license": "GPL-2.0-or-later",
-	"homepage": "https://github.com/rtCamp/wp-framework",
+	"authors": [
+		{
+			"name": "rtCamp",
+			"email": "support@rtcamp.com",
+			"homepage": "https://rtcamp.com"
+		}
+	],
+	"homepage": "https://github.com/rtCamp/wp-primitives",
 	"support": {
-		"issues": "https://github.com/rtCamp/wp-framework/issues",
-		"source": "https://github.com/rtCamp/wp-framework"
+		"issues": "https://github.com/rtCamp/wp-primitives/issues",
+		"source": "https://github.com/rtCamp/wp-primitives",
+		"docs": "https://opensource.rtcamp.com/wp-primitives/"
 	},
 	"require": {
 		"php": ">=8.2"
@@ -25,12 +41,12 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"rtCamp\\WPFramework\\": "inc/"
+			"rtCamp\\WPPrimitives\\": "inc/"
 		}
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"rtCamp\\WPFramework\\Tests\\": "tests/"
+			"rtCamp\\WPPrimitives\\Tests\\": "tests/"
 		},
 		"exclude-from-classmap": [
 			"tests/Fixtures/ActionSchedulerFakes.php",
@@ -61,6 +77,11 @@
 		"analyse": "Run PHPStan static analysis.",
 		"test": "Run the PHPUnit test suite.",
 		"check": "Run lint + analyse + test in sequence. Exit code 0 if all green."
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-main": "2.x-dev"
+		}
 	},
 	"minimum-stability": "stable",
 	"prefer-stable": true

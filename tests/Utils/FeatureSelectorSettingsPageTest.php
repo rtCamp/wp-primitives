@@ -2,16 +2,16 @@
 /**
  * FeatureSelectorSettingsPage utility tests.
  *
- * @package rtCamp\WPFramework\Tests
+ * @package rtCamp\WPPrimitives\Tests
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Utils;
+namespace rtCamp\WPPrimitives\Tests\Utils;
 
-use rtCamp\WPFramework\Tests\TestCase;
-use rtCamp\WPFramework\Utils\FeatureSelector;
-use rtCamp\WPFramework\Utils\FeatureSelectorSettingsPage;
+use rtCamp\WPPrimitives\Tests\TestCase;
+use rtCamp\WPPrimitives\Utils\FeatureSelector;
+use rtCamp\WPPrimitives\Utils\FeatureSelectorSettingsPage;
 
 /**
  * Tests for FeatureSelectorSettingsPage.

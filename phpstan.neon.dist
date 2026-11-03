@@ -1,11 +1,11 @@
-# PHPStan configuration — wp-framework
+# PHPStan configuration — wp-primitives
 # Docs: https://phpstan.org/config-reference
 
 includes:
     - vendor/szepeviktor/phpstan-wordpress/extension.neon
 
 parameters:
-    level: 5
+    level: 6
     phpVersion: 80200
 
     paths:
