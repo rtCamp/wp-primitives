@@ -7,15 +7,15 @@
  * adapter's overrides win. Anonymous subclasses keep each scenario
  * self-contained.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractLocalEnvironment;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractLocalEnvironment;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 /**
  * Tests for AbstractLocalEnvironment.

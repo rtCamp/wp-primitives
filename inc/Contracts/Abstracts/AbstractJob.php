@@ -2,15 +2,15 @@
 /**
  * Abstract Job.
  *
- * @package rtCamp\WPFramework\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since   1.0.0
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Interfaces\Registrable;
+use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
 
 /**
  * Class AbstractJob
@@ -154,7 +154,7 @@ abstract class AbstractJob implements Registrable {
 				__METHOD__,
 				sprintf(
 					/* translators: %d: The interval, in seconds, that was passed. */
-					esc_html__( 'A positive interval is required, %d given. Use schedule_at() for a one-off job.', 'wp-framework' ),
+					esc_html__( 'A positive interval is required, %d given. Use schedule_at() for a one-off job.', 'wp-primitives' ),
 					esc_html( (string) $interval_in_seconds )
 				),
 				'1.0.0'

@@ -2,12 +2,12 @@
 /**
  * Analysis-only declarations for Action Scheduler (https://actionscheduler.org/).
  *
- * Not a dependency of this package — see {@see \rtCamp\WPFramework\Contracts\Abstracts\AbstractJob},
+ * Not a dependency of this package — see {@see \rtCamp\WPPrimitives\Contracts\Abstracts\AbstractJob},
  * which guards every call behind `is_available()`. Referenced via PHPStan's
  * `scanFiles` so those calls resolve regardless of whether a consumer has the
  * library installed. Never autoloaded or executed.
  *
- * @package rtCamp\WPFramework
+ * @package rtCamp\WPPrimitives
  */
 
 declare( strict_types = 1 );

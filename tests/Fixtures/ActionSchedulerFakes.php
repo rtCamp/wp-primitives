@@ -2,14 +2,14 @@
 /**
  * Action Scheduler API fakes for AbstractJob tests.
  *
- * wp-framework has no dependency on Action Scheduler — these stand-ins let
+ * wp-primitives has no dependency on Action Scheduler — these stand-ins let
  * tests exercise AbstractJob's "available" branch without installing the
  * real library. Signatures mirror https://actionscheduler.org/api/.
  * Declared in the global namespace, exactly where the real library would put
  * them; explicitly required from bootstrap.php since PSR-4 doesn't autoload
  * plain functions.
  *
- * @package rtCamp\WPFramework\Tests\Fixtures
+ * @package rtCamp\WPPrimitives\Tests\Fixtures
  */
 
 declare( strict_types = 1 );

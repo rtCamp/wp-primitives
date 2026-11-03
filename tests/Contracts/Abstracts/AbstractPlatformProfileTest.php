@@ -7,15 +7,15 @@
  * bare-profile defaults and an override of each bucket, using anonymous
  * subclasses so each scenario is self-contained.
  *
- * @package rtCamp\WPFramework\Tests\Contracts\Abstracts
+ * @package rtCamp\WPPrimitives\Tests\Contracts\Abstracts
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPFramework\Tests\Contracts\Abstracts;
+namespace rtCamp\WPPrimitives\Tests\Contracts\Abstracts;
 
-use rtCamp\WPFramework\Contracts\Abstracts\AbstractPlatformProfile;
-use rtCamp\WPFramework\Tests\TestCase;
+use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractPlatformProfile;
+use rtCamp\WPPrimitives\Tests\TestCase;
 
 /**
  * Tests for AbstractPlatformProfile.
