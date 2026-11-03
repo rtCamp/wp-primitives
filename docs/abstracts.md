@@ -5,15 +5,18 @@ sidebar_label: Abstracts
 
 # Abstracts — the base-class cookbook
 
-The twelve `Abstract*` classes in
+The seventeen `Abstract*` classes in
 [`inc/Contracts/Abstracts/`](../inc/Contracts/Abstracts/) are the part of the
 framework a service author touches most. Each one wraps a single WordPress
 registration chore so the subclass writes *what* it is, not *how* to register it.
 
 Every abstract here (except `AbstractModule`, which is structural;
-`AbstractFeature`, which gates another service behind a flag; and
+`AbstractFeature`, which gates another service behind a flag;
 `AbstractAbility`, which describes an ability that its paired
-`AbstractAbilityRegistrar` registers) follows the same shape:
+`AbstractAbilityRegistrar` registers; and the four platform-extensibility
+abstracts — `AbstractPlatformLog`, `AbstractPlatformProfile`,
+`AbstractLocalEnvironment`, `AbstractVulnerabilityProvider` — which are queried
+on demand and register no hook at all) follows the same shape:
 
 - it `implements Registrable`, so the [`Loader`](architecture.md) drives it;
 - its `register_hooks()` attaches **one** WordPress hook;
@@ -24,6 +27,10 @@ So the lifecycle is always: the loader calls `register_hooks()` → that adds an
 action on the right WordPress hook → when that hook fires, the actual
 registration runs. Read [architecture.md](architecture.md) if that split isn't
 familiar yet.
+
+`AbstractJob` is `Registrable` too, but registers on **its own** hook (named
+by the subclass) rather than a fixed WordPress one — see
+[Background jobs](#background-jobs) below.
 
 ## Which hook each one uses
 
@@ -41,6 +48,11 @@ familiar yet.
 | `AbstractFeature` | — (gates the subclass's own hooks) | `get_slug()`, `get_feature_registry()`, plus the subclass's `register_hooks()` |
 | `AbstractAbility` | — (registered by its `AbstractAbilityRegistrar`) | `name()`, `label()`, `description()`, `category()`, `input_schema()`, `output_schema()`, `execute()` |
 | `AbstractAbilityRegistrar` | `wp_abilities_api_categories_init` + `wp_abilities_api_init` | `category_slug()`, `category_description()`, `abilities()` |
+| `AbstractJob` | its own hook (via `get_hook()`) | `get_hook()`, `handle()` |
+| `AbstractPlatformLog` | — (queried on demand) | `get_recent_entries()` |
+| `AbstractPlatformProfile` | — (queried on demand) | `get_slug()`, `get_name()` |
+| `AbstractLocalEnvironment` | — (queried on demand) | `get_name()`, `is_active()` |
+| `AbstractVulnerabilityProvider` | — (queried on demand) | `get_plugin_vulnerabilities()`, `get_theme_vulnerabilities()`, `get_core_vulnerabilities()` |
 
 ---
 
@@ -496,6 +508,219 @@ final class Registrar extends AbstractAbilityRegistrar {
 Load `Registrar` like any other `Registrable` (usually from a module's
 `get_classes()`); the ability is then retrievable via
 `wp_get_ability( 'my-plugin/site-summary' )` and executable by administrators.
+
+## Background jobs
+
+### AbstractJob
+
+[`AbstractJob.php`](../inc/Contracts/Abstracts/AbstractJob.php) — a background
+job that runs through [Action Scheduler](https://actionscheduler.org/), the de
+facto WordPress queue/scheduling library. Action Scheduler is **never a
+dependency of this package** — it's a seam, same as the platform-extensibility
+abstracts below. Every scheduling method guards on `AbstractJob::is_available()`
+and degrades to a silent no-op (`null`/`false`) when the library isn't loaded.
+Action Scheduler **3.6.0 or newer** is required — that release added action
+priorities and the `$unique` parameter, which older copies drop silently, so
+`is_available()` reports anything older as unavailable rather than half-working.
+
+**Must implement:** `get_hook()` (static — the WordPress action hook the job
+runs on, e.g. `"my-plugin/send-welcome-email"`) and `handle( array $args )`
+(the actual work).
+
+`register_hooks()` always attaches the listener, regardless of whether Action
+Scheduler is present: `handle()` runs off a plain WordPress action, so
+`do_action( MyJob::get_hook(), $args )` runs the job synchronously even
+without Action Scheduler installed at all — scheduling is an enhancement, not
+a requirement.
+
+Args are always a single associative array. Every `schedule_*()` method wraps
+the caller's `$args` as Action Scheduler's one positional argument, and
+`register_hooks()` registers the listener with a fixed `accepted_args = 1` to
+match — so `handle()` always receives one plain array. Scheduling through the
+raw `as_*()` functions directly, instead of this class's own `schedule_*()`
+methods, breaks that contract.
+
+Overridable seams: `get_group()` (defaults to `''`), `is_unique()` (defaults to
+`false` — when `true`, Action Scheduler skips scheduling a duplicate of an
+already-pending/running action with the same hook, group, and args), plus two
+distinct priorities, both defaulting to `10`: `get_hook_priority()` is the
+WordPress hook priority `register_hooks()` attaches `handle()` at, while
+`get_queue_priority()` is passed to every `schedule_*()` call to order this job
+against other queued actions (Action Scheduler clamps it to `0`-`255`).
+
+```php
+final class SendWelcomeEmailJob extends AbstractJob {
+    public static function get_hook(): string { return 'my-plugin/send-welcome-email'; }
+
+    protected function handle( array $args ): void {
+        wp_mail( $args['email'], 'Welcome!', 'Thanks for signing up.' );
+    }
+}
+
+$job = new SendWelcomeEmailJob();
+$job->register_hooks();                                   // load-time, e.g. from a module
+$job->schedule_async( [ 'email' => $user->user_email ] );  // imperative call site
+```
+
+`schedule_async()`, `schedule_at( $timestamp, $args )`, and
+`schedule_recurring( $timestamp, $interval_in_seconds, $args )` each return the
+Action Scheduler action ID, `0` when Action Scheduler declined to schedule it
+(most often an `is_unique()` duplicate), or `null` when Action Scheduler is
+unavailable and nothing was attempted. `schedule_recurring()` additionally
+rejects a non-positive interval with `_doing_it_wrong()` and `null`: Action
+Scheduler would turn `0` into a one-off action and walk a negative interval
+backwards, leaving it permanently overdue — use `schedule_at()` for a one-off
+job. `is_scheduled( $args )` and
+`unschedule( $args )` round out the seam for checking and cancelling.
+
+## Platform extensibility
+
+Four contracts with **no platform or vendor specifics of their own** — pure
+seams a later package (VIP support, a CVE scanner, a readiness lens) fills
+in with a concrete implementation. None register a WordPress hook; each is
+constructed and queried on demand by whatever consumes it.
+
+### AbstractPlatformLog
+
+[`AbstractPlatformLog.php`](../inc/Contracts/Abstracts/AbstractPlatformLog.php)
+— reads recent host-level log entries (PHP errors/fatals) and normalizes each
+to a message, level, timestamp, and — where the source line permits it — a
+file:line location.
+
+**Must implement:** `get_recent_entries( int $limit = 100 )`, returning
+entries newest-first as
+`array{timestamp: ?string, level: string, message: string, file: ?string, line: ?int, raw: string}`.
+
+Overridable: `is_available()` (defaults to `true`) — a capability-check seam
+for whatever the source depends on (a readable file, CLI credentials, …).
+`get_recent_entries()` should still return `[]` rather than throw even if a
+caller skips that check.
+
+A protected `parse_error_log_line( string $line )` helper is included: it
+parses a standard PHP error-log line (`[timestamp] PHP Level:  message in
+FILE:LINE` or `... in FILE on line LINE`) into the same shape. This is
+generic PHP log formatting, not specific to any host, and is the natural
+building block for a local `debug.log`-backed implementation:
+
+```php
+final class DebugLogReader extends AbstractPlatformLog {
+    public function is_available(): bool {
+        return defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG && is_readable( WP_CONTENT_DIR . '/debug.log' );
+    }
+
+    public function get_recent_entries( int $limit = 100 ): array {
+        if ( ! $this->is_available() ) {
+            return [];
+        }
+
+        $lines   = array_slice( file( WP_CONTENT_DIR . '/debug.log' ) ?: [], -$limit );
+        $entries = array_filter( array_map( fn ( string $line ) => $this->parse_error_log_line( trim( $line ) ), $lines ) );
+
+        return array_reverse( array_values( $entries ) );
+    }
+}
+```
+
+### AbstractPlatformProfile
+
+[`AbstractPlatformProfile.php`](../inc/Contracts/Abstracts/AbstractPlatformProfile.php)
+— the ruleset a readiness lens applies: named rule buckets a hosting platform
+constrains. Every bucket defaults to permissive, so a profile that declares
+nothing imposes no constraints, and new buckets can be added later without
+breaking existing subclasses. Most buckets spell that as an empty array;
+`get_writable_paths()` uses `null`, reserving `[]` for "no path is writable".
+
+**Must implement:** `get_slug()`, `get_name()`.
+
+Overridable rule buckets, all permissive by default:
+`get_restricted_functions()`, `get_writable_paths()` (returns `null` when the
+platform declares no constraint — an empty array means the opposite, that no
+path is writable), `get_supported_php_versions()`,
+`get_object_cache_constraints()` (returns
+`array{max_object_bytes: ?int, backend: ?string}`), `get_incompatible_plugins()`.
+
+```php
+final class VipPlatformProfile extends AbstractPlatformProfile {
+    public function get_slug(): string { return 'vip'; }
+    public function get_name(): string { return 'WordPress VIP'; }
+
+    public function get_restricted_functions(): array {
+        return [ 'eval', 'exec', 'shell_exec', 'system' ];
+    }
+
+    public function get_writable_paths(): ?array {
+        return [ 'wp-content/uploads', '/tmp' ];
+    }
+}
+```
+
+### AbstractLocalEnvironment
+
+[`AbstractLocalEnvironment.php`](../inc/Contracts/Abstracts/AbstractLocalEnvironment.php)
+— the seam behind local WordPress development environments: `wp-env`, VIP's
+`vip dev-env`, or any other Docker-based local stack. Each concrete adapter
+implements its own detection.
+
+**Must implement:** `get_name()`, `is_active()` (the detection seam — e.g. a
+constant or env var unique to that environment).
+
+Overridable: `get_debug_log_path()` (defaults to `WP_CONTENT_DIR . '/debug.log'`),
+`get_available_services()` (defaults to `[]`, e.g. `['memcached', 'elasticsearch']`),
+`is_filesystem_writable()` (defaults to `true`).
+
+```php
+final class VipDevEnvAdapter extends AbstractLocalEnvironment {
+    public function get_name(): string { return 'vip-dev-env'; }
+    public function is_active(): bool { return defined( 'VIP_GO_APP_ENVIRONMENT' ); }
+    public function get_available_services(): array { return [ 'memcached', 'elasticsearch' ]; }
+    public function is_filesystem_writable(): bool { return false; }
+}
+```
+
+### AbstractVulnerabilityProvider
+
+[`AbstractVulnerabilityProvider.php`](../inc/Contracts/Abstracts/AbstractVulnerabilityProvider.php)
+— the seam for a WordPress-ecosystem CVE/vulnerability database, WPScan
+first, so a second provider is a new class extending this one. Lookups
+return every known vulnerability for a slug/version unfiltered (matching how
+WPScan's own API responds).
+
+**Must implement:** `get_plugin_vulnerabilities( string $slug )`,
+`get_theme_vulnerabilities( string $slug )`, `get_core_vulnerabilities( string $version )`
+— each returning a list of
+`array{title: string, type: string, fixed_in: ?string, references: array{url: string[], cve: string[]}, cvss: ?array{score: float, vector: string}}`.
+
+Overridable: `is_available()` (defaults to `true`) — a capability-check seam
+(an API token, network access, …).
+
+A concrete `affects_version( array $vulnerability, string $installed_version ): bool`
+helper is provided: `true` when `fixed_in` is `null` (still unpatched) or the
+installed version predates it, `false` otherwise — the shared filtering logic
+every provider gets for free:
+
+```php
+final class WPScanProvider extends AbstractVulnerabilityProvider {
+    public function __construct( private readonly string $api_token = '' ) {}
+
+    public function is_available(): bool {
+        return '' !== $this->api_token;
+    }
+
+    public function get_plugin_vulnerabilities( string $slug ): array {
+        // wp_remote_get( "https://wpscan.com/api/v3/plugins/{$slug}" ), mapped to the shape above.
+    }
+
+    public function get_theme_vulnerabilities( string $slug ): array { /* … */ }
+    public function get_core_vulnerabilities( string $version ): array { /* … */ }
+}
+
+$provider = new WPScanProvider( getenv( 'WPSCAN_API_TOKEN' ) ?: '' );
+foreach ( $provider->get_plugin_vulnerabilities( 'akismet' ) as $vulnerability ) {
+    if ( $provider->affects_version( $vulnerability, '4.0.0' ) ) {
+        // flag it
+    }
+}
+```
 
 ---
 

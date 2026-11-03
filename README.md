@@ -85,12 +85,15 @@ A registered, REST-enabled post type with no `register_post_type()` call and no
     interfaces
   - the `Loader` trait (instantiate a list of classes, register their hooks,
     cache the shared ones) and the `Container` it stores instances in
-- **Twelve `Abstract*` base classes** — one per WordPress registration chore, so
-  a consumer writes intent instead of boilerplate: `AbstractModule`,
+- **Seventeen `Abstract*` base classes** — WordPress registration chores plus a
+  few seams that are queried rather than registered, so a consumer writes intent
+  instead of boilerplate: `AbstractModule`,
   `AbstractPostType`, `AbstractTaxonomy`, `AbstractBlock`, `AbstractShortcode`,
   `AbstractRESTController`, `AbstractSettingsPage`, `AbstractAdminPage`,
   `AbstractUserRole`, `AbstractFeature`, `AbstractAbility`,
-  `AbstractAbilityRegistrar`
+  `AbstractAbilityRegistrar`, `AbstractJob`, `AbstractPlatformLog`,
+  `AbstractPlatformProfile`, `AbstractLocalEnvironment`,
+  `AbstractVulnerabilityProvider`
 - **Asset & render loaders** — `AssetLoader` (scripts/styles/modules +
   `*.asset.php` manifests), `ComponentLoader` and `TemplateLoader` (resolve
   components/templates across the child-theme → parent-theme → package hierarchy)

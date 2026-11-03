@@ -47,7 +47,11 @@
 	"autoload-dev": {
 		"psr-4": {
 			"rtCamp\\WPPrimitives\\Tests\\": "tests/"
-		}
+		},
+		"exclude-from-classmap": [
+			"tests/Fixtures/ActionSchedulerFakes.php",
+			"tests/Fixtures/LoaderFixtures.php"
+		]
 	},
 	"config": {
 		"allow-plugins": {
