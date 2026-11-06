@@ -58,8 +58,8 @@ body:
       label: Compatibility
       description: How the change affects plugins and themes on 2.x.
       options:
-        - "Additive: a new class, method or optional parameter"
-        - "Breaking: changes an existing signature or behaviour under inc/Contracts/"
+        - "Additive: a new class, utility or optional (non-abstract) method"
+        - "Breaking: a new abstract or interface method, a new parameter on a method subclasses override, or a changed signature or behaviour"
         - Not sure
     validations:
       required: true
