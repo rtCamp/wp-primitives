@@ -1,0 +1,41 @@
+name: Release
+
+# release-please reads the Conventional Commit subjects squash-merged to main and keeps one
+# release pull request open that bumps the version and writes CHANGELOG.md. Merging that pull
+# request tags vX.Y.Z on main and publishes the GitHub release with the changelog entry as notes.
+#
+# The release pull request is opened with GITHUB_TOKEN, so GitHub starts no workflow runs on it
+# (no tests, no PR title check). Keep the PR title check out of the required checks. If the Test
+# and Measure jobs become required, as auto-merge.yml expects for Dependabot, a release pull
+# request waits on checks that never start: switch the token below to a GitHub App token, which
+# starts them, or have a maintainer push an empty commit to the release branch, which does too.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Serialise runs so two merges in quick succession can't race on the release pull request.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Open or update the release pull request, or publish the release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ github.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

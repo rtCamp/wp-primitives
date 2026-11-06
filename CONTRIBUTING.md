@@ -60,8 +60,10 @@ contract-change, and documentation guidance.
 - [ ] Any change to `inc/Contracts/` is flagged as breaking in the PR description.
 - [ ] Contract changes are reflected in `ai/primitives-php.instructions.md`.
 - [ ] User-visible behavior is reflected in `README.md` or `docs/`.
-- [ ] A `CHANGELOG.md` entry is added under `## [Unreleased]`.
-- [ ] Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
+- [ ] The PR title is a [Conventional Commit](https://www.conventionalcommits.org/)
+      that reads as the changelog entry (`fix:`, `feat:`, `feat!:` for a breaking
+      change). Pull requests are squash-merged, and release-please writes
+      `CHANGELOG.md` from the title, so don't edit `CHANGELOG.md` by hand.
 
 ## License
 
