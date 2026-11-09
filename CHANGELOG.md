@@ -4,8 +4,9 @@ All notable changes to `rtcamp/wp-primitives` are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
+From 2.2.0 on, entries are written by [release-please](https://github.com/googleapis/release-please)
+from the Conventional Commit pull request titles merged to `main`. Don't edit this file by hand;
+to reword an entry, see [Releasing](docs/maintainers.md#releasing).
 
 ### Added
 
@@ -180,7 +181,6 @@ Initial release. Requires PHP 8.2+.
 - Reference documentation under `docs/`, a GPL-2.0-or-later `LICENSE.md`, and a
   WordPress integration test suite running against `@wordpress/env`.
 
-[Unreleased]: https://github.com/rtCamp/wp-primitives/compare/v2.1.0...HEAD
 [2.1.0]: https://github.com/rtCamp/wp-primitives/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/rtCamp/wp-primitives/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/rtCamp/wp-primitives/compare/v1.0.0...v1.0.1

@@ -7,6 +7,9 @@ updates:
     labels:
       - "dependencies"
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore"
+      include: "scope"
     groups:
       composer:
         patterns:
@@ -19,3 +22,6 @@ updates:
     labels:
       - "dependencies"
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore"
+      include: "scope"
