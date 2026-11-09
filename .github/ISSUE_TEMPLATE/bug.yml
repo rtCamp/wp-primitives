@@ -1,0 +1,90 @@
+name: Bug report
+description: A class, contract or utility in rtcamp/wp-primitives misbehaves.
+type: Bug
+labels:
+  - "Type: Bug"
+body:
+  - type: markdown
+    attributes:
+      value: >-
+        Thanks for reporting a bug. Please search
+        [existing issues](https://github.com/rtCamp/wp-primitives/issues?q=is%3Aissue)
+        first.
+  - type: markdown
+    attributes:
+      value: >-
+        **Found a security issue?** Do not open a public issue. Report it
+        privately through
+        [GitHub's vulnerability reporting](https://github.com/rtCamp/wp-primitives/security/advisories/new),
+        as [SECURITY.md](https://github.com/rtCamp/wp-primitives/blob/main/SECURITY.md)
+        describes.
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      description: The installed `rtcamp/wp-primitives` version (`composer show rtcamp/wp-primitives`).
+      placeholder: 2.1.0
+    validations:
+      required: true
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      description: The version the code runs on (`php -v`, or the one in your wp-env or host).
+      placeholder: "8.3"
+    validations:
+      required: true
+  - type: input
+    id: wp-version
+    attributes:
+      label: WordPress version
+      placeholder: "6.8"
+    validations:
+      required: true
+  - type: input
+    id: affected
+    attributes:
+      label: Affected class or method
+      placeholder: rtCamp\WPPrimitives\AssetLoader::register_block_manifest()
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: The error, notice or behaviour you saw.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: >-
+        The smallest code that shows the problem, for example a class that
+        extends the abstract and the hook it runs on.
+      render: php
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: PHP errors, notices or stack traces. Rendered as code, so no backticks are needed.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and this is not a duplicate.
+          required: true
+        - label: I removed secrets, keys and private URLs from everything above.
+          required: true
