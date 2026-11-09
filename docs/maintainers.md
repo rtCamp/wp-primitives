@@ -161,17 +161,33 @@ Releases are cut by [release-please](https://github.com/googleapis/release-pleas
 
    | Change | Title |
    | --- | --- |
-   | Anything breaking in `inc/Contracts/` or in documented behaviour, including a new abstract method or a new interface method | `feat!:` (or a `BREAKING CHANGE:` footer), major |
+   | Anything breaking in `inc/Contracts/` or in documented behaviour, including a new abstract method or a new interface method | `feat!:`, major |
    | New API: a new class, an optional method with a default body, a new hook | `feat:`, minor |
    | Fixes that keep the contract | `fix:`, patch |
    | Docs, tests, CI, refactors with no behaviour change | `docs:`, `test:`, `ci:`, `refactor:`, `chore:`, no release |
 
    A `feat!:` also needs its entry in [upgrading.md](upgrading.md) in the same
    pull request.
-3. When you want to release, review the release pull request: reword entries
-   there if a title reads badly, then squash-merge it. release-please tags
-   `vX.Y.Z` on the merge commit and publishes the GitHub release with that
-   section as the notes.
+
+   The `!` has to be in the title. The squash commit's body is built from the
+   branch's commit messages, so a `BREAKING CHANGE:` footer written in the PR
+   description never reaches `main`.
+3. When you want to release, review the release pull request, then
+   squash-merge it. release-please tags `vX.Y.Z` on the merge commit and
+   publishes the GitHub release with that section as the notes.
+
+   Don't edit the release pull request or its branch: release-please rebuilds
+   both on every run, so the edit is lost. To reword an entry, edit the
+   description of the merged pull request it came from and add:
+
+   ```text
+   BEGIN_COMMIT_OVERRIDE
+   fix: the wording you want
+   END_COMMIT_OVERRIDE
+   ```
+
+   The next release-please run (any push to `main`, or re-running the
+   workflow) rebuilds the release pull request from it.
 4. Confirm Packagist picked the tag up: `composer show rtcamp/wp-primitives --all`
    lists the new version within a minute or two. If it does not, check the
    webhook delivery under the repository's Settings > Webhooks.
