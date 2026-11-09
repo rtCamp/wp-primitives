@@ -8,6 +8,17 @@ From 2.2.0 on, entries are written by [release-please](https://github.com/google
 from the Conventional Commit pull request titles merged to `main`. Don't edit this file by hand;
 to reword an entry, edit the open release pull request.
 
+### Added
+
+- Repository files for outside contributors. Bug report and feature request
+  issue forms replace blank issues, and `config.yml` sends security reports to
+  private vulnerability reporting. `.github/CODEOWNERS` requests reviews from
+  the maintainers. `.github/labels.yml` records the label set shared across the
+  rtCamp framework repositories, plus this repository's `Scope:` labels, for
+  maintainers to apply with `gh label create --force`. `.github/release.yml`
+  now groups GitHub's generated release notes by those labels. All of it stays
+  under `.github/`, which the Composer archive already leaves out.
+
 ## [2.1.0] - 2026-10-02
 
 ### Added

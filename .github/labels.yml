@@ -1,0 +1,135 @@
+# Labels for rtCamp/wp-primitives.
+#
+# Labels are repository settings, not files, so adding an entry here does not
+# create the label. A maintainer applies this list by running
+# `gh label create <name> --color <color> --description <description> --force`
+# for each entry: missing labels are created and existing ones updated. That
+# never deletes a label, so removing an entry here does not remove it on GitHub.
+#
+# The "Shared" sections are the same in all five rtCamp framework repositories
+# (wp-shared-workflows, wp-primitives, wp-tooling, theme-elementary and
+# plugin-elementary), apart from the wording of the BC descriptions; change them
+# in all five together. The sections after them belong to this repository.
+# .github/release.yml groups release notes by these labels.
+
+# --- Shared: type ------------------------------------------------------------
+- name: "Type: Bug"
+  color: "D93F0B"
+  description: "Something is broken or behaves unexpectedly"
+- name: "Type: Feature"
+  color: "A2EEEF"
+  description: "New capability or an improvement to an existing one"
+- name: "Type: Task"
+  color: "0E8A16"
+  description: "Self-contained unit of work for a milestone"
+- name: "Type: Chore"
+  color: "C5DEF5"
+  description: "Maintenance, tooling, docs, housekeeping"
+- name: "Type: Epic"
+  color: "5319E7"
+  description: "Large initiative spanning multiple issues"
+- name: "Type: Story"
+  color: "1D76DB"
+  description: "Group of related tasks within an epic"
+- name: "Type: Docs"
+  color: "BFD4F2"
+  description: "Documentation-only change"
+
+# --- Shared: priority --------------------------------------------------------
+- name: "Priority: P0"
+  color: "B60205"
+  description: "Critical: blocks milestone"
+- name: "Priority: P1"
+  color: "D93F0B"
+  description: "High: sprint commitment"
+- name: "Priority: P2"
+  color: "FBCA04"
+  description: "Medium: nice to have this sprint"
+- name: "Priority: P3"
+  color: "C2E0C6"
+  description: "Low: can slip"
+
+# --- Shared: status ----------------------------------------------------------
+- name: "Status: Blocked"
+  color: "E99695"
+  description: "Waiting on another issue or external dependency"
+- name: "Status: Needs Review"
+  color: "FEF2C0"
+  description: "Human review requested"
+- name: "Status: Rotating"
+  color: "D4C5F9"
+  description: "Engineer rotated out: awaiting pickup (see Handoff log)"
+- name: "Status: Needs BC Check"
+  color: "F9D0C4"
+  description: "Run /check-bc before merge"
+
+# --- Shared: backward compatibility ------------------------------------------
+- name: "BC: Breaking"
+  color: "B60205"
+  description: "Breaking change: targets release/vNext"
+- name: "BC: Additive"
+  color: "0E8A16"
+  description: "Additive only: safe for current major"
+- name: "BC: Deprecation"
+  color: "FBCA04"
+  description: "Adds or removes a @deprecated symbol"
+
+# --- Shared: dependencies and outside contributors ---------------------------
+- name: "dependencies"
+  color: "0366d6"
+  description: "Pull requests that update a dependency file"
+- name: "good first issue"
+  color: "7057ff"
+  description: "Good for newcomers"
+- name: "help wanted"
+  color: "008672"
+  description: "Extra attention is needed"
+
+# --- This repository: scope --------------------------------------------------
+# Matches the Area dropdown in the issue forms.
+- name: "Scope: Contracts"
+  color: "6F42C1"
+  description: "inc/Contracts/: interfaces, abstracts and traits"
+- name: "Scope: Loaders"
+  color: "0075CA"
+  description: "Container, AssetLoader, ComponentLoader and TemplateLoader"
+- name: "Scope: Utilities"
+  color: "8B4513"
+  description: "inc/Utils/: Cache, Transients, Logger, Timer, Encryptor and FeatureSelector"
+- name: "Scope: AI Sync"
+  color: "FF6B6B"
+  description: "AI instructions (ai/) and the sync tool (bin/)"
+- name: "Scope: Traits"
+  color: "8B4513"
+  description: "Shared traits (Singleton)"
+- name: "Scope: Quality Config"
+  color: "0075CA"
+  description: "phpcs.xml.dist + phpstan.neon.dist"
+- name: "Scope: Tests"
+  color: "BFDADC"
+  description: "PHPUnit test suite"
+- name: "Scope: Docs"
+  color: "FEF2C0"
+  description: "Documentation"
+
+# --- Legacy: keep until relabelled -------------------------------------------
+# These describe wp-devtools code that is not in this package. They are still on
+# closed issues, so they stay until those are relabelled; don't use them on new
+# issues.
+- name: "Scope: AI Privacy"
+  color: "FF6B6B"
+  description: "Legacy (wp-devtools): AI_Data_Sanitizer + ai_context() contract"
+- name: "Scope: Collector Interfaces"
+  color: "6F42C1"
+  description: "Legacy (wp-devtools): interfaces in src/Dev/Interfaces/"
+- name: "Scope: Dev Monitor"
+  color: "6F42C1"
+  description: "Legacy (wp-devtools): Dev_Monitor panel and collectors"
+- name: "Status: Needs Privacy Check"
+  color: "E99695"
+  description: "Legacy (wp-devtools): run /check-privacy before merge"
+
+# --- This repository: Dependabot ecosystem labels ----------------------------
+- name: "javascript"
+  color: "168700"
+  description: "Pull requests that update javascript code"
