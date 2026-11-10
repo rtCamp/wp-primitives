@@ -64,3 +64,7 @@ require_once __DIR__ . '/Fixtures/LoaderFixtures.php';
 
 // Start up the WP testing environment.
 require $_test_root . '/includes/bootstrap.php';
+
+// Action Scheduler is not a dependency of this package (see AbstractJob), so its
+// API is faked here. After WordPress, so a real one would win instead.
+require_once __DIR__ . '/Fixtures/ActionSchedulerFakes.php';
