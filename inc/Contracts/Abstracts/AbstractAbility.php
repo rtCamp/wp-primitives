@@ -34,7 +34,7 @@ abstract class AbstractAbility {
 	 * Must match the Abilities API name pattern `^[a-z0-9-]+/[a-z0-9-]+$`
 	 * (namespace prefix, a slash, then the ability slug).
 	 *
-	 * @return string Ability name.
+	 * @return lowercase-string&non-falsy-string Ability name.
 	 */
 	abstract public function name(): string;
 

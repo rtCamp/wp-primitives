@@ -118,9 +118,9 @@ class ComponentLoader {
 	 * mirroring TemplateLoader's prefixed hooks — the loader context slug is still
 	 * passed as an argument for handlers that want it.
 	 *
-	 * @param string $event Hook suffix (e.g. 'before_render').
+	 * @param non-empty-string $event Hook suffix (e.g. 'before_render').
 	 *
-	 * @return string Namespaced hook name.
+	 * @return non-empty-string Namespaced hook name.
 	 */
 	private function component_hook( string $event ): string {
 		return $this->get_context() . '/component_' . $event;
@@ -524,10 +524,10 @@ class ComponentLoader {
 	/**
 	 * Build the (filterable) asset handle for a component asset.
 	 *
-	 * @param string $name       Component name.
-	 * @param string $asset_type 'style' or 'script'.
+	 * @param non-empty-string $name       Component name.
+	 * @param non-empty-string $asset_type 'style' or 'script'.
 	 *
-	 * @return string Asset handle.
+	 * @return non-empty-string Asset handle.
 	 */
 	private function component_asset_handle( string $name, string $asset_type ): string {
 		$context = $this->get_context();
@@ -536,10 +536,10 @@ class ComponentLoader {
 		/**
 		 * Filters a component's asset handle.
 		 *
-		 * @param string $handle     Default handle.
-		 * @param string $name       Component name.
-		 * @param string $asset_type 'style' or 'script'.
-		 * @param string $context    Loader context slug.
+		 * @param non-empty-string $handle     Default handle.
+		 * @param non-empty-string $name       Component name.
+		 * @param non-empty-string $asset_type 'style' or 'script'.
+		 * @param string           $context    Loader context slug.
 		 */
 		return (string) apply_filters( $this->component_hook( 'asset_handle' ), $handle, $name, $asset_type, $context );
 	}
@@ -550,10 +550,10 @@ class ComponentLoader {
 	 * Searches the asset loaders in override precedence and registers via the
 	 * first one that holds the file.
 	 *
-	 * @param string $asset_type     'style' or 'script'.
-	 * @param string $handle         Asset handle. Should be unique.
-	 * @param string $filename       Asset filename relative to the assets dir, excluding extension.
-	 * @param bool   $allow_override Whether theme/child overrides may win, or only the package's own dir.
+	 * @param non-empty-string $asset_type     'style' or 'script'.
+	 * @param non-empty-string $handle         Asset handle. Should be unique.
+	 * @param non-empty-string $filename       Asset filename relative to the assets dir, excluding extension.
+	 * @param bool             $allow_override Whether theme/child overrides may win, or only the package's own dir.
 	 *
 	 * @return bool Whether the asset is registered or registerable.
 	 */

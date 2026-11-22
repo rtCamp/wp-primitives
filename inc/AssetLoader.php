@@ -151,7 +151,7 @@ class AssetLoader {
 	 * @param string $filename  Path of the asset relative to the assets directory, excluding the extension.
 	 * @param string $extension Asset extension (e.g. 'js', 'css').
 	 *
-	 * @return string Absolute asset URL.
+	 * @return non-empty-string Absolute asset URL.
 	 */
 	private function asset_src( string $filename, string $extension ): string {
 		return sprintf(
@@ -169,11 +169,11 @@ class AssetLoader {
 	 * version is normalised to `string|false` so it passes straight to the
 	 * wp_register_* functions (which read `false` as "no version").
 	 *
-	 * @param array{version: string, dependencies?: array<int, string>} $meta Resolved asset metadata.
-	 * @param array<string>                                             $deps Caller dependencies (empty to inherit).
-	 * @param ?string                                                   $ver  Caller version (null to inherit).
+	 * @param array{version: string, dependencies?: array<int, non-empty-string>} $meta Resolved asset metadata.
+	 * @param array<non-empty-string>                                             $deps Caller dependencies (empty to inherit).
+	 * @param ?string                                                             $ver  Caller version (null to inherit).
 	 *
-	 * @return array{0: array<string>, 1: string|false} Tuple of [ dependencies, version ].
+	 * @return array{0: array<non-empty-string>, 1: string|false} Tuple of [ dependencies, version ].
 	 */
 	private function resolve_deps_and_version( array $meta, array $deps, ?string $ver ): array {
 		$resolved_deps    = empty( $deps ) ? ( $meta['dependencies'] ?? [] ) : $deps;
@@ -234,11 +234,11 @@ class AssetLoader {
 	/**
 	 * Register a script.
 	 *
-	 * @param string   $handle    Name of the script. Should be unique.
-	 * @param string   $filename  Path of the script relative to the assets directory, excluding the .js extension.
-	 * @param string[] $deps      Optional. Registered script handles this depends on. Inherited from the asset file if empty.
-	 * @param ?string  $ver       Optional. Version string. Inherited from the asset file (or filemtime) if null.
-	 * @param bool     $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
+	 * @param non-empty-string   $handle    Name of the script. Should be unique.
+	 * @param string             $filename  Path of the script relative to the assets directory, excluding the .js extension.
+	 * @param non-empty-string[] $deps      Optional. Registered script handles this depends on. Inherited from the asset file if empty.
+	 * @param ?string            $ver       Optional. Version string. Inherited from the asset file (or filemtime) if null.
+	 * @param bool               $in_footer Optional. Whether to enqueue the script before </body> instead of in the <head>.
 	 *
 	 * @return bool True on success; false if the asset file is missing.
 	 */
@@ -263,11 +263,11 @@ class AssetLoader {
 	/**
 	 * Register a CSS stylesheet.
 	 *
-	 * @param string   $handle   Name of the stylesheet. Should be unique.
-	 * @param string   $filename Path of the stylesheet relative to the assets directory, excluding the .css extension.
-	 * @param string[] $deps     Optional. Registered stylesheet handles this depends on. Inherited from the asset file if empty.
-	 * @param ?string  $ver      Optional. Version string. Inherited from the asset file (or filemtime) if null.
-	 * @param string   $media    Optional. The media for which this stylesheet has been defined.
+	 * @param non-empty-string   $handle   Name of the stylesheet. Should be unique.
+	 * @param string             $filename Path of the stylesheet relative to the assets directory, excluding the .css extension.
+	 * @param non-empty-string[] $deps     Optional. Registered stylesheet handles this depends on. Inherited from the asset file if empty.
+	 * @param ?string            $ver      Optional. Version string. Inherited from the asset file (or filemtime) if null.
+	 * @param string             $media    Optional. The media for which this stylesheet has been defined.
 	 *
 	 * @return bool True on success; false if the asset file is missing.
 	 */
@@ -338,7 +338,7 @@ class AssetLoader {
 	 * @param string $filename  Asset path relative to the assets directory, excluding the extension.
 	 * @param string $extension Asset file extension (e.g. 'js', 'css').
 	 *
-	 * @return array{version: string, dependencies?: array<int, string>}|null Metadata, or null if the filename is rejected (path traversal) or the asset file is missing.
+	 * @return array{version: string, dependencies?: array<int, non-empty-string>}|null Metadata, or null if the filename is rejected (path traversal) or the asset file is missing.
 	 */
 	private function get_asset_meta( string $filename, string $extension ): ?array {
 		// $filename feeds a require() in read_asset_manifest(); reject traversal
@@ -377,7 +377,7 @@ class AssetLoader {
 	 * @param string $manifest_file Absolute path to the `.asset.php` manifest.
 	 * @param string $asset_file    Absolute path to the asset file the version falls back to.
 	 *
-	 * @return array{version: string, dependencies?: array<int, string>} Metadata (dependencies + version).
+	 * @return array{version: string, dependencies?: array<int, non-empty-string>} Metadata (dependencies + version).
 	 */
 	private function read_asset_manifest( string $manifest_file, string $asset_file ): array {
 		if ( file_exists( $manifest_file ) ) {

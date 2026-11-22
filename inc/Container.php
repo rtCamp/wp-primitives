@@ -44,11 +44,10 @@ final class Container {
 	 */
 	public function get( string $id ): object {
 		if ( ! isset( $this->instances[ $id ] ) ) {
-			// phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages are not rendered to browser.
 			throw new \RuntimeException(
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception messages are not rendered to browser.
 				sprintf( 'Instance "%s" is not registered in the container.', $id )
 			);
-			// phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 		}
 
 		return $this->instances[ $id ];

@@ -167,7 +167,7 @@ gain the ability to load other classes.
 |---|---|---|
 | `load( array $classes ): void` | `protected` | Instantiate each unique class; register hooks if `Registrable` (respecting `ConditionallyRegistrable`); cache if `Shareable`. Creates a fresh `Container` each call. |
 | `get_shared( string $id ): object` | `public` | Return an instance previously cached as `Shareable`. Throws `RuntimeException` if `load()` hasn't run, or if `$id` was never cached as a `Shareable` in that load (not `Shareable`, or not among the loaded classes). |
-| `$container` | `private Container` | The per-load instance store. Not accessible to consumers — go through `get_shared()`. |
+| `$container` | `private ?Container` | The per-load instance store. Not accessible to consumers — go through `get_shared()`. |
 
 Because `load()` is `protected`, only the class that `use`s the trait can start a
 load — you can't load from outside. That's why the entry point is a consumer's

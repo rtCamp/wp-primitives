@@ -106,7 +106,7 @@ class TemplateLoader {
 	 * then the package, and loads it via load_template() with the (filtered)
 	 * arguments in scope. No-op when no template is found.
 	 *
-	 * @param string               $slug Template slug.
+	 * @param non-empty-string     $slug Template slug.
 	 * @param string|null          $name Optional. Template variation name.
 	 * @param array<string, mixed> $args Optional. Data passed to the template.
 	 *
@@ -116,7 +116,7 @@ class TemplateLoader {
 		/**
 		 * Fires when a template part is requested.
 		 *
-		 * @param string               $slug Template slug.
+		 * @param non-empty-string     $slug Template slug.
 		 * @param string|null          $name Template variation name.
 		 * @param array<string, mixed> $args Data to pass to the template.
 		 */
@@ -132,7 +132,7 @@ class TemplateLoader {
 		 * Filters the arguments passed to the template.
 		 *
 		 * @param array<string, mixed> $args Data to pass to the template.
-		 * @param string               $slug Template slug.
+		 * @param non-empty-string     $slug Template slug.
 		 * @param string|null          $name Template variation name.
 		 */
 		$args = (array) apply_filters( $this->hook( 'template_args' ), $args, $slug, $name );
@@ -143,7 +143,7 @@ class TemplateLoader {
 	/**
 	 * Render a template part and return its output as a string.
 	 *
-	 * @param string               $slug Template slug.
+	 * @param non-empty-string     $slug Template slug.
 	 * @param string|null          $name Optional. Template variation name.
 	 * @param array<string, mixed> $args Optional. Data passed to the template.
 	 *
@@ -171,8 +171,8 @@ class TemplateLoader {
 	 * The low-level escape hatch for callers that only need to know whether a
 	 * template exists, or want its path. Most callers want render() or get().
 	 *
-	 * @param string      $slug Template slug.
-	 * @param string|null $name Optional. Template variation name.
+	 * @param non-empty-string $slug Template slug.
+	 * @param string|null      $name Optional. Template variation name.
 	 *
 	 * @return string|false Located template path, or false if not found.
 	 */
@@ -349,9 +349,9 @@ class TemplateLoader {
 	/**
 	 * Build a fully-qualified hook name from the prefix and a hook suffix.
 	 *
-	 * @param string $name Hook suffix.
+	 * @param non-empty-string $name Hook suffix.
 	 *
-	 * @return string Prefixed hook name.
+	 * @return non-empty-string Prefixed hook name.
 	 */
 	private function hook( string $name ): string {
 		return $this->hook_prefix . $this->hook_separator . $name;
