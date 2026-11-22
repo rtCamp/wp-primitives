@@ -40,12 +40,14 @@ trait Loader {
 	 */
 	protected function load( array $classes ): void {
 		$this->container = new Container();
+		$seen            = [];
 
 		foreach ( $classes as $class_name ) {
 			// Skip duplicates so their hooks aren't triggered multiple times.
-			if ( $this->container->has( $class_name ) ) {
+			if ( isset( $seen[ $class_name ] ) ) {
 				continue;
 			}
+			$seen[ $class_name ] = true;
 
 			$instance = new $class_name();
 

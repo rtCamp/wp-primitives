@@ -41,9 +41,11 @@ framework. Given `class-string[]`, for each class it:
 
 ```php
 foreach ( $classes as $class_name ) {
-    if ( $this->container->has( $class_name ) ) {
-      continue;
+    if ( isset( $seen[ $class_name ] ) ) {
+        continue;
     }
+    $seen[ $class_name ] = true;
+
     $instance = new $class_name();
 
     if ( $instance instanceof Registrable ) {
