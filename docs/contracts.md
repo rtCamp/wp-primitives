@@ -26,7 +26,8 @@ interface Registrable {
 
 `register_hooks()` is where a class calls its `add_action()` / `add_filter()`.
 The `Loader` calls this method for you during `load()`; you never call it
-directly. Every `Abstract*` class implements this.
+directly. Every `Abstract*` class that registers a hook implements this; the
+platform-extensibility abstracts, which are queried on demand, do not.
 
 ### `ConditionallyRegistrable`
 

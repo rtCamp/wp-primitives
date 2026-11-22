@@ -25,11 +25,11 @@ Two rules define the whole package:
    `Container`. This is the spine; start with
    [getting-started.md](getting-started.md), then read
    [architecture.md](architecture.md).
-2. **A library of base classes.** Twelve `Abstract*` classes — most wrap one
+2. **A library of base classes.** Seventeen `Abstract*` classes — most wrap one
    WordPress registration chore (a post type, a taxonomy, a block, a settings
    page, an ability, …); two are structural: `AbstractModule` groups services
-   and `AbstractFeature` gates one behind a flag. See
-   [abstracts.md](abstracts.md).
+   and `AbstractFeature` gates one behind a flag; four more are queried on
+   demand rather than hook-registered — see [abstracts.md](abstracts.md).
 3. **Asset & render plumbing.** `AssetLoader`, `ComponentLoader`, and
    `TemplateLoader` — enqueue built assets and resolve component/template files
    across the child-theme → parent-theme → package hierarchy. See
@@ -45,7 +45,7 @@ Two rules define the whole package:
 | [getting-started.md](getting-started.md) | A complete first integration: requirements, bootstrap, module, service, and shared-service retrieval. |
 | [architecture.md](architecture.md) | The mental model: how a class becomes a live hook. The `Registrable` → `Loader` → `Container` flow and where `Module` fits. Start here. |
 | [contracts.md](contracts.md) | Reference for the interfaces and traits: `Registrable`, `ConditionallyRegistrable`, `Shareable`, `CLICommand`, `Loader`, `Singleton`. |
-| [abstracts.md](abstracts.md) | Cookbook for the twelve `Abstract*` base classes — what each is for, the methods to implement, the hook it wires, a minimal subclass. |
+| [abstracts.md](abstracts.md) | Cookbook for the seventeen `Abstract*` base classes — what each is for, the methods to implement, the hook it wires, a minimal subclass. |
 | [loaders.md](loaders.md) | `AssetLoader`, `ComponentLoader`, `TemplateLoader` — the asset/render subsystem and the theme-override hierarchy they share. |
 | [utilities.md](utilities.md) | `Encryptor`, `Cache`, `FeatureSelector`, its settings page, `Logger`, `Transients`, `Timer`, and `Container`. |
 | [upgrading.md](upgrading.md) | What changes between releases, and what a consumer has to do about it. |
@@ -60,7 +60,9 @@ names — usually a list of `Module`s. Each `Module` is itself a `Loader` that
 holds a list of services. Loading walks the list: every class is instantiated,
 anything that is `Registrable` gets its `register_hooks()` called (so it wires
 its own `add_action`/`add_filter`), and anything marked `Shareable` is cached in
-a `Container` so it can be fetched later. The `Abstract*` classes are all
+a `Container` so it can be fetched later. Most `Abstract*` classes are
 `Registrable` — they exist so the service author writes "this is a post type
 called *foo*" instead of hand-writing the `register_post_type()` call and the
-`init` hook. That's the entire framework in one breath; the rest is detail.
+`init` hook. A few are plain describable objects queried on demand instead
+(no hook of their own); [abstracts.md](abstracts.md) calls out which. That's
+the entire framework in one breath; the rest is detail.

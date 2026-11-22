@@ -10,7 +10,7 @@ Tool-agnostic brief for AI coding agents (Claude Code, Copilot coding agent, Cod
 ## Key principles (full detail in the files above)
 
 - **`inc/Contracts/` is public API.** Interfaces, abstracts, and their method signatures are consumed by every plugin/theme: a signature change breaks all of them. Treat such changes as breaking.
-- **Zero Composer runtime deps**: `composer.json` `require` holds only `php`; everything else is `require-dev`.
+- **Zero Composer runtime deps**: `composer.json` `require` holds only `php`; everything else is `require-dev`. An optional third-party library is a guarded seam, never a dependency — `AbstractJob` reaches Action Scheduler only behind `is_available()`, with a `.stubs/` entry for PHPStan and fakes for tests.
 - **TDD**: failing PHPUnit test first (`tests/` mirrors `inc/`), then code.
 - **Tests run against real WordPress via wp-env** — no WP function mocking. `npm run wp-env start` then `npm run test:php` (a `pretest:php` hook runs `composer install` in the container first). WP-dependent tests extend `rtCamp\WPPrimitives\Tests\TestCase` (a `WP_UnitTestCase`); pure-logic tests can stay on `PHPUnit\Framework\TestCase`. CI runs a PHP × WP matrix (PHP 8.2+, WP 6.5+).
 - `declare( strict_types = 1 );`, full types, `@package`/`@since`, `static::` not `self::`, PSR-4 (`rtCamp\WPPrimitives\` → `inc/`).

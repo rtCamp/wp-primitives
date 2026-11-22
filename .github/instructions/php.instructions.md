@@ -8,11 +8,11 @@ description: "Framework-development rules for rtcamp/wp-primitives PHP."
 ## Layout & contracts
 
 - `inc/Contracts/Interfaces/`: `Registrable`, `ConditionallyRegistrable`, `Shareable`, `CLICommand`.
-- `inc/Contracts/Abstracts/`: `AbstractModule`, `AbstractFeature`, `AbstractPostType`, `AbstractTaxonomy`, `AbstractBlock`, `AbstractShortcode`, `AbstractRESTController`, `AbstractSettingsPage`, `AbstractAdminPage`, `AbstractUserRole`, `AbstractAbility`, `AbstractAbilityRegistrar`.
+- `inc/Contracts/Abstracts/`: `AbstractModule`, `AbstractFeature`, `AbstractPostType`, `AbstractTaxonomy`, `AbstractBlock`, `AbstractShortcode`, `AbstractRESTController`, `AbstractSettingsPage`, `AbstractAdminPage`, `AbstractUserRole`, `AbstractAbility`, `AbstractAbilityRegistrar`, `AbstractJob`, `AbstractPlatformLog`, `AbstractPlatformProfile`, `AbstractLocalEnvironment`, `AbstractVulnerabilityProvider`.
 - `inc/Contracts/Traits/`: `Loader`, `Singleton`.
 - `inc/` root: `Container`, `AssetLoader`, `ComponentLoader`, `TemplateLoader`; `inc/Utils/`: utilities (e.g. `Encryptor`).
 
-Everything under `inc/Contracts/` is a **consumed contract**. New abstracts/interfaces must follow the existing shape (e.g. an `Abstract*` `implements Registrable` and exposes `abstract` methods for the bits that vary).
+Everything under `inc/Contracts/` is a **consumed contract**. Most new abstracts follow the `Registrable` shape (`implements Registrable`, `abstract` methods for the bits that vary). The exception is a plain describable/queried-on-demand object with no WordPress hook of its own — the platform-extensibility abstracts (`AbstractPlatformLog`, `AbstractPlatformProfile`, `AbstractLocalEnvironment`, `AbstractVulnerabilityProvider`) are this shape on purpose.
 
 ## Mandatory
 
@@ -28,4 +28,4 @@ Everything under `inc/Contracts/` is a **consumed contract**. New abstracts/inte
 3. 🚩 A new dependency added to `composer.json` `require` (must stay `php`-only; dev tools go in `require-dev`).
 4. 🚩 Missing `strict_types`/types/docblocks; PSR-4 mismatch; `self::` where `static::` is required.
 5. 🚩 Missing escape/sanitize where the utility touches WordPress output/input; raw `$wpdb` without `prepare()`.
-6. 🚩 New abstract/interface that doesn't follow the existing contract shape (e.g. an `Abstract*` not implementing `Registrable`, or duplicating a capability the `Loader`/`Container` already provides).
+6. 🚩 New abstract/interface that doesn't follow the existing contract shape, or duplicates a capability the `Loader`/`Container` already provides. Not implementing `Registrable` is fine for a plain describable/queried-on-demand object (see the platform-extensibility precedent above) — only flag it if the class also fires WordPress hooks itself without going through `Registrable`.

@@ -11,6 +11,15 @@ parameters:
     paths:
         - inc
 
+    # Action Scheduler is not a dependency of this package (see AbstractJob), so
+    # declare its symbols here to keep the guarded calls resolvable on every
+    # machine. scanFiles (not stubFiles) is required: these symbols exist nowhere
+    # PHPStan can reflect, and stubFiles only overrides types for already-known
+    # ones. This also avoids inline ignores that would go unmatched wherever the
+    # library *is* installed (reportUnmatchedIgnoredErrors is on).
+    scanFiles:
+        - .stubs/action-scheduler.stub
+
     excludePaths:
         - vendor
         - node_modules (?)

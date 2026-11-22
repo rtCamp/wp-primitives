@@ -1,0 +1,81 @@
+<?php
+/**
+ * Analysis-only declarations for Action Scheduler (https://actionscheduler.org/).
+ *
+ * Not a dependency of this package — see {@see \rtCamp\WPPrimitives\Contracts\Abstracts\AbstractJob},
+ * which guards every call behind `is_available()`. Referenced via PHPStan's
+ * `scanFiles` so those calls resolve regardless of whether a consumer has the
+ * library installed. Never autoloaded or executed.
+ *
+ * @package rtCamp\WPPrimitives
+ */
+
+declare( strict_types = 1 );
+
+class ActionScheduler_Versions {
+	public static function instance(): ActionScheduler_Versions {}
+
+	/**
+	 * @return string|false The highest registered version, or false when none is.
+	 */
+	public function latest_version() {}
+}
+
+class ActionScheduler {
+	/**
+	 * @param string|null $function_name Calling function name, for the developer notice.
+	 */
+	public static function is_initialized( ?string $function_name = null ): bool {}
+}
+
+/**
+ * @param string               $hook     The hook to trigger.
+ * @param array<mixed>         $args     Arguments to pass when the hook triggers.
+ * @param string               $group    The group to assign this job to.
+ * @param bool                 $unique   Whether the action should be unique.
+ * @param int                  $priority Lower values take precedence.
+ *
+ * @return int The action ID. Zero on error.
+ */
+function as_enqueue_async_action( string $hook, array $args = [], string $group = '', bool $unique = false, int $priority = 10 ): int {}
+
+/**
+ * @param int                  $timestamp When the job will run.
+ * @param string               $hook      The hook to trigger.
+ * @param array<mixed>         $args      Arguments to pass when the hook triggers.
+ * @param string               $group     The group to assign this job to.
+ * @param bool                 $unique    Whether the action should be unique.
+ * @param int                  $priority  Lower values take precedence.
+ *
+ * @return int The action ID. Zero on error.
+ */
+function as_schedule_single_action( int $timestamp, string $hook, array $args = [], string $group = '', bool $unique = false, int $priority = 10 ): int {}
+
+/**
+ * @param int                  $timestamp           When the first instance will run.
+ * @param int                  $interval_in_seconds How long to wait between runs.
+ * @param string               $hook                The hook to trigger.
+ * @param array<mixed>         $args                Arguments to pass when the hook triggers.
+ * @param string               $group               The group to assign this job to.
+ * @param bool                 $unique              Whether the action should be unique.
+ * @param int                  $priority            Lower values take precedence.
+ *
+ * @return int The action ID. Zero on error.
+ */
+function as_schedule_recurring_action( int $timestamp, int $interval_in_seconds, string $hook, array $args = [], string $group = '', bool $unique = false, int $priority = 10 ): int {}
+
+/**
+ * @param string                     $hook  Name of the hook to search for.
+ * @param array<mixed>|null          $args  Arguments to match.
+ * @param string                     $group Group of the action to match.
+ */
+function as_has_scheduled_action( string $hook, ?array $args = null, string $group = '' ): bool {}
+
+/**
+ * @param string               $hook  The hook that the job will trigger.
+ * @param array<mixed>         $args  Args that would have been passed to the job.
+ * @param string               $group The group the job is assigned to.
+ *
+ * @return int|null The scheduled action ID if found, or null.
+ */
+function as_unschedule_action( string $hook, array $args = [], string $group = '' ): ?int {}
