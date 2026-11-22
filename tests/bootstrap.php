@@ -58,9 +58,5 @@ if ( ! file_exists( $_test_root . '/includes/functions.php' ) ) {
 
 require_once $_test_root . '/includes/functions.php';
 
-// Load fixtures that contain multiple classes per file (PSR-4 only autoloads
-// single-class files matching the class name).
-require_once __DIR__ . '/Fixtures/LoaderFixtures.php';
-
 // Start up the WP testing environment.
 require $_test_root . '/includes/bootstrap.php';
