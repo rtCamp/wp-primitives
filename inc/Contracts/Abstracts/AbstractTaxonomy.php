@@ -29,7 +29,6 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
  * Class - AbstractTaxonomy
  */
 abstract class AbstractTaxonomy implements Registrable {
-
 	/**
 	 * Get the taxonomy slug.
 	 *
@@ -143,8 +142,6 @@ abstract class AbstractTaxonomy implements Registrable {
 
 	/**
 	 * Whether this taxonomy is hierarchical (like categories).
-	 *
-	 * @return bool
 	 */
 	public function is_hierarchical(): bool {
 		return false;

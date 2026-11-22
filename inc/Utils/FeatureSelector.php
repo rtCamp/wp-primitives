@@ -47,7 +47,6 @@ namespace rtCamp\WPPrimitives\Utils;
  * @since 1.0.0
  */
 class FeatureSelector {
-
 	/**
 	 * Registered flags keyed by slug. Name and description may still be closures;
 	 * get_features() resolves them.
@@ -77,8 +76,6 @@ class FeatureSelector {
 
 	/**
 	 * Return the context slug as passed to the constructor (not normalized).
-	 *
-	 * @return string
 	 */
 	public function get_context(): string {
 		return $this->context;

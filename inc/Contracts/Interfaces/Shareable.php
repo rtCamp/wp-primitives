@@ -25,4 +25,6 @@ namespace rtCamp\WPPrimitives\Contracts\Interfaces;
 /**
  * Interface - Shareable
  */
-interface Shareable {}
+interface Shareable {
+	// noop.
+}

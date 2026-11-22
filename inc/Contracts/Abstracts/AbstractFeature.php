@@ -28,7 +28,6 @@ use rtCamp\WPPrimitives\Utils\FeatureSelector;
  * @since 1.0.0
  */
 abstract class AbstractFeature implements ConditionallyRegistrable {
-
 	/**
 	 * Return the slug that identifies this feature flag.
 	 *

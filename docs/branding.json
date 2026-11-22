@@ -1,6 +1,6 @@
 {
-  "tagline": "A shared PHP base for WordPress projects",
-  "navbar": {
-    "title": "WP Primitives"
-  }
+	"tagline": "A shared PHP base for WordPress projects",
+	"navbar": {
+		"title": "WP Primitives"
+	}
 }

@@ -30,7 +30,6 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
  * Class - AbstractPostType
  */
 abstract class AbstractPostType implements Registrable {
-
 	/**
 	 * Get the post type slug.
 	 *
@@ -59,8 +58,6 @@ abstract class AbstractPostType implements Registrable {
 	 * SVG, a URL, or 'none' to leave it empty for CSS.
 	 *
 	 * @see https://developer.wordpress.org/resource/dashicons/
-	 *
-	 * @return string
 	 */
 	abstract public function get_menu_icon(): string;
 
@@ -192,8 +189,6 @@ abstract class AbstractPostType implements Registrable {
 	 * Get the menu position for the post type.
 	 *
 	 * Return null to use the WordPress default.
-	 *
-	 * @return int|null
 	 */
 	public function get_menu_position(): ?int {
 		return null;
@@ -201,8 +196,6 @@ abstract class AbstractPostType implements Registrable {
 
 	/**
 	 * Whether this post type is hierarchical (like pages).
-	 *
-	 * @return bool
 	 */
 	public function is_hierarchical(): bool {
 		return false;

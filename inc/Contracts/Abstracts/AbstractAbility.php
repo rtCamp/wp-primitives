@@ -27,7 +27,6 @@ namespace rtCamp\WPPrimitives\Contracts\Abstracts;
  * @since 1.0.0
  */
 abstract class AbstractAbility {
-
 	/**
 	 * Return the fully-qualified ability name, e.g. "my-plugin/do-thing".
 	 *

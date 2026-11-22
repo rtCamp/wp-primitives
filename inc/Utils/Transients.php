@@ -34,7 +34,6 @@ namespace rtCamp\WPPrimitives\Utils;
  * @since 1.0.0
  */
 class Transients {
-
 	/**
 	 * Longest transient name WordPress can store.
 	 *

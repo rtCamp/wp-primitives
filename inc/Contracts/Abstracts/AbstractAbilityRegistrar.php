@@ -32,7 +32,6 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
  * @since 1.0.0
  */
 abstract class AbstractAbilityRegistrar implements Registrable {
-
 	/**
 	 * {@inheritDoc}
 	 */

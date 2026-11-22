@@ -88,8 +88,31 @@ jobs:
       - name: Run PHPStan
         run: composer analyse
 
+  lint-js:
+    name: 'Lint JS'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+        env:
+          CI: true
+
+      - name: Run ESLint
+        run: npm run lint:js
+
   unit-test-php:
-    name: "PHP ${{ matrix.php }} / WP ${{ matrix.wp }}"
+    name: 'PHP ${{ matrix.php }} / WP ${{ matrix.wp }}'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -100,6 +123,9 @@ jobs:
           # WordPress added PHP 8.4 support in 6.7.
           - { php: '8.4', wp: '6.5' }
           - { php: '8.4', wp: '6.6' }
+        include:
+          # Only collect coverage on the latest PHP/WP combination.
+          - { php: '8.4', wp: '7.1', coverage: true }
     env:
       WP_ENV_PHP_VERSION: ${{ matrix.php }}
       WP_ENV_CORE: WordPress/WordPress#${{ matrix.wp }}
@@ -112,7 +138,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: '24'
+          node-version-file: '.nvmrc'
+          cache: 'npm'
 
       - name: Install Node dependencies
         run: npm ci
@@ -120,37 +147,7 @@ jobs:
           CI: true
 
       - name: Start WP environment
-        run: npm run wp-env start
+        run: npm run wp-env start ${{ matrix.coverage && '-- --xdebug=coverage' || '' }}
 
       - name: Run tests
-        run: npm run test:php
-
-  coverage-php:
-    name: 'PHP Coverage'
-    runs-on: ubuntu-latest
-    env:
-      # Coverage is version-agnostic, so one representative cell is enough.
-      WP_ENV_PHP_VERSION: '8.3'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Setup Node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: '24'
-
-      - name: Install Node dependencies
-        run: npm ci
-        env:
-          CI: true
-
-      - name: Start WP environment (Xdebug coverage)
-        run: npx wp-env start --xdebug=coverage
-
-      - name: Run tests with coverage
-        # With Xdebug enabled above, phpunit.xml.dist prints the coverage
-        # summary to the job log (php://stdout).
         run: npm run test:php

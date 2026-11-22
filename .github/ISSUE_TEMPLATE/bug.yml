@@ -2,7 +2,7 @@ name: Bug report
 description: A class, contract or utility in rtcamp/wp-primitives misbehaves.
 type: Bug
 labels:
-  - "Type: Bug"
+  - 'Type: Bug'
 body:
   - type: markdown
     attributes:
@@ -16,7 +16,7 @@ body:
         **Found a security issue?** Do not open a public issue. Report it
         privately through
         [GitHub's vulnerability reporting](https://github.com/rtCamp/wp-primitives/security/advisories/new),
-        as [SECURITY.md](https://github.com/rtCamp/wp-primitives/blob/main/SECURITY.md)
+        as [SECURITY.md](https://github.com/rtCamp/wp-primitives/blob/main/.github/SECURITY.md)
         describes.
   - type: input
     id: package-version
@@ -31,14 +31,14 @@ body:
     attributes:
       label: PHP version
       description: The version the code runs on (`php -v`, or the one in your wp-env or host).
-      placeholder: "8.3"
+      placeholder: '8.3'
     validations:
       required: true
   - type: input
     id: wp-version
     attributes:
       label: WordPress version
-      placeholder: "6.8"
+      placeholder: '6.8'
     validations:
       required: true
   - type: input

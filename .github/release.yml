@@ -12,20 +12,20 @@ changelog:
   categories:
     - title: Breaking changes
       labels:
-        - "BC: Breaking"
+        - 'BC: Breaking'
     - title: Features
       labels:
-        - "Type: Feature"
-        - "BC: Additive"
+        - 'Type: Feature'
+        - 'BC: Additive'
     - title: Fixes
       labels:
-        - "Type: Bug"
+        - 'Type: Bug'
     - title: Docs
       labels:
-        - "Type: Docs"
+        - 'Type: Docs'
     - title: Dependencies
       labels:
         - dependencies
     - title: Other
       labels:
-        - "*"
+        - '*'

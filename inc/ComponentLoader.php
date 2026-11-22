@@ -24,7 +24,6 @@ namespace rtCamp\WPPrimitives;
  * @since 1.0.0
  */
 class ComponentLoader {
-
 	/**
 	 * Component PHP directory, relative to each source root in the hierarchy.
 	 *
@@ -219,8 +218,6 @@ class ComponentLoader {
 	 *     @type bool   $allow_override Whether theme/child overrides may win, or the component resolves
 	 *                                  from the package's own directory only. Default true.
 	 * }
-	 *
-	 * @return void
 	 */
 	public function render( string $name, array $args = [], array $options = [] ): void {
 		$this->render_component( $name, $args, $options, static::class . '::render' );
@@ -261,8 +258,6 @@ class ComponentLoader {
 	 * @param array<string, mixed> $args    Arguments to pass to the component.
 	 * @param array<string, mixed> $options Resolution and asset enqueue options.
 	 * @param string|null          $caller  Optional caller name for incorrect-usage notices.
-	 *
-	 * @return void
 	 */
 	protected function render_component( string $name, array $args = [], array $options = [], ?string $caller = null ): void {
 
@@ -476,8 +471,6 @@ class ComponentLoader {
 	 *
 	 * @param array<string, mixed> $component Component metadata.
 	 * @param array<string, mixed> $options   Component render options.
-	 *
-	 * @return void
 	 */
 	private function enqueue_component_assets( array $component, array $options ): void {
 		if ( empty( $component['name'] ) || empty( $component['assets'] ) || ! is_array( $component['assets'] ) ) {
@@ -611,8 +604,6 @@ class ComponentLoader {
 	 * @param array<string, mixed> $args    Component arguments.
 	 * @param string               $name    Component name.
 	 * @param array<string, mixed> $options Resolved render options.
-	 *
-	 * @return void
 	 */
 	private static function load_template( string $__file, array $args, string $name, array $options ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- $args, $name and $options are available to templates.
 		require $__file; // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable, WordPressVIPMinimum.Files.IncludingFile.NotAbsolutePath -- Component file path is resolved and readability-checked before inclusion.

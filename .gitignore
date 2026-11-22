@@ -1,12 +1,26 @@
+# Dependencies
 /vendor/
 /node_modules/
-/.phpunit.cache/
-/.phpunit.result.cache
-/coverage/
-/build/
-.idea/
-.vscode/settings.json
-.vscode/launch.json
-*.log
+
+# macOS/IDE
 .DS_Store
 Thumbs.db
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Logs and temporary output
+*.log
+*.tmp
+tests/_output/*
+!tests/_output/.gitkeep
+
+# Local Configs
+/phpcs.xml
+/phpunit.xml
+/phpstan.neon
+
+# AI files
+.gemini/
+.claude/

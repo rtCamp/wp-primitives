@@ -28,23 +28,27 @@ Run these before opening a pull request:
 ```bash
 composer lint
 composer analyse
+npm run lint:js
 npm run test:php
 ```
 
-`npm run test:php` runs PHPUnit inside the wp-env `tests-cli` container. Its
-`pretest:php` hook installs Composer dependencies in that container first.
+`npm run test:php` runs PHPUnit inside the wp-env `cli` container. Its `pretest:php` hook installs Composer dependencies in that container first.
 
 `composer test` invokes PHPUnit directly on the host. Use it only when the host
 has a WordPress test suite and database configured through one of the paths
-supported by `tests/bootstrap.php`, such as `WP_TESTS_DIR`. Merely starting
+supported by `tests/phpunit/bootstrap.php`, such as `WP_TESTS_DIR`. Merely starting
 wp-env does not configure the host command.
 
 Coverage can be collected in wp-env with:
 
 ```bash
-npx wp-env start --xdebug=coverage
-npm run test:php:coverage
+npm run wp-env start -- --xdebug=coverage
+npm run test:php
 ```
+
+Generated output lands in the git-ignored `tests/_output/`: the coverage report
+(`html/` and `php-coverage.xml`), the PHPUnit result cache, the PHPCS cache, the
+PHPStan cache, and the wp-env `debug.log`.
 
 Stop the environment when it is no longer needed:
 
@@ -55,15 +59,15 @@ npm run wp-env stop
 ## Test conventions
 
 - Follow TDD: add a failing test, then implement the behavior.
-- Mirror `inc/` under `tests/` for new classes and traits.
-- Extend `rtCamp\WPPrimitives\Tests\TestCase` for code that calls WordPress APIs.
-- A pure-logic test may extend `PHPUnit\Framework\TestCase`.
+- Mirror `inc/` under `tests/phpunit/Integration/` for new classes and traits.
+  Test files must end in `Test.php`.
+- Extend `rtCamp\WPPrimitives\Tests\TestCase` (a `WP_UnitTestCase`).
 - Exercise actual WordPress registrations and registries rather than mocking
   WordPress functions.
-- Add reusable test-only classes under `tests/Fixtures/`.
+- Add reusable test-only classes under `tests/phpunit/Integration/Fixtures/`.
 - Keep tests order-independent; PHPUnit runs them in random order.
 
-CI runs PHPCS, PHPStan, and a PHP × WordPress integration-test matrix. The local
+CI runs PHPCS, PHPStan, ESLint, and a PHP × WordPress integration-test matrix. The local
 commands above are the closest single-environment equivalent.
 
 ## Changing the library
@@ -107,7 +111,7 @@ limited to PHP. Development-only tooling belongs in `require-dev`.
 - Add `@package` and `@since` documentation.
 - Use `snake_case` methods and `PascalCase` classes.
 - Use `static::`, not `self::`, where late static binding is intended.
-- Add a matching test in the mirrored `tests/` path.
+- Add a matching test in the mirrored `tests/phpunit/Integration/` path.
 - Add the new API to the appropriate page under `docs/` and to the README/index
   inventory when it is a new top-level capability.
 
@@ -124,7 +128,7 @@ or use the workflow's manual trigger to verify deployment.
 The documentation has two audiences:
 
 - **Implementors:** `README.md` and `docs/{getting-started,architecture,contracts,abstracts,loaders,utilities}.md`.
-- **Maintainers and contributors:** `CONTRIBUTING.md`, this guide, `AGENTS.md`,
+- **Maintainers and contributors:** `.github/CONTRIBUTING.md`, this guide, `AGENTS.md`,
   and `.github/instructions/`.
 
 When implementation changes, search all of these locations for the affected

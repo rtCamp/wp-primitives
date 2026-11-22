@@ -141,6 +141,8 @@ npm ci
 npm run wp-env start
 composer lint
 composer analyse
+npm run lint:js
+npm run format
 npm run test:php
 ```
 
@@ -152,7 +154,7 @@ workflow.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ## License
 

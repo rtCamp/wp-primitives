@@ -43,7 +43,6 @@ namespace rtCamp\WPPrimitives\Utils;
  * @since   1.0.0
  */
 class Logger {
-
 	/**
 	 * Prefix shown in every line, identifying the consumer that emitted it.
 	 *
@@ -69,8 +68,6 @@ class Logger {
 	 * @param string               $level   PSR-3 level: debug, info, warning, error.
 	 * @param string               $message Message body.
 	 * @param array<string, mixed> $context Optional structured context, appended as JSON.
-	 *
-	 * @return void
 	 */
 	public function log( string $level, string $message, array $context = [] ): void {
 		if ( ! $this->is_enabled() ) {
@@ -92,8 +89,6 @@ class Logger {
 	 *
 	 * @param string               $message Message body.
 	 * @param array<string, mixed> $context Optional structured context.
-	 *
-	 * @return void
 	 */
 	public function debug( string $message, array $context = [] ): void {
 		$this->log( 'debug', $message, $context );
@@ -104,8 +99,6 @@ class Logger {
 	 *
 	 * @param string               $message Message body.
 	 * @param array<string, mixed> $context Optional structured context.
-	 *
-	 * @return void
 	 */
 	public function info( string $message, array $context = [] ): void {
 		$this->log( 'info', $message, $context );
@@ -116,8 +109,6 @@ class Logger {
 	 *
 	 * @param string               $message Message body.
 	 * @param array<string, mixed> $context Optional structured context.
-	 *
-	 * @return void
 	 */
 	public function warning( string $message, array $context = [] ): void {
 		$this->log( 'warning', $message, $context );
@@ -128,8 +119,6 @@ class Logger {
 	 *
 	 * @param string               $message Message body.
 	 * @param array<string, mixed> $context Optional structured context.
-	 *
-	 * @return void
 	 */
 	public function error( string $message, array $context = [] ): void {
 		$this->log( 'error', $message, $context );
