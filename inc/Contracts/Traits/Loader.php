@@ -26,9 +26,9 @@ trait Loader {
 	/**
 	 * Shared instances populated during load.
 	 *
-	 * @var Container
+	 * @var ?Container
 	 */
-	private Container $container;
+	private ?Container $container = null;
 
 	/**
 	 * Instantiate each class; register hooks if Registrable; cache if Shareable.
@@ -43,9 +43,7 @@ trait Loader {
 		$seen            = [];
 
 		foreach ( $classes as $class_name ) {
-			// Skip duplicates: a class listed twice would otherwise be instantiated
-			// twice and register its hooks on two separate instances (so the hook
-			// body runs twice), while the Shareable cache would keep only the last.
+			// Skip duplicates so their hooks aren't triggered multiple times.
 			if ( isset( $seen[ $class_name ] ) ) {
 				continue;
 			}
@@ -69,17 +67,27 @@ trait Loader {
 	 * Fetch a shared instance populated during load.
 	 *
 	 * @template T of object
+	 *
 	 * @param string $id Class name.
 	 * @phpstan-param class-string<T> $id
-	 * @return object
+	 *
+	 * @return object The shared instance.
 	 * @phpstan-return T
+	 *
 	 * @throws \RuntimeException If load() has not been called or the class was not registered as Shareable.
 	 */
 	public function get_shared( string $id ): object {
-		if ( ! isset( $this->container ) ) {
+		if ( null === $this->container ) {
 			throw new \RuntimeException( 'Cannot call get_shared() before load() has been called.' );
 		}
 
-		return $this->container->get( $id );
+		/**
+		 * The type is enforced via ::load()
+		 *
+		 * @phpstan-var T $instance
+		 */
+		$instance = $this->container->get( $id );
+
+		return $instance;
 	}
 }

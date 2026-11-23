@@ -5,8 +5,10 @@ includes:
     - vendor/szepeviktor/phpstan-wordpress/extension.neon
 
 parameters:
-    level: 6
-    phpVersion: 80200
+    level: 8
+    phpVersion:
+        min: 80200
+        max: 80699
 
     paths:
         - inc
