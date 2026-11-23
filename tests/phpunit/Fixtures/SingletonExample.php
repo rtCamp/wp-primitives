@@ -2,12 +2,12 @@
 /**
  * Singleton fixture class for SingletonTest.
  *
- * @package rtCamp\WPPrimitives\Tests\Integration\Fixtures
+ * @package rtCamp\WPPrimitives\Tests\Fixtures
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPPrimitives\Tests\Integration\Fixtures;
+namespace rtCamp\WPPrimitives\Tests\Fixtures;
 
 use rtCamp\WPPrimitives\Contracts\Traits\Singleton;
 

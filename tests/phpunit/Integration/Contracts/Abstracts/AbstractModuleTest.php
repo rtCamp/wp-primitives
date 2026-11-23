@@ -14,8 +14,8 @@ declare( strict_types = 1 );
 namespace rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts;
 
 use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractModule;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\PlainRegistrable;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\ShareableRegistrable;
+use rtCamp\WPPrimitives\Tests\Fixtures\PlainRegistrable;
+use rtCamp\WPPrimitives\Tests\Fixtures\ShareableRegistrable;
 use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class AbstractModuleTest extends TestCase {

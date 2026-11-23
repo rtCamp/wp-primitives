@@ -16,12 +16,12 @@ declare( strict_types = 1 );
 
 namespace rtCamp\WPPrimitives\Tests\Integration;
 
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\ConditionalAllowed;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\ConditionalDenied;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\CountingRegistrable;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\LoaderRunner;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\PlainRegistrable;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\ShareableRegistrable;
+use rtCamp\WPPrimitives\Tests\Fixtures\ConditionalAllowed;
+use rtCamp\WPPrimitives\Tests\Fixtures\ConditionalDenied;
+use rtCamp\WPPrimitives\Tests\Fixtures\CountingRegistrable;
+use rtCamp\WPPrimitives\Tests\Fixtures\LoaderRunner;
+use rtCamp\WPPrimitives\Tests\Fixtures\PlainRegistrable;
+use rtCamp\WPPrimitives\Tests\Fixtures\ShareableRegistrable;
 use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class LoaderTest extends TestCase {

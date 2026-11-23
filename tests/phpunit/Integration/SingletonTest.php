@@ -9,10 +9,10 @@ declare( strict_types = 1 );
 
 namespace rtCamp\WPPrimitives\Tests\Integration;
 
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\BareSingleton;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\FlakySingleton;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\ReentrantSingleton;
-use rtCamp\WPPrimitives\Tests\Integration\Fixtures\SingletonExample;
+use rtCamp\WPPrimitives\Tests\Fixtures\BareSingleton;
+use rtCamp\WPPrimitives\Tests\Fixtures\FlakySingleton;
+use rtCamp\WPPrimitives\Tests\Fixtures\ReentrantSingleton;
+use rtCamp\WPPrimitives\Tests\Fixtures\SingletonExample;
 use rtCamp\WPPrimitives\Tests\TestCase;
 
 final class SingletonTest extends TestCase {

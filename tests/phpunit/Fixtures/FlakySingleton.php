@@ -5,12 +5,12 @@
  * Exercises the rollback path: a failed construction must not leave a
  * half-built instance published, and a later call must construct again.
  *
- * @package rtCamp\WPPrimitives\Tests\Integration\Fixtures
+ * @package rtCamp\WPPrimitives\Tests\Fixtures
  */
 
 declare( strict_types = 1 );
 
-namespace rtCamp\WPPrimitives\Tests\Integration\Fixtures;
+namespace rtCamp\WPPrimitives\Tests\Fixtures;
 
 use rtCamp\WPPrimitives\Contracts\Traits\Singleton;
 
