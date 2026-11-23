@@ -7,7 +7,7 @@
 		"node": "^24.22.1 || >=26.12.1"
 	},
 	"scripts": {
-		"format": "wp-scripts format",
+		"format": "wp-scripts format . '**/*.md'",
 		"lint:js": "wp-scripts lint-js",
 		"lint:js:fix": "wp-scripts lint-js --fix",
 		"lint:php": "composer run-script lint",
@@ -23,15 +23,15 @@
 		"@rtcamp/eslint-config": "2.0.0",
 		"@wordpress/env": "12.2.0",
 		"@wordpress/prettier-config": "5.2.0",
-		"@wordpress/scripts": "37.2.0",
-		"prettier": "npm:wp-prettier@3.9.6"
+		"@wordpress/scripts": "37.2.0"
 	},
 	"overrides": {
+		"@wp-playground/storage": {
+			"isomorphic-git": "1.38.6"
+		},
 		"express": {
 			"qs": "6.16.2"
 		},
-		"@wp-playground/storage": {
-			"isomorphic-git": "1.38.6"
-		}
+		"prettier": "npm:wp-prettier@^3"
 	}
 }

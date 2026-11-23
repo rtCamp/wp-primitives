@@ -1,6 +1,6 @@
 ---
-applyTo: "**/*.php"
-description: "Framework + WordPress rules for PHP. Canonical source, shipped by rtcamp/wp-primitives."
+applyTo: '**/*.php'
+description: 'Framework + WordPress rules for PHP. Canonical source, shipped by rtcamp/wp-primitives.'
 ---
 
 # PHP rules: framework, WordPress, security, tests
@@ -12,6 +12,7 @@ description: "Framework + WordPress rules for PHP. Canonical source, shipped by 
 `Main` (`use Singleton; use Loader;`) lists classes in `const CLASSES`. The `Loader` instantiates each → if `Registrable`, calls `register_hooks()` (skipped when `ConditionallyRegistrable::can_register()` is false) → if `Shareable`, caches it in a `Container` (fetch via `get_shared()`). Otherwise a fresh, non-shared instance.
 
 Decision order for a new class, **do NOT default to Singleton**:
+
 1. **plain `Registrable`**: default; loaded by the `Loader`, never retrieved elsewhere.
 2. **`Registrable` + `Shareable`**: only if another class must retrieve it via `get_shared()`.
 3. **`Singleton`**: only the `Main` bootstrap.

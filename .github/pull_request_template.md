@@ -25,14 +25,17 @@ $ ...
 <!-- Copy the issue's "Acceptance criteria" checklist. Tick each as you verify. -->
 
 ### Runtime behavior
+
 - [ ]
 
 ### Code quality
+
 - [ ] Lint — zero errors
 - [ ] Static analysis — zero errors
 - [ ] Tests pass
 
 ### Housekeeping
+
 - [ ] PR title is a Conventional Commit; release-please writes `CHANGELOG.md` from it
 
 ## Reviewer notes
@@ -44,4 +47,3 @@ $ ...
 ## Screenshots / terminal output
 
 <!-- Include for UI / CLI work. Optional for pure backend changes. -->
-

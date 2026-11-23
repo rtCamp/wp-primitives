@@ -6,3 +6,5 @@ vendor
 # Files
 package-lock.json
 composer.lock
+LICENSE.md
+CHANGELOG.md

@@ -5,9 +5,7 @@ sidebar_label: Getting started
 
 # Getting started
 
-This guide shows the smallest complete integration: install the package, boot it
-from a plugin or theme, group services in a module, and retrieve a deliberately
-shared service.
+This guide shows the smallest complete integration: install the package, boot it from a plugin or theme, group services in a module, and retrieve a deliberately shared service.
 
 ## Requirements
 
@@ -15,9 +13,7 @@ shared service.
 - WordPress 6.5 or newer
 - Composer
 
-The package has no Composer runtime dependencies beyond PHP. It is nevertheless
-a WordPress library: its registration classes and most utilities call WordPress
-APIs. `Encryptor` additionally requires the OpenSSL PHP extension when used.
+The package has no Composer runtime dependencies beyond PHP. It is nevertheless a WordPress library: its registration classes and most utilities call WordPress APIs. `Encryptor` additionally requires the OpenSSL PHP extension when used.
 
 ## Install
 
@@ -25,10 +21,7 @@ APIs. `Encryptor` additionally requires the OpenSSL PHP extension when used.
 composer require rtcamp/wp-primitives:^2.0
 ```
 
-The package is published on [Packagist](https://packagist.org/packages/rtcamp/wp-primitives),
-so `composer require` is all a consumer needs. To install from GitHub instead (a
-development branch, a fork, or a project that does not use Packagist), add the
-repository to the consuming project's `composer.json` first:
+The package is published on [Packagist](https://packagist.org/packages/rtcamp/wp-primitives), so `composer require` is all a consumer needs. To install from GitHub instead (a development branch, a fork, or a project that does not use Packagist), add the repository to the consuming project's `composer.json` first:
 
 ```json
 {
@@ -41,19 +34,13 @@ repository to the consuming project's `composer.json` first:
 }
 ```
 
-Pin with a caret constraint. `inc/Contracts/` is the public API and the project
-follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), so `^2.0`
-accepts additive releases and refuses the next major. Read
-[upgrading.md](upgrading.md) before moving across a major.
+Pin with a caret constraint. `inc/Contracts/` is the public API and the project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html), so `^2.0` accepts additive releases and refuses the next major. Read [upgrading.md](upgrading.md) before moving across a major.
 
-Composer exposes framework classes through the `rtCamp\WPPrimitives\` namespace.
-The consuming plugin or theme remains responsible for requiring its own Composer
-autoload file and starting its entry class.
+Composer exposes framework classes through the `rtCamp\WPPrimitives\` namespace. The consuming plugin or theme remains responsible for requiring its own Composer autoload file and starting its entry class.
 
 ## 1. Create a service
 
-Use the narrowest contract that describes the service. Most hook-driven classes
-only need `Registrable`:
+Use the narrowest contract that describes the service. Most hook-driven classes only need `Registrable`:
 
 ```php
 <?php
@@ -74,14 +61,11 @@ final class ContentFilters implements Registrable {
 }
 ```
 
-For post types, taxonomies, blocks, shortcodes, REST controllers, settings pages,
-admin pages, and user roles, extend the matching `Abstract*` class instead of
-repeating its registration plumbing. See [abstracts.md](abstracts.md).
+For post types, taxonomies, blocks, shortcodes, REST controllers, settings pages, admin pages, and user roles, extend the matching `Abstract*` class instead of repeating its registration plumbing. See [abstracts.md](abstracts.md).
 
 ## 2. Group services in a module
 
-An `AbstractModule` is a loader for a related set of classes. Every listed class
-must be constructible without required constructor arguments.
+An `AbstractModule` is a loader for a related set of classes. Every listed class must be constructible without required constructor arguments.
 
 ```php
 <?php
@@ -102,8 +86,7 @@ final class ContentModule extends AbstractModule {
 
 ## 3. Bootstrap the loader
 
-The framework deliberately does not ship a `Main` class. A plugin or theme owns
-its entry point and decides when the first load begins.
+The framework deliberately does not ship a `Main` class. A plugin or theme owns its entry point and decides when the first load begins.
 
 ### Plugin entry point
 
@@ -139,21 +122,13 @@ Main::get_instance();
 
 ### Theme entry point
 
-The same `Main` shape works in a theme. Require the theme's Composer autoloader
-from `functions.php`, make the `Main` class available, and call
-`Main::get_instance()` there. As in the plugin example, the constructor loads
-the modules immediately. Services register their callbacks in `register_hooks()`;
-work that depends on a later WordPress lifecycle event belongs in those callbacks.
+The same `Main` shape works in a theme. Require the theme's Composer autoloader from `functions.php`, make the `Main` class available, and call `Main::get_instance()` there. As in the plugin example, the constructor loads the modules immediately. Services register their callbacks in `register_hooks()`; work that depends on a later WordPress lifecycle event belongs in those callbacks.
 
-The early `static::$instance = $this` assignment is important when construction
-can re-enter `get_instance()`. A class using `Singleton` and its subclasses also
-share one storage slot; do not call `get_instance()` on a subclass of a singleton.
-See [contracts.md](contracts.md#singleton).
+The early `static::$instance = $this` assignment is important when construction can re-enter `get_instance()`. A class using `Singleton` and its subclasses also share one storage slot; do not call `get_instance()` on a subclass of a singleton. See [contracts.md](contracts.md#singleton).
 
 ## Sharing a service intentionally
 
-Classes are not retained by default. Add the `Shareable` marker only when another
-class must retrieve the exact instance that was loaded:
+Classes are not retained by default. Add the `Shareable` marker only when another class must retrieve the exact instance that was loaded:
 
 ```php
 use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
@@ -176,14 +151,9 @@ final class InfrastructureModule extends AbstractModule {
 }
 ```
 
-`get_shared()` belongs to the loader that loaded the class. In this example the
-cache is retrieved from `InfrastructureModule`, not from `Main`. If an outer
-loader must retrieve the module itself, the module must also implement
-`Shareable`.
+`get_shared()` belongs to the loader that loaded the class. In this example the cache is retrieved from `InfrastructureModule`, not from `Main`. If an outer loader must retrieve the module itself, the module must also implement `Shareable`.
 
-Prefer constructor injection when objects can be assembled directly. `Shareable`
-is for loader-created objects that genuinely need later retrieval; it should not
-be the default for every service.
+Prefer constructor injection when objects can be assembled directly. `Shareable` is for loader-created objects that genuinely need later retrieval; it should not be the default for every service.
 
 ## What happens during load
 
@@ -194,10 +164,6 @@ For each unique class name, the loader:
 3. calls `register_hooks()` when registration is allowed;
 4. stores the instance when it is `Shareable`.
 
-Duplicate class names in one list are ignored. Each call to `load()` creates a
-fresh container, so a later call on the same loader replaces the previously
-shared set. Prefer one load per loader with the complete class list.
+Duplicate class names in one list are ignored. Each call to `load()` creates a fresh container, so a later call on the same loader replaces the previously shared set. Prefer one load per loader with the complete class list.
 
-Continue with [architecture.md](architecture.md) for the lifecycle model and
-[abstracts.md](abstracts.md) for implementation recipes. When something doesn't
-register, start at [troubleshooting.md](troubleshooting.md).
+Continue with [architecture.md](architecture.md) for the lifecycle model and [abstracts.md](abstracts.md) for implementation recipes. When something doesn't register, start at [troubleshooting.md](troubleshooting.md).

@@ -2,7 +2,7 @@
 
 `rtcamp/wp-primitives`: shared base contracts (interfaces, abstracts, traits) and small utilities consumed via Composer by every rtCamp plugin/theme skeleton. **Zero runtime dependencies.** PHP 8.2+.
 
-This repo defines the framework itself. The rules for *consuming* it live in `ai/primitives-php.instructions.md` (shipped to consumers); keep it in sync when contracts change.
+This repo defines the framework itself. The rules for _consuming_ it live in `ai/primitives-php.instructions.md` (shipped to consumers); keep it in sync when contracts change.
 
 Detailed rules: `.github/instructions/php.instructions.md`.
 

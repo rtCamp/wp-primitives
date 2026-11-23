@@ -1,6 +1,6 @@
 ---
-applyTo: "inc/**/*.php"
-description: "Framework-development rules for rtcamp/wp-primitives PHP."
+applyTo: 'inc/**/*.php'
+description: 'Framework-development rules for rtcamp/wp-primitives PHP.'
 ---
 
 # Framework PHP rules

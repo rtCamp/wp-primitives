@@ -9,7 +9,7 @@ How GitHub Copilot code-review instructions and AI-agent guidance are authored, 
 
 ## The problem it solves
 
-1. **Copilot code review only reads instruction files from the *repo root* `.github/`.** It ignores nested `.github/` directories.
+1. **Copilot code review only reads instruction files from the _repo root_ `.github/`.** It ignores nested `.github/` directories.
 2. Our code lives in **three kinds of repo**, with **two different roots**:
    - a **standalone plugin/theme** repo, where the root is the package;
    - an **assembled `wp-content`** repo, where the root is `wp-content` and packages are nested under `plugins/<slug>/` and `themes/<slug>/`.
@@ -18,15 +18,15 @@ How GitHub Copilot code-review instructions and AI-agent guidance are authored, 
 
 ## The pieces
 
-| File | Repo | Role |
-|---|---|---|
-| `ai/primitives-php.instructions.md` | framework | Canonical framework + WordPress review rules. Single source of truth. |
-| `bin/sync-ai-instructions.js` | framework | One tool, run by the consumer via `npm run sync-ai`. Refreshes each package's framework rules from its vendored copy, then projects every package's instructions to the `wp-content` root. `--check` for a CI drift gate; `--root DIR` forces the `wp-content` root instead of detecting it from the current directory. |
-| `.github/copilot-instructions.md` | each package | Repo-wide overview + review conduct (skeleton-authored). |
-| `.github/instructions/structure.instructions.md` | each package | Package layout + wiring (skeleton-authored, carries the package's names). |
-| `.github/instructions/primitives-php.instructions.md` | each package | Generated from the package's vendored framework. Banner-marked; do not hand-edit. |
-| `AGENTS.md` | each package | Tool-agnostic brief for coding agents. Inlines key principles + points to `.github/`. |
-| `CLAUDE.md` | each package | Thin; defers to `AGENTS.md`, holds any Claude-only overrides. |
+| File                                                  | Repo         | Role                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ai/primitives-php.instructions.md`                   | framework    | Canonical framework + WordPress review rules. Single source of truth.                                                                                                                                                                                                                                                   |
+| `bin/sync-ai-instructions.js`                         | framework    | One tool, run by the consumer via `npm run sync-ai`. Refreshes each package's framework rules from its vendored copy, then projects every package's instructions to the `wp-content` root. `--check` for a CI drift gate; `--root DIR` forces the `wp-content` root instead of detecting it from the current directory. |
+| `.github/copilot-instructions.md`                     | each package | Repo-wide overview + review conduct (skeleton-authored).                                                                                                                                                                                                                                                                |
+| `.github/instructions/structure.instructions.md`      | each package | Package layout + wiring (skeleton-authored, carries the package's names).                                                                                                                                                                                                                                               |
+| `.github/instructions/primitives-php.instructions.md` | each package | Generated from the package's vendored framework. Banner-marked; do not hand-edit.                                                                                                                                                                                                                                       |
+| `AGENTS.md`                                           | each package | Tool-agnostic brief for coding agents. Inlines key principles + points to `.github/`.                                                                                                                                                                                                                                   |
+| `CLAUDE.md`                                           | each package | Thin; defers to `AGENTS.md`, holds any Claude-only overrides.                                                                                                                                                                                                                                                           |
 
 ## Data flow
 
@@ -54,19 +54,19 @@ wp-content/.github/instructions/
 
 ## Names vs globs — two transforms
 
-| Transform | Done by | When |
-|---|---|---|
-| Placeholder names (`Project_Name` to real namespace, `project-name` to slug) | `bin/init.js` in the skeleton (also processes `.github/`) | `npm run init` |
-| Refresh framework rules + re-glob `applyTo` to the wp-content root + merge | `bin/sync-ai-instructions.js` (framework) | `npm run sync-ai` (chained from init) |
+| Transform                                                                    | Done by                                                   | When                                  |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------- |
+| Placeholder names (`Project_Name` to real namespace, `project-name` to slug) | `bin/init.js` in the skeleton (also processes `.github/`) | `npm run init`                        |
+| Refresh framework rules + re-glob `applyTo` to the wp-content root + merge   | `bin/sync-ai-instructions.js` (framework)                 | `npm run sync-ai` (chained from init) |
 
 ## Two review contexts, one source
 
-| Context | Repo root | Copilot reads | Globs |
-|---|---|---|---|
-| Standalone plugin/theme | the package | the package's own `.github/` | root-relative (`**/*.php`, `inc/**`) |
-| Assembled `wp-content` | `wp-content` | `wp-content/.github/` (projected) | prefixed (`plugins/<slug>/**`) |
+| Context                 | Repo root    | Copilot reads                     | Globs                                |
+| ----------------------- | ------------ | --------------------------------- | ------------------------------------ |
+| Standalone plugin/theme | the package  | the package's own `.github/`      | root-relative (`**/*.php`, `inc/**`) |
+| Assembled `wp-content`  | `wp-content` | `wp-content/.github/` (projected) | prefixed (`plugins/<slug>/**`)       |
 
-The framework repo itself has its **own** `.github/` with framework-*development* rules; reviewed when you PR the framework, and it does not flow into consumers (it's a vendored dependency, invisible at consumer review).
+The framework repo itself has its **own** `.github/` with framework-_development_ rules; reviewed when you PR the framework, and it does not flow into consumers (it's a vendored dependency, invisible at consumer review).
 
 ## Using it
 
