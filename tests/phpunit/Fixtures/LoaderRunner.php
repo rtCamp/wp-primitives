@@ -16,6 +16,7 @@ use rtCamp\WPPrimitives\Contracts\Traits\Loader;
  * get_shared() from outside the class hierarchy.
  */
 final class LoaderRunner {
+
 	use Loader;
 
 	/**
