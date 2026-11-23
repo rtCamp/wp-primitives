@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <phpunit
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
-	bootstrap="tests/bootstrap.php"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+	bootstrap="tests/phpunit/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
-	cacheResultFile=".phpunit.cache/test-results"
+	cacheResultFile="tests/_output/.phpunit.cache/test-results"
 	executionOrder="random"
 	failOnWarning="true"
 	failOnRisky="true"
@@ -14,8 +14,8 @@
 	convertWarningsToExceptions="true">
 
 	<testsuites>
-		<testsuite name="default">
-			<directory suffix="Test.php">./tests</directory>
+		<testsuite name="Integration">
+			<directory suffix="Test.php">./tests/phpunit/Integration</directory>
 		</testsuite>
 	</testsuites>
 
@@ -28,7 +28,9 @@
 			<directory suffix=".php">./inc</directory>
 		</include>
 		<report>
-			<text outputFile="php://stdout" showUncoveredFiles="false"/>
+			<clover outputFile="tests/_output/php-coverage.xml" />
+			<html outputDirectory="tests/_output/html" />
+			<text outputFile="php://stdout" showOnlySummary="true" />
 		</report>
 	</coverage>
 </phpunit>

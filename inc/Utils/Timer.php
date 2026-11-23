@@ -39,7 +39,6 @@ namespace rtCamp\WPPrimitives\Utils;
  * @since 1.0.0
  */
 class Timer {
-
 	/**
 	 * Active and completed timers, keyed by label.
 	 *
@@ -54,8 +53,6 @@ class Timer {
 	 * second start would otherwise silently discard the original start time.
 	 *
 	 * @param string $label Unique identifier for this timer.
-	 *
-	 * @return void
 	 */
 	public function start( string $label ): void {
 		if ( '' === $label ) {
@@ -150,8 +147,6 @@ class Timer {
 	 *
 	 * @param string $label Timer label.
 	 * @param string $name  Lap name.
-	 *
-	 * @return void
 	 */
 	public function lap( string $label, string $name ): void {
 		if ( '' === $label ) {

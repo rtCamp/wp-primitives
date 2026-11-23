@@ -1,6 +1,6 @@
 ---
-applyTo: "inc/**/*.php"
-description: "Framework-development rules for rtcamp/wp-primitives PHP."
+applyTo: 'inc/**/*.php'
+description: 'Framework-development rules for rtcamp/wp-primitives PHP.'
 ---
 
 # Framework PHP rules
@@ -19,11 +19,11 @@ Everything under `inc/Contracts/` is a **consumed contract**. New abstracts/inte
 - `declare( strict_types = 1 );` at the top of every file. Full param + return types. `@package` + `@since` on every class/trait/interface docblock.
 - `snake_case` methods, `PascalCase` classes, filename === class, namespace === directory (PSR-4).
 - `static::`, never `self::`, for late static binding (the `Singleton` trait relies on it).
-- New class/trait/interface gets a PHPUnit test in `tests/` mirroring its path.
+- New class/trait/interface gets a PHPUnit test in `tests/phpunit/Integration/` mirroring its path.
 
 ## Flag on review (priority order)
 
-1. 🚩 **MANDATORY: always post, exempt from dedupe/trim/budget:** a new or changed class/trait/interface shipped without a matching test in `tests/`.
+1. 🚩 **MANDATORY: always post, exempt from dedupe/trim/budget:** a new or changed class/trait/interface shipped without a matching test in `tests/phpunit/Integration/`.
 2. 🚩 Backward-incompatible change to anything under `inc/Contracts/` (renamed/removed/retyped public method, changed abstract signature) without a documented migration. This breaks every consumer.
 3. 🚩 A new dependency added to `composer.json` `require` (must stay `php`-only; dev tools go in `require-dev`).
 4. 🚩 Missing `strict_types`/types/docblocks; PSR-4 mismatch; `self::` where `static::` is required.

@@ -47,7 +47,6 @@ namespace rtCamp\WPPrimitives;
  * @since 1.0.0
  */
 class TemplateLoader {
-
 	/**
 	 * Prefix for the filter/action hook names (usually the package slug, snake_case).
 	 *
@@ -109,8 +108,6 @@ class TemplateLoader {
 	 * @param non-empty-string     $slug Template slug.
 	 * @param string|null          $name Optional. Template variation name.
 	 * @param array<string, mixed> $args Optional. Data passed to the template.
-	 *
-	 * @return void
 	 */
 	public function render( string $slug, ?string $name = null, array $args = [] ): void {
 		/**
@@ -242,7 +239,7 @@ class TemplateLoader {
 			static function ( string $template ): string {
 				$segments = array_filter(
 					array_map( 'sanitize_file_name', explode( '/', $template ) ),
-					static fn( string $seg ): bool => '' !== $seg && '..' !== $seg
+					static fn ( string $seg ): bool => '' !== $seg && '..' !== $seg
 				);
 
 				return implode( '/', $segments );
@@ -250,7 +247,7 @@ class TemplateLoader {
 			$templates
 		);
 
-		return array_values( array_filter( $sanitized, static fn( string $t ): bool => '' !== $t ) );
+		return array_values( array_filter( $sanitized, static fn ( string $t ): bool => '' !== $t ) );
 	}
 
 	/**

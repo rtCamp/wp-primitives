@@ -1,25 +1,37 @@
 {
-  "name": "wp-primitives",
-  "version": "0.0.1",
-  "description": "Tooling for the rtCamp WordPress framework: wp-env integration test harness.",
-  "private": true,
-  "author": "rtCamp",
-  "license": "GPL-2.0-or-later",
-  "scripts": {
-    "wp-env": "wp-env",
-    "pretest:php": "wp-env run tests-cli --env-cwd=wp-content/wp-primitives-rt -- composer install --no-interaction",
-    "test:php": "wp-env run tests-cli --env-cwd=wp-content/wp-primitives-rt -- vendor/bin/phpunit -c phpunit.xml.dist",
-    "test:php:coverage": "wp-env run tests-cli --env-cwd=wp-content/wp-primitives-rt -- vendor/bin/phpunit -c phpunit.xml.dist --coverage-html coverage"
-  },
-  "devDependencies": {
-    "@wordpress/env": "12.1.0"
-  },
-  "overrides": {
-    "express": {
-      "qs": "6.16.2"
-    },
-    "@wp-playground/storage": {
-      "isomorphic-git": "1.38.6"
-    }
-  }
+	"name": "wp-primitives",
+	"private": true,
+	"author": "rtCamp",
+	"license": "GPL-2.0-or-later",
+	"engines": {
+		"node": "^24.22.1 || >=26.12.1"
+	},
+	"scripts": {
+		"format": "wp-scripts format . '**/*.md'",
+		"lint:js": "wp-scripts lint-js",
+		"lint:js:fix": "wp-scripts lint-js --fix",
+		"lint:php": "composer run-script lint",
+		"lint:php:fix": "composer run-script lint:fix",
+		"lint:php:types": "composer run-script analyse",
+		"wp-env": "wp-env",
+		"wp-env:cli": "wp-env run cli --env-cwd=wp-content/plugins/wp-primitives",
+		"pretest:php": "npm run wp-env:cli -- composer install --no-interaction",
+		"test:php": "npm run wp-env:cli -- vendor/bin/phpunit -c phpunit.xml.dist"
+	},
+	"devDependencies": {
+		"@eslint-community/eslint-plugin-eslint-comments": "4.8.1",
+		"@rtcamp/eslint-config": "2.0.0",
+		"@wordpress/env": "12.2.0",
+		"@wordpress/prettier-config": "5.2.0",
+		"@wordpress/scripts": "37.2.0"
+	},
+	"overrides": {
+		"@wp-playground/storage": {
+			"isomorphic-git": "1.38.6"
+		},
+		"express": {
+			"qs": "6.16.2"
+		},
+		"prettier": "npm:wp-prettier@^3"
+	}
 }

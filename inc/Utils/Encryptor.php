@@ -25,7 +25,6 @@ namespace rtCamp\WPPrimitives\Utils;
  * @since 1.0.0
  */
 class Encryptor {
-
 	/**
 	 * GCM authentication tag length in bytes.
 	 */

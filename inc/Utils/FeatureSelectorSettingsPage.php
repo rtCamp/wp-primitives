@@ -38,7 +38,6 @@ use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractSettingsPage;
  * @since 1.0.0
  */
 abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
-
 	/**
 	 * Return the FeatureSelector whose flags this page manages.
 	 *
@@ -100,8 +99,6 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 
 	/**
 	 * Return the settings-section ID every flag field is attached to.
-	 *
-	 * @return string
 	 */
 	protected function get_section_id(): string {
 		return $this->get_option_group() . '_section';
@@ -239,7 +236,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 	 * {@inheritDoc}
 	 */
 	public function render(): void {
-		if ( ! current_user_can( $this->get_capability() ) ) {
+		if ( ! current_user_can( $this->get_capability() ) ) { // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 			return;
 		}
 

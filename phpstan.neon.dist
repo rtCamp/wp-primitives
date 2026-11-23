@@ -1,31 +1,19 @@
-# PHPStan configuration — wp-primitives
+# PHPStan configuration for rtcamp/wp-primitives.
 # Docs: https://phpstan.org/config-reference
 
 includes:
-    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+    - vendor/rtcamp/wp-phpstan/phpstan.neon.dist
 
 parameters:
     level: 8
     phpVersion:
         min: 80200
         max: 80699
+    tmpDir: tests/_output/phpstan
 
     paths:
         - inc
-
+        - tests/phpstan
     excludePaths:
-        - vendor
         - node_modules (?)
-        - tests
-
-    # Treat unmatched ignore patterns as errors so stale suppressions get flagged.
-    reportUnmatchedIgnoredErrors: true
-
-    ignoreErrors:
-        # Traits (e.g. Singleton) are public API consumed by downstream
-        # plugins/themes. Whether inc/ itself uses a given trait varies, so
-        # trait.unused may legitimately match zero times — tolerate that here
-        # (per-entry) while still flagging other stale ignores globally.
-        -
-            identifier: trait.unused
-            reportUnmatched: false
+        - vendor

@@ -1,0 +1,10 @@
+# Dirs
+node_modules
+tests/_output
+vendor
+
+# Files
+package-lock.json
+composer.lock
+LICENSE.md
+CHANGELOG.md

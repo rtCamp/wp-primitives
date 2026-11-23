@@ -15,9 +15,7 @@
 
 ---
 
-`wp-primitives` is a **library, not a plugin**. It ships contracts (interfaces,
-abstracts, traits) plus concrete loaders and utilities; consuming plugins and
-themes build their features on top. It has **zero Composer runtime dependencies**.
+`wp-primitives` is a **library, not a plugin**. It ships contracts (interfaces, abstracts, traits) plus concrete loaders and utilities; consuming plugins and themes build their features on top. It has **zero Composer runtime dependencies**.
 
 Requirements:
 
@@ -32,16 +30,13 @@ Requirements:
 composer require rtcamp/wp-primitives:^2.0
 ```
 
-The package is published on [Packagist](https://packagist.org/packages/rtcamp/wp-primitives),
-so no extra configuration is needed. To install straight from GitHub instead (a
-branch, a fork, or a project that does not use Packagist), add a VCS repository
-before requiring it:
+The package is published on [Packagist](https://packagist.org/packages/rtcamp/wp-primitives), so no extra configuration is needed. To install straight from GitHub instead (a branch, a fork, or a project that does not use Packagist), add a VCS repository before requiring it:
 
 ```json
 {
-	"repositories": [
-		{ "type": "vcs", "url": "https://github.com/rtCamp/wp-primitives" }
-	]
+  "repositories": [
+    { "type": "vcs", "url": "https://github.com/rtCamp/wp-primitives" }
+  ]
 }
 ```
 
@@ -74,64 +69,47 @@ final class Main {
 Main::get_instance();
 ```
 
-A registered, REST-enabled post type with no `register_post_type()` call and no
-`init` hook written by hand. Full walkthrough in
-[docs/getting-started.md](docs/getting-started.md).
+A registered, REST-enabled post type with no `register_post_type()` call and no `init` hook written by hand. Full walkthrough in [docs/getting-started.md](docs/getting-started.md).
 
 ## What's inside
 
 - **Registration core** — the spine every consumer boots through:
-  - `Registrable`, `ConditionallyRegistrable`, `Shareable`, `CLICommand`
-    interfaces
-  - the `Loader` trait (instantiate a list of classes, register their hooks,
-    cache the shared ones) and the `Container` it stores instances in
-- **Twelve `Abstract*` base classes** — one per WordPress registration chore, so
-  a consumer writes intent instead of boilerplate: `AbstractModule`,
-  `AbstractPostType`, `AbstractTaxonomy`, `AbstractBlock`, `AbstractShortcode`,
-  `AbstractRESTController`, `AbstractSettingsPage`, `AbstractAdminPage`,
-  `AbstractUserRole`, `AbstractFeature`, `AbstractAbility`,
-  `AbstractAbilityRegistrar`
-- **Asset & render loaders** — `AssetLoader` (scripts/styles/modules +
-  `*.asset.php` manifests), `ComponentLoader` and `TemplateLoader` (resolve
-  components/templates across the child-theme → parent-theme → package hierarchy)
+  - `Registrable`, `ConditionallyRegistrable`, `Shareable`, `CLICommand` interfaces
+  - the `Loader` trait (instantiate a list of classes, register their hooks, cache the shared ones) and the `Container` it stores instances in
+- **Twelve `Abstract*` base classes** — one per WordPress registration chore, so a consumer writes intent instead of boilerplate: `AbstractModule`, `AbstractPostType`, `AbstractTaxonomy`, `AbstractBlock`, `AbstractShortcode`, `AbstractRESTController`, `AbstractSettingsPage`, `AbstractAdminPage`, `AbstractUserRole`, `AbstractFeature`, `AbstractAbility`, `AbstractAbilityRegistrar`
+- **Asset & render loaders** — `AssetLoader` (scripts/styles/modules + `*.asset.php` manifests), `ComponentLoader` and `TemplateLoader` (resolve components/templates across the child-theme → parent-theme → package hierarchy)
 - **`Singleton` trait** — standard `get_instance()` with clone/wakeup guards
 - **Utilities & services** (`inc/Utils/`) — context-scoped helpers:
   - `Encryptor` — authenticated AES-256-GCM encryption for values stored in the DB
   - `Cache` — typed wrapper over the WP object cache, group-namespaced, optional SWR
-  - `FeatureSelector` + `FeatureSelectorSettingsPage` — a fail-closed feature-flag
-    registry and its admin toggle page
+  - `FeatureSelector` + `FeatureSelectorSettingsPage` — a fail-closed feature-flag registry and its admin toggle page
   - `Logger` — context-prefixed, `WP_DEBUG`-gated logging
   - `Timer` — named request-scoped timers and laps
   - `Transients` — prefix-namespaced transient storage
 
-The contract surface (`inc/Contracts/`) is the public API: every interface,
-abstract, and signature there is consumed by dependents, so changes to it are
-treated as breaking.
+The contract surface (`inc/Contracts/`) is the public API: every interface, abstract, and signature there is consumed by dependents, so changes to it are treated as breaking.
 
 ## What's NOT here (intentional)
 
-- **No bootstrap / `Main` class.** The framework gives you the `Loader` trait and
-  the contracts; each consumer writes its own entry class that kicks off the first
-  `load()`. The framework is the spine, not the application.
-- **No project scaffolding engine.** Scaffold/init tooling lives in a separate
-  package (`@rtcamp/wp-tooling`), not here.
+- **No bootstrap / `Main` class.** The framework gives you the `Loader` trait and the contracts; each consumer writes its own entry class that kicks off the first `load()`. The framework is the spine, not the application.
+- **No project scaffolding engine.** Scaffold/init tooling lives in a separate package (`@rtcamp/wp-tooling`), not here.
 
 ## Documentation
 
 Start with [docs/index.md](docs/index.md), then:
 
-| Doc | What it covers |
-|---|---|
-| [getting-started.md](docs/getting-started.md) | Install, bootstrap a plugin or theme, load a module, and share a service. |
-| [architecture.md](docs/architecture.md) | How a class becomes a live hook — the `Registrable` → `Loader` → `Container` flow. Read first. |
-| [contracts.md](docs/contracts.md) | The interfaces and traits in detail. |
-| [abstracts.md](docs/abstracts.md) | Cookbook for the `Abstract*` base classes. |
-| [loaders.md](docs/loaders.md) | `AssetLoader`, `ComponentLoader`, `TemplateLoader` and the theme-override hierarchy. |
-| [utilities.md](docs/utilities.md) | `Encryptor`, `Cache`, feature flags, logging, transients, timers, and `Container`. |
-| [upgrading.md](docs/upgrading.md) | What changes between releases and what a consumer has to do about it. |
-| [troubleshooting.md](docs/troubleshooting.md) | Symptom → cause for the errors and silent no-ops the framework emits. |
-| [ai-review-system.md](docs/ai-review-system.md) | How the AI review instructions are authored here and synced into the skeletons. |
-| [maintainers.md](docs/maintainers.md) | Development environment, tests, change checklist, and documentation maintenance. |
+| Doc                                             | What it covers                                                                                 |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| [getting-started.md](docs/getting-started.md)   | Install, bootstrap a plugin or theme, load a module, and share a service.                      |
+| [architecture.md](docs/architecture.md)         | How a class becomes a live hook — the `Registrable` → `Loader` → `Container` flow. Read first. |
+| [contracts.md](docs/contracts.md)               | The interfaces and traits in detail.                                                           |
+| [abstracts.md](docs/abstracts.md)               | Cookbook for the `Abstract*` base classes.                                                     |
+| [loaders.md](docs/loaders.md)                   | `AssetLoader`, `ComponentLoader`, `TemplateLoader` and the theme-override hierarchy.           |
+| [utilities.md](docs/utilities.md)               | `Encryptor`, `Cache`, feature flags, logging, transients, timers, and `Container`.             |
+| [upgrading.md](docs/upgrading.md)               | What changes between releases and what a consumer has to do about it.                          |
+| [troubleshooting.md](docs/troubleshooting.md)   | Symptom → cause for the errors and silent no-ops the framework emits.                          |
+| [ai-review-system.md](docs/ai-review-system.md) | How the AI review instructions are authored here and synced into the skeletons.                |
+| [maintainers.md](docs/maintainers.md)           | Development environment, tests, change checklist, and documentation maintenance.               |
 
 ## Development
 
@@ -141,18 +119,16 @@ npm ci
 npm run wp-env start
 composer lint
 composer analyse
+npm run lint:js
+npm run format
 npm run test:php
 ```
 
-Tests run against real WordPress via [`@wordpress/env`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/).
-Use `npm run test:php`, which runs PHPUnit inside the wp-env test container;
-`composer test` only works directly when a host WordPress test suite has been
-configured. See [docs/maintainers.md](docs/maintainers.md) for the complete
-workflow.
+Tests run against real WordPress via [`@wordpress/env`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/). Use `npm run test:php`, which runs PHPUnit inside the wp-env test container; `composer test` only works directly when a host WordPress test suite has been configured. See [docs/maintainers.md](docs/maintainers.md) for the complete workflow.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ## License
 

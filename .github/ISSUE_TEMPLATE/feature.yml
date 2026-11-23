@@ -2,7 +2,7 @@ name: Feature request
 description: Suggest a new contract, abstract, utility or behaviour.
 type: Feature
 labels:
-  - "Type: Feature"
+  - 'Type: Feature'
 body:
   - type: markdown
     attributes:
@@ -16,17 +16,17 @@ body:
         `inc/Contracts/` is public API: every rtCamp plugin and theme consumes
         it, so changing a signature there is a breaking change. The package also
         keeps zero Composer runtime dependencies.
-        [CONTRIBUTING.md](https://github.com/rtCamp/wp-primitives/blob/main/CONTRIBUTING.md)
+        [CONTRIBUTING.md](https://github.com/rtCamp/wp-primitives/blob/main/.github/CONTRIBUTING.md)
         explains how to build it yourself.
   - type: dropdown
     id: area
     attributes:
       label: Area
       options:
-        - "Contracts (inc/Contracts/: interfaces, abstracts, traits)"
-        - "Container and loaders (Container, AssetLoader, ComponentLoader, TemplateLoader)"
-        - "Utilities (inc/Utils/)"
-        - "AI instructions and sync tool (ai/, bin/)"
+        - 'Contracts (inc/Contracts/: interfaces, abstracts, traits)'
+        - 'Container and loaders (Container, AssetLoader, ComponentLoader, TemplateLoader)'
+        - 'Utilities (inc/Utils/)'
+        - 'AI instructions and sync tool (ai/, bin/)'
         - Documentation
         - Not sure
     validations:
@@ -58,8 +58,8 @@ body:
       label: Compatibility
       description: How the change affects plugins and themes on 2.x.
       options:
-        - "Additive: a new class, utility or optional (non-abstract) method"
-        - "Breaking: a new abstract or interface method, a new parameter on a method subclasses override, or a changed signature or behaviour"
+        - 'Additive: a new class, utility or optional (non-abstract) method'
+        - 'Breaking: a new abstract or interface method, a new parameter on a method subclasses override, or a changed signature or behaviour'
         - Not sure
     validations:
       required: true

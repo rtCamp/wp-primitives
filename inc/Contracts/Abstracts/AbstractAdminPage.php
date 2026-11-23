@@ -27,15 +27,11 @@ abstract class AbstractAdminPage implements Registrable {
 
 	/**
 	 * Get the page title (shown in browser tab).
-	 *
-	 * @return string
 	 */
 	abstract protected function get_page_title(): string;
 
 	/**
 	 * Get the menu title (shown in the admin sidebar).
-	 *
-	 * @return string
 	 */
 	abstract protected function get_menu_title(): string;
 
@@ -62,7 +58,7 @@ abstract class AbstractAdminPage implements Registrable {
 				$parent,
 				$this->get_page_title(),
 				$this->get_menu_title(),
-				$this->get_capability(),
+				$this->get_capability(), // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 				static::get_slug(),
 				[ $this, 'render' ],
 				$this->get_position()
@@ -71,7 +67,7 @@ abstract class AbstractAdminPage implements Registrable {
 			add_menu_page(
 				$this->get_page_title(),
 				$this->get_menu_title(),
-				$this->get_capability(),
+				$this->get_capability(), // phpcs:ignore WordPress.WP.Capabilities.Undetermined
 				static::get_slug(),
 				[ $this, 'render' ],
 				$this->get_icon(),
@@ -85,8 +81,6 @@ abstract class AbstractAdminPage implements Registrable {
 	 *
 	 * Return null for a top-level menu, or a slug string for a submenu.
 	 * E.g. 'options-general.php' for Settings submenu.
-	 *
-	 * @return string|null
 	 */
 	protected function get_parent_slug(): ?string {
 		return null;
@@ -94,8 +88,6 @@ abstract class AbstractAdminPage implements Registrable {
 
 	/**
 	 * Get the required capability to access this page.
-	 *
-	 * @return string
 	 */
 	protected function get_capability(): string {
 		return 'manage_options';
@@ -112,8 +104,6 @@ abstract class AbstractAdminPage implements Registrable {
 
 	/**
 	 * Get the menu position.
-	 *
-	 * @return int|null
 	 */
 	protected function get_position(): ?int {
 		return null;

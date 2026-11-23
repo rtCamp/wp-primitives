@@ -53,7 +53,6 @@ namespace rtCamp\WPPrimitives\Utils;
  * @since 1.0.0
  */
 class Cache {
-
 	/**
 	 * TTL (seconds) for the SWR regeneration lock key.
 	 *
