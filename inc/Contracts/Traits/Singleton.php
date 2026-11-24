@@ -5,6 +5,8 @@
  * Singletons are an ANTI-PATTERN. Use with caution and only when necessary.
  * In most cases, it's better to use dependency injection.
  *
+ * Avoid using this trait in a class meant to be extended by multiple subclasses, as the static instance will be shared across them.
+ *
  * @package rtCamp\WPPrimitives\Contracts\Traits
  * @since 1.0.0
  */
@@ -20,25 +22,14 @@ trait Singleton {
 	/**
 	 * The single instance of the class using this trait.
 	 *
-	 * Protected on purpose: it is part of the trait's contract. A singleton whose
-	 * constructor does real work (a plugin/theme `Main` running a Loader) should
-	 * assign `static::$instance = $this;` as its first statement, so anything
-	 * built during that work can call `get_instance()` re-entrantly and receive
-	 * this same object instead of triggering a second construction.
-	 *
-	 * Limitation: a trait `static` property is one storage slot shared by a class
-	 * and its subclasses. Do not extend a class that uses this trait and call
-	 * `get_instance()` on the child — whichever side is resolved first occupies
-	 * the shared slot for both.
-	 *
 	 * @var ?static
 	 */
 	protected static $instance;
 
 	/**
-	 * The single constructor.
+	 * Protected to prevent direct instantiation.
 	 *
-	 * It's protected to prevent direct instantiation.
+	 * When overloading, assign `static::$instance = $this;` as the first statement in the constructor to ensure `get_instance()` returns the correct object during construction.
 	 */
 	protected function __construct() {
 		// To be implemented by the class using the trait.
@@ -47,11 +38,8 @@ trait Singleton {
 	/**
 	 * Get the instance of the class.
 	 *
-	 * The instance is stored once the constructor returns. If the constructor
-	 * does work that can call back into `get_instance()`, assign
-	 * `static::$instance = $this;` as its first statement (see the property
-	 * docblock) — otherwise the re-entrant call finds nothing stored yet and
-	 * constructs a second instance, recursing until the stack blows.
+	 * Before calling `get_instance()` within the constructor, ensure that `static::$instance` has been assigned.
+	 * Do not call in a child class, to prevent the static $instance from being shared across different subclasses.
 	 */
 	public static function get_instance(): static {
 		if ( ! isset( static::$instance ) ) {

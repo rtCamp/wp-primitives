@@ -2,11 +2,6 @@
 /**
  * AbstractAbilityRegistrar tests for cores without the Abilities API.
  *
- * The registrar promises to be inert on WordPress older than 6.9: its hooks
- * never fire there, and calling its callbacks directly must still be a silent
- * no-op rather than a fatal "call to undefined function". These tests only run
- * on such cores (the 6.5 to 6.8 cells of the CI matrix) and are skipped on 6.9+.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 
@@ -30,13 +25,13 @@ final class AbstractAbilityRegistrarLegacyCoreTest extends TestCase {
 	}
 
 	/**
-	 * A registrar that records every seam the callbacks touch.
+	 * Build a registrar that records each overridable method it calls.
 	 */
 	private function make_recording_registrar(): AbstractAbilityRegistrar {
 		return new class() extends AbstractAbilityRegistrar {
 
 			/**
-			 * Seams that were called, in order.
+			 * Names of the methods called, in order.
 			 *
 			 * @var array<int, string>
 			 */
@@ -68,7 +63,7 @@ final class AbstractAbilityRegistrarLegacyCoreTest extends TestCase {
 
 		$registrar->register_category();
 
-		$this->assertSame( [], $registrar->calls, 'no seam may run when the API is missing' );
+		$this->assertSame( [], $registrar->calls, 'no method may run when the API is missing' );
 	}
 
 	public function test_register_abilities_is_a_no_op_without_the_abilities_api(): void {
@@ -86,6 +81,6 @@ final class AbstractAbilityRegistrarLegacyCoreTest extends TestCase {
 
 		$this->assertSame( 10, has_action( 'wp_abilities_api_categories_init', [ $registrar, 'register_category' ] ) );
 		$this->assertSame( 10, has_action( 'wp_abilities_api_init', [ $registrar, 'register_abilities' ] ) );
-		$this->assertSame( [], $registrar->calls, 'adding the hooks must not touch any seam' );
+		$this->assertSame( [], $registrar->calls, 'adding the hooks must not call any method' );
 	}
 }

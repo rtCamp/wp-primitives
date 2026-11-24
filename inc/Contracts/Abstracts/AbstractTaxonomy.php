@@ -3,8 +3,6 @@
  * Abstract Taxonomy class.
  *
  * Provides a rich base for registering WordPress custom taxonomies.
- * Subclasses declare the slug, object types and labels; the base class
- * builds the full options array and handles registration.
  *
  * Usage:
  *
@@ -68,9 +66,6 @@ abstract class AbstractTaxonomy implements Registrable {
 
 	/**
 	 * Register the taxonomy.
-	 *
-	 * Calls after_register() when done — override that for any
-	 * additional setup that must run after the taxonomy exists.
 	 */
 	public function register(): void {
 		$this->register_taxonomy();
@@ -94,8 +89,8 @@ abstract class AbstractTaxonomy implements Registrable {
 	/**
 	 * Get the full args array passed to register_taxonomy().
 	 *
-	 * Override to customise any option; or override the individual
-	 * helper methods (is_hierarchical, get_labels, …) instead.
+	 * To change a single option, override its helper method, such as
+	 * is_hierarchical() or get_labels(), or use get_custom_options().
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -115,7 +110,7 @@ abstract class AbstractTaxonomy implements Registrable {
 	}
 
 	/**
-	 * Get any additional options to merge into the taxonomy args.
+	 * Get extra options to merge into the register_taxonomy() args.
 	 *
 	 * Override to add or override any options not covered by the other
 	 * helper methods.

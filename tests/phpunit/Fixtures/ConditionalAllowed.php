@@ -12,7 +12,7 @@ namespace rtCamp\WPPrimitives\Tests\Fixtures;
 use rtCamp\WPPrimitives\Contracts\Interfaces\ConditionallyRegistrable;
 
 /**
- * A ConditionallyRegistrable that opts in — should have register_hooks() called.
+ * ConditionallyRegistrable whose can_register() returns true.
  */
 final class ConditionalAllowed implements ConditionallyRegistrable {
 	public static bool $registered = false;

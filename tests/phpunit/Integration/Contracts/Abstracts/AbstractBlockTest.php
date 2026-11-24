@@ -2,10 +2,6 @@
 /**
  * AbstractBlock tests.
  *
- * Integration tests against real WordPress (wp-env): asserts the block is
- * registered with WP_Block_Type_Registry and wired to the instance's render
- * callback.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 
@@ -72,10 +68,7 @@ final class AbstractBlockTest extends TestCase {
 	}
 
 	public function test_block_dir_without_block_json_falls_back_to_the_block_name(): void {
-		// Regression: an unbuilt block directory used to reach register_block_type()
-		// as a "block name", so WordPress rejected it with a namespace-prefix
-		// notice and nothing was registered. WP_UnitTestCase fails the test on any
-		// unexpected _doing_it_wrong(), so the absence of a notice is asserted too.
+		// WP_UnitTestCase fails the test on any unexpected _doing_it_wrong(), so this also checks that no notice fires.
 		$dir = sys_get_temp_dir() . '/wpf-unbuilt-' . str_replace( '.', '', uniqid( '', true ) );
 		mkdir( $dir, 0777, true );
 

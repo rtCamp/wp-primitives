@@ -2,11 +2,6 @@
 /**
  * Asset loader tests.
  *
- * Runs against a real WordPress instance (wp-env): registrations are asserted
- * by reading the actual wp_scripts()/wp_styles()/wp_script_modules() registries
- * rather than stubbed globals, and incorrect-usage notices via
- * WP_UnitTestCase::setExpectedIncorrectUsage().
- *
  * @package rtCamp\WPPrimitives\Tests\Integration
  */
 
@@ -29,9 +24,7 @@ final class AssetLoaderTest extends TestCase {
 	public function set_up(): void {
 		parent::set_up();
 
-		// Start each test from clean dependency registries so handles registered
-		// in one test don't leak into the next (WP_UnitTestCase does not reset
-		// these between tests).
+		// WP_UnitTestCase does not reset these registries between tests.
 		$GLOBALS['wp_scripts'] = null;
 		$GLOBALS['wp_styles']  = null;
 		$this->reset_script_modules();
@@ -73,7 +66,7 @@ final class AssetLoaderTest extends TestCase {
 		$this->assertSame( 'https://example.test/theme/assets/build/js/app.js', $script->src );
 		$this->assertSame( [ 'wp-dom' ], $script->deps );
 		$this->assertSame( 'v1', $script->ver );
-		// in_footer defaults to true → footer group.
+		// in_footer defaults to true, which puts the script in footer group 1.
 		$this->assertSame( 1, $script->extra['group'] ?? null );
 	}
 
@@ -108,7 +101,7 @@ final class AssetLoaderTest extends TestCase {
 		$this->assertNotNull( $module );
 		$this->assertSame( 'https://example.test/theme/assets/build/js/module.js', $module['src'] );
 		$this->assertSame( 'v3', $module['version'] );
-		// WordPress normalises each dependency to id/import form (import: static default).
+		// WordPress normalises each dependency to an id/import pair, with import defaulting to static.
 		$this->assertSame(
 			[
 				[
@@ -202,10 +195,8 @@ final class AssetLoaderTest extends TestCase {
 	}
 
 	public function test_register_block_manifest_registers_collection(): void {
-		// A real block.json plus a manifest describing it, both under the loader's
-		// base. Spans the supported range: WP 6.8+ registers via the manifest
-		// collection API; 6.5–6.7 falls back to per-block registration from disk
-		// (which reads the block.json), so both paths register the same block.
+		// WP 6.8+ registers the block through the manifest collection API. WP 6.5 to 6.7
+		// registers it from block.json on disk.
 		$this->write_asset(
 			'build/blocks/example/block.json',
 			'{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wp-primitives/example","title":"Example","category":"widgets"}'
@@ -225,8 +216,6 @@ final class AssetLoaderTest extends TestCase {
 	}
 
 	public function test_legacy_fallback_ignores_a_manifest_that_is_not_an_array(): void {
-		// Only the 6.5 to 6.7 fallback reads the manifest itself; on 6.8+ core
-		// does, so the guard under test only exists on older cores.
 		if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
 			$this->markTestSkipped( 'The per-block fallback only runs on WordPress < 6.8.' );
 		}
@@ -235,7 +224,6 @@ final class AssetLoaderTest extends TestCase {
 			'build/blocks/example/block.json',
 			'{"$schema":"https://schemas.wp.org/trunk/block.json","apiVersion":3,"name":"wp-primitives/example","title":"Example","category":"widgets"}'
 		);
-		// A manifest that evaluates to something other than an array.
 		$this->write_asset( 'build/blocks-manifest.php', '<?php return "not-a-manifest";' );
 
 		$this->loader->register_block_manifest( 'build/blocks', 'build/blocks-manifest.php' );
@@ -270,15 +258,12 @@ final class AssetLoaderTest extends TestCase {
 	}
 
 	public function test_register_script_rejects_path_traversal_in_filename(): void {
-		// A `..` in the filename would let the require()'d .asset.php escape the
-		// assets directory; the loader refuses it (returns false, registers nothing).
+		// A `..` in the filename would let the required .asset.php file escape the assets directory.
 		$this->assertFalse( $this->loader->register_script( 'evil', '../../wp-config' ) );
 		$this->assertNull( $this->registered_script( 'evil' ) );
 	}
 
 	public function test_has_asset_rejects_path_traversal_in_the_filename(): void {
-		// has_asset() is public API in its own right, so its guard needs direct
-		// coverage rather than being exercised only through register_script().
 		$this->write_asset( 'assets/build/js/real.js', '' );
 
 		$this->assertTrue( $this->loader->has_asset( 'js/real', 'js' ) );
@@ -295,14 +280,6 @@ final class AssetLoaderTest extends TestCase {
 	}
 
 	public function test_has_asset_probe_cannot_reach_a_file_outside_the_assets_dir(): void {
-		// Prove the guard is load-bearing rather than rejecting a path that would
-		// have missed anyway: build the exact string the unguarded sprintf() would
-		// produce, assert a real file sits at it, then assert has_asset() still
-		// refuses. If the path arithmetic ever stops escaping, the first assertion
-		// fails loudly instead of the test passing for the wrong reason.
-		// The assets directory has to exist for the traversal to resolve at all —
-		// POSIX walks every component, so `assets/build/../..` is ENOENT if
-		// `assets/build` was never created.
 		$this->write_asset( 'assets/build/js/real.js', '' );
 		$this->write_asset( 'outside.txt', 'secret' );
 

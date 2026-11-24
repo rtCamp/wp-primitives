@@ -1,12 +1,9 @@
 <?php
 /**
- * Singleton fixture using the documented heavy-constructor pattern.
+ * Singleton fixture that calls get_instance() from its own constructor.
  *
- * Models the supported consumer shape: a theme/plugin Main whose constructor
- * assigns `static::$instance = $this;` first, then runs a Loader — and a class
- * built by that Loader calls Main::get_instance() while Main is still
- * constructing. The early assignment is the trait's documented re-entrancy
- * guard; this fixture pins that the property stays protected and assignable.
+ * Models a plugin Main class whose constructor assigns `static::$instance` first and then runs a Loader, where a
+ * loaded class calls Main::get_instance() before Main's constructor returns.
  *
  * @package rtCamp\WPPrimitives\Tests\Fixtures
  */
@@ -25,29 +22,27 @@ class ReentrantSingleton {
 	use Singleton;
 
 	/**
-	 * How many times the constructor ran — must stay at 1.
+	 * Number of times the constructor ran.
 	 */
 	public static int $construct_count = 0;
 
 	/**
-	 * What the re-entrant get_instance() call returned mid-construction.
+	 * Instance returned by get_instance() inside the constructor.
 	 */
 	public static ?self $seen_during_construction = null;
 
 	/**
-	 * Set before the re-entrant call, so the test can prove the re-entrant
-	 * caller observed the constructor's progress on the same object.
+	 * Set to 'yes' before the constructor calls get_instance().
 	 */
 	public string $ready = 'no';
 
 	protected function __construct() {
-		// The documented pattern: publish first, then do the real work.
 		static::$instance = $this;
 
 		++self::$construct_count;
 
 		if ( self::$construct_count > 3 ) {
-			// A regression would recurse forever; fail loudly instead.
+			// Stops infinite recursion if get_instance() constructs again.
 			throw new \RuntimeException( 'Singleton re-entered its own construction.' );
 		}
 

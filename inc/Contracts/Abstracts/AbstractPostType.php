@@ -3,9 +3,6 @@
  * Abstract Post Type class.
  *
  * Provides a rich base for registering WordPress custom post types.
- * Subclasses declare the slug, labels and icon; the base class builds
- * the full options array and handles registration, including optional
- * taxonomy association and a post-registration hook.
  *
  * Usage:
  *
@@ -69,10 +66,7 @@ abstract class AbstractPostType implements Registrable {
 	}
 
 	/**
-	 * Register the post type and its taxonomies.
-	 *
-	 * Calls after_register() when done — override that for any
-	 * additional setup that must run after the post type exists.
+	 * Register the post type.
 	 */
 	public function register(): void {
 		$this->register_post_type();
@@ -88,10 +82,7 @@ abstract class AbstractPostType implements Registrable {
 	}
 
 	/**
-	 * Associate supported taxonomies with this post type.
-	 *
-	 * Called after register_post_type(). Uses the slugs returned by
-	 * get_supported_taxonomies() to call register_taxonomy_for_object_type().
+	 * Associate the taxonomies from get_supported_taxonomies() with this post type.
 	 */
 	public function register_taxonomies(): void {
 		foreach ( $this->get_supported_taxonomies() as $taxonomy ) {
@@ -102,16 +93,15 @@ abstract class AbstractPostType implements Registrable {
 	/**
 	 * Runs after the post type has been registered.
 	 *
-	 * Override to add any additional setup (e.g. flushing rewrite rules on
-	 * first activation) without touching the registration logic.
+	 * Override to add any additional setup (e.g. flushing rewrite rules on first activation) without touching the registration logic.
 	 */
 	public function after_register(): void {}
 
 	/**
 	 * Get the full args array passed to register_post_type().
 	 *
-	 * Override to customise any option; or override the individual
-	 * helper methods (get_editor_supports, is_hierarchical, …) instead.
+	 * To change a single option, override its helper method, such as get_editor_supports() or is_hierarchical(),
+	 * or use get_custom_options().
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -140,7 +130,7 @@ abstract class AbstractPostType implements Registrable {
 	}
 
 	/**
-	 * Get any additional options to merge into the post type args.
+	 * Get extra options to merge into the register_post_type() args.
 	 *
 	 * Override to add or override any options not covered by the other
 	 * helper methods.
@@ -153,6 +143,7 @@ abstract class AbstractPostType implements Registrable {
 
 	/**
 	 * Get the post type labels.
+	 *
 	 * Override to add more labels or customise as needed.
 	 *
 	 * @return array<string, string>

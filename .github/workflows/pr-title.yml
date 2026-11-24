@@ -1,11 +1,6 @@
 name: PR Title Validation
 
-# Pull requests are squash-merged and the PR title becomes the commit on main. release-please
-# reads those subjects to pick the next version and write CHANGELOG.md, so the title has to be a
-# Conventional Commit: feat -> minor, fix -> patch, a "!" after the type -> major.
-#
-# Not a required status check: the release pull request is opened with GITHUB_TOKEN, which
-# starts no workflow runs, so this check never reports on it.
+# Ensures PR titles follow the Conventional Commit format, so they can be used during release notes generation.
 
 on:
   pull_request:

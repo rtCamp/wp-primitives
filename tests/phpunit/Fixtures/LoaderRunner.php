@@ -12,8 +12,7 @@ namespace rtCamp\WPPrimitives\Tests\Fixtures;
 use rtCamp\WPPrimitives\Contracts\Traits\Loader;
 
 /**
- * Public wrapper around the Loader trait so tests can call load() and
- * get_shared() from outside the class hierarchy.
+ * Exposes the Loader trait's protected load() as run().
  */
 final class LoaderRunner {
 

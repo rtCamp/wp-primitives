@@ -1,6 +1,6 @@
 {
 	"name": "rtcamp/wp-primitives",
-	"description": "Contracts, loaders and utilities for building WordPress plugins and themes on a shared, tested base.",
+	"description": "Contracts, loaders and utilities for building WordPress plugins and themes.",
 	"keywords": [
 		"wordpress",
 		"wordpress-plugin",
@@ -75,7 +75,7 @@
 		"lint:fix": "Auto-fix fixable PHPCS violations.",
 		"analyse": "Run PHPStan static analysis.",
 		"test": "Run the PHPUnit test suite.",
-		"check": "Run lint + analyse + test in sequence. Exit code 0 if all green."
+		"check": "Run lint, analyse and test in order. Exits 0 if all pass."
 	},
 	"require": {
 		"php": ">=8.2"

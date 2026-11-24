@@ -15,25 +15,16 @@ use rtCamp\WPPrimitives\Contracts\Abstracts\AbstractSettingsPage;
 /**
  * Admin settings page for a FeatureSelector registry.
  *
- * Renders one checkbox per registered flag and wires the form to the WordPress
- * Settings API. All flag states are stored in the single shared option managed
- * by the injected {@see FeatureSelector}.
+ * Renders one checkbox per registered flag through the Settings API. The form
+ * posts to `options.php` with field names of the form
+ * `{shared_option_key}[{flag_key}]`, e.g. `my_plugin_features[dark-mode]`.
  *
- * The form posts to `options.php` with array-style field names:
- *   {shared_option_key}[{flag_key}]  e.g.  elementary_features[dark-mode]
+ * A flag whose override constant is defined is rendered as a disabled
+ * checkbox, and saving the form keeps its stored value.
  *
- * The sanitize callback writes only non-locked flags back to the stored array.
- * Flags overridden by a PHP constant are rendered as locked (disabled checkbox)
- * and are excluded from the sanitize pass so saving never overwrites the
- * constant's intent in the options table.
- *
- * Boot order: register flags on the selector before `admin_init` fires. The
- * flag list is read lazily when the Settings API hooks run, so flags registered
- * after {@see FeatureSelectorSettingsPage::register_hooks()} still appear.
- *
- * Override the protected seams (menu slug, option group, titles, capability via
- * the parent) or {@see FeatureSelectorSettingsPage::render_field()} to customise
- * the page chrome.
+ * Register flags on the selector before `admin_init`. The flag list is read
+ * when the Settings API hooks run, so flags registered after
+ * {@see FeatureSelectorSettingsPage::register_hooks()} still appear.
  *
  * @since 1.0.0
  */
@@ -41,8 +32,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 	/**
 	 * Return the FeatureSelector whose flags this page manages.
 	 *
-	 * Called lazily at hook time, so it's safe to resolve from a shared container
-	 * here — the container is fully populated before any hook fires.
+	 * Called from hook callbacks, not from the constructor.
 	 */
 	abstract protected function get_selector(): FeatureSelector;
 
@@ -55,12 +45,6 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * `register_settings()` stays on both `admin_init` and `rest_api_init`
-	 * (it only calls the REST-safe `register_setting()`), but sections and
-	 * fields use `add_settings_section()`/`add_settings_field()` from
-	 * `wp-admin/includes/template.php`, which is not loaded during REST
-	 * requests — so field registration hooks `admin_init` only.
 	 */
 	public function register_hooks(): void {
 		parent::register_hooks();
@@ -71,10 +55,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Slugifies the selector's context onto the base slug so the page slug
-	 * stays a clean, valid menu slug regardless of context casing/spacing:
-	 * `my-plugin` → `my-plugin-features`, `My Plugin v2.0` →
-	 * `my-plugin-v2-0-features`, empty context → `features`.
+	 * Slugifies the selector's context and prepends it to the base slug.
 	 *
 	 * @return non-empty-string
 	 */
@@ -87,9 +68,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Underscored menu slug — intentionally kept in sync with the selector's
-	 * shared_option_key() so that settings_fields() and the registered option
-	 * name always match (both normalize context the same way).
+	 * The menu slug with dashes replaced by underscores, e.g. `my_plugin_features`.
 	 *
 	 * @return non-empty-string
 	 */
@@ -132,11 +111,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Registers a single array option (the selector's shared option key) with
-	 * a sanitize callback that validates each non-locked flag's value.
-	 *
-	 * Locked flags (constant-overridden) are excluded from the form but their
-	 * previously stored value is preserved — see sanitize_settings().
+	 * Registers the selector's shared option as an array.
 	 */
 	protected function get_settings(): array {
 		return [
@@ -149,14 +124,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 	}
 
 	/**
-	 * Sanitize the submitted feature-flag array before it's written to the DB.
-	 *
-	 * For every registered, non-locked flag: true if the checkbox was submitted,
-	 * false otherwise (unchecked checkboxes are absent from the POST body).
-	 *
-	 * For locked flags (constant-overridden): the previously stored value is
-	 * carried forward so saving the form never silently resets a locked flag's
-	 * database record to false.
+	 * Sanitize the feature flag array before it is saved.
 	 *
 	 * @param mixed $input Raw value received from the Settings API.
 	 * @return array<string, bool> Sanitized flag-key => bool map.
@@ -165,15 +133,11 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 		$submitted = is_array( $input ) ? $input : [];
 
 		/*
-		 * This runs as a `sanitize_option_{key}` filter, which fires on EVERY write
-		 * of the shared option — not only on this settings page's form. On a
-		 * programmatic write (FeatureSelector::enable()/disable()) the incoming array
-		 * is already the full intended state, so the checkbox rebuild below would
-		 * wrongly reset every default-on flag that has never been stored to false.
-		 * Only apply that rebuild for a genuine options.php submission of this option
-		 * group; pass any other write through untouched.
+		 * `sanitize_option_{key}` also fires for FeatureSelector::enable() and
+		 * disable(). Their array is already complete, and rebuilding it from
+		 * checkboxes would set every unstored, default-on flag to false.
 		 */
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- options.php verifies the nonce + capability before this filter runs; the marker only distinguishes a form save from a programmatic write.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- options.php verifies the nonce and capability before this filter runs.
 		$option_page = isset( $_POST['option_page'] ) ? sanitize_text_field( wp_unslash( $_POST['option_page'] ) ) : '';
 
 		if ( $option_page !== $this->get_option_group() ) {
@@ -193,7 +157,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 			$key = $this->get_selector()->flag_key( $slug );
 
 			if ( defined( $this->get_selector()->constant_name( $slug ) ) ) {
-				// Preserve the stored value so the constant's intent in the DB is not overwritten.
+				// Keep the stored value of a flag locked by a constant.
 				if ( array_key_exists( $key, $stored ) ) {
 					$sanitized[ $key ] = (bool) $stored[ $key ];
 				}
@@ -210,7 +174,7 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 	/**
 	 * Register one settings field per flag, all attached to a single section.
 	 *
-	 * Hooked to `admin_init` only — see {@see FeatureSelectorSettingsPage::register_hooks()}.
+	 * @internal Hooked to `admin_init`.
 	 */
 	public function register_fields(): void {
 		add_settings_section(
@@ -257,10 +221,9 @@ abstract class FeatureSelectorSettingsPage extends AbstractSettingsPage {
 	/**
 	 * Render one flag's checkbox.
 	 *
-	 * Uses array-style field names ({shared_option_key}[{flag_key}]) so all
-	 * flags post as a single option array. Reuses {@see FeatureSelector::is_enabled()}
-	 * so a defined constant is reflected automatically; the checkbox is then
-	 * disabled and a help message names the constant.
+	 * The checked state comes from {@see FeatureSelector::is_enabled()}. When
+	 * the flag's override constant is defined, the checkbox is disabled and a
+	 * description names the constant.
 	 *
 	 * @param array{slug: string, name: string, description: string} $args Flag metadata.
 	 */

@@ -13,8 +13,7 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
 use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
 
 /**
- * Implements both Registrable and Shareable — hooks fire AND the instance
- * is cached in the container.
+ * Registrable and Shareable fixture that records whether register_hooks() ran.
  */
 final class ShareableRegistrable implements Registrable, Shareable {
 	public static bool $registered = false;

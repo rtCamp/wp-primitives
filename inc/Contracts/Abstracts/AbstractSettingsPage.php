@@ -2,9 +2,7 @@
 /**
  * Abstract Settings Page class.
  *
- * Provides a clean interface for registering a WordPress settings page
- * with the Settings API. Handles menu registration, settings registration,
- * and rendering in a single class.
+ * Base class for a WordPress settings page. It adds the menu page and registers its options with the Settings API.
  *
  * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since 1.0.0
@@ -60,10 +58,7 @@ abstract class AbstractSettingsPage implements Registrable {
 		add_action( 'admin_init', [ $this, 'register_settings' ] );
 		add_action( 'rest_api_init', [ $this, 'register_settings' ] );
 
-		// The menu and render() are gated by get_capability(), but options.php gates
-		// the *save* on option_page_capability_{group}, which defaults to
-		// manage_options. Align them so a lowered get_capability() can actually save,
-		// instead of rendering a page that silently fails to persist.
+		// Use ::get_capability() for the option page capability checks.
 		add_filter(
 			'option_page_capability_' . $this->get_option_group(),
 			fn (): string => $this->get_capability()

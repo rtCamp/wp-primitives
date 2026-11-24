@@ -2,11 +2,6 @@
 /**
  * Tests for the TemplateLoader class.
  *
- * Runs against a real WordPress instance (wp-env): the theme hierarchy is
- * pointed at fixture directories via the template_directory/stylesheet_directory
- * filters (TestCase::set_theme_dirs), and rendering is asserted through real
- * load_template() output rather than a stub call log.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration
  */
 
@@ -136,8 +131,7 @@ final class TemplateLoaderTest extends TestCase {
 	}
 
 	public function test_theme_package_layer_is_deduplicated(): void {
-		// Theme consumer: its own templates ARE the parent-theme override path,
-		// so the package layer must collapse rather than be searched twice.
+		// A theme's package directory is also its parent theme override path.
 		$this->use_single_theme();
 		$theme_loader = new TemplateLoader( 'thm', $this->tmp . '/parent/templates', 'templates' );
 
@@ -148,7 +142,6 @@ final class TemplateLoaderTest extends TestCase {
 	}
 
 	public function test_theme_child_overrides_the_theme_package(): void {
-		// Theme ships card.php; a child theme overrides it. Same loader, no plugin layer.
 		$this->use_child_theme();
 		$theme_loader = new TemplateLoader( 'thm', $this->tmp . '/parent/templates', 'templates' );
 
@@ -167,8 +160,6 @@ final class TemplateLoaderTest extends TestCase {
 	}
 
 	public function test_child_theme_package_has_no_parent_fallback(): void {
-		// A loader owned by the child theme: nothing sits above it, so the parent
-		// theme is NOT searched as a fallback (mirrors ComponentLoader).
 		$this->use_child_theme();
 		$child_loader = new TemplateLoader( 'ct', $this->tmp . '/child/templates', 'templates' );
 
@@ -189,8 +180,7 @@ final class TemplateLoaderTest extends TestCase {
 	}
 
 	public function test_name_variant_wins_across_layers_over_base_slug(): void {
-		// WP locate_template precedence: a more specific name dominates location.
-		// The parent's card-featured.php must beat the child's card.php.
+		// As in locate_template(), a name variant in any layer beats the base slug in a higher layer.
 		$this->use_child_theme();
 		$this->write( $this->tmp . '/child/my-plugin/card.php' );
 		$this->write( $this->tmp . '/parent/my-plugin/card-featured.php' );
@@ -218,8 +208,6 @@ final class TemplateLoaderTest extends TestCase {
 	}
 
 	public function test_get_rethrows_and_balances_the_buffer_when_a_template_throws(): void {
-		// get() must clear its own output buffer and re-throw rather than leave a
-		// half-rendered buffer open for the caller to inherit.
 		$this->use_single_theme();
 		$this->write( $this->tmp . '/plugin/templates/boom.php', '<?php throw new \RuntimeException( "kaboom" );' );
 
@@ -328,10 +316,7 @@ final class TemplateLoaderTest extends TestCase {
 	}
 
 	public function test_a_theme_switch_is_not_served_from_the_previous_themes_cache(): void {
-		// Regression: the location cache used to key on candidate names only, so a
-		// Shareable loader reused across a switch_theme()/switch_to_blog() in one
-		// request kept serving the old theme's hit. The key now includes the
-		// resolved paths, which change with the active theme.
+		// The cache key includes the resolved theme paths, which change on switch_theme() or switch_to_blog().
 		$this->use_single_theme();
 		$this->write( $this->tmp . '/parent/my-plugin/card.php' );
 		$this->write( $this->tmp . '/child/my-plugin/card.php' );
@@ -346,8 +331,6 @@ final class TemplateLoaderTest extends TestCase {
 	}
 
 	public function test_switching_back_reuses_the_original_themes_entry(): void {
-		// The key is per-path-set rather than a blanket invalidation, so switching
-		// back must return the first theme's result again.
 		$this->use_single_theme();
 		$this->write( $this->tmp . '/parent/my-plugin/card.php' );
 		$this->write( $this->tmp . '/child/my-plugin/card.php' );
@@ -367,7 +350,6 @@ final class TemplateLoaderTest extends TestCase {
 	public function test_locate_returns_false_when_no_candidate_names(): void {
 		$this->use_single_theme();
 
-		// A filter that empties the candidate list short-circuits to false.
 		add_filter( 'my_plugin/template_file_names', static fn (): array => [] );
 
 		$this->assertFalse( $this->loader()->locate( 'card' ) );

@@ -13,23 +13,14 @@ namespace rtCamp\WPPrimitives\Utils;
 /**
  * Class - Transients
  *
- * Wraps WordPress's transient API with a per-instance key prefix, so two modules
- * living in the same PHP process that happen to pick the same logical key never
- * clobber each other — the classic `set_transient( 'user_count', … )` collision.
- *
- * This is the one utility here that is multi-instance out of necessity rather than
- * convenience: there is no shared/singleton form, because isolated key namespaces
- * are the entire point. Each consumer constructs its own wrapper with a unique
- * prefix, and every key is namespaced before it reaches WordPress:
+ * Wraps the WordPress transient API and prefixes every key, so two instances
+ * with different prefixes can use the same key.
  *
  *     $store = new Transients( 'my-module' );
  *     $store->set( 'user_count', 42, HOUR_IN_SECONDS );
- *     $store->get( 'user_count' ); // 42 — isolated from any other module's 'user_count'.
+ *     $store->get( 'user_count' ); // 42
  *
- * Regular (single-site) transients only; a multisite / site-transient variant can
- * arrive later by overriding the {@see resolve_key()} seam, with no breaking change.
- * Not `final`, and internal calls go through `$this` so such overrides take effect —
- * the same extension pattern as {@see Cache::resolve_group()}.
+ * Uses regular (single-site) transients.
  *
  * @since 1.0.0
  */
@@ -46,8 +37,7 @@ class Transients {
 	/**
 	 * Construct a Transients wrapper bound to a key prefix.
 	 *
-	 * @param string $prefix Per-instance namespace prepended to every key. A
-	 *                       construction-time identity — readonly, not runtime-mutable.
+	 * @param string $prefix Prefix added to every key.
 	 */
 	public function __construct(
 		protected readonly string $prefix,
@@ -56,10 +46,7 @@ class Transients {
 	/**
 	 * Get a transient value.
 	 *
-	 * Returns `mixed` because transients can hold any serialisable value (mirrors
-	 * WordPress's own `get_transient()` signature).
-	 *
-	 * @param string $key Logical key (namespaced before lookup).
+	 * @param string $key Unprefixed key.
 	 *
 	 * @return mixed Stored value, or `false` if missing or expired.
 	 */
@@ -70,7 +57,7 @@ class Transients {
 	/**
 	 * Set a transient with an optional expiration.
 	 *
-	 * @param string $key        Logical key (namespaced before write).
+	 * @param string $key        Unprefixed key.
 	 * @param mixed  $value      Value to store. Must be serialisable.
 	 * @param int    $expiration TTL in seconds. Defaults to one day; `0` means no expiry.
 	 *
@@ -83,7 +70,7 @@ class Transients {
 	/**
 	 * Delete a transient.
 	 *
-	 * @param string $key Logical key (namespaced before delete).
+	 * @param string $key Unprefixed key.
 	 *
 	 * @return bool True if the transient was deleted, false otherwise.
 	 */
@@ -92,27 +79,20 @@ class Transients {
 	}
 
 	/**
-	 * Namespace a logical key with this instance's prefix.
+	 * Prefix a key with this instance's prefix.
 	 *
-	 * Format: `<strlen(prefix)>:<prefix>_<key>`. The leading length header is
-	 * digits-only and terminated by the first `:`, so the prefix/key boundary stays
-	 * unambiguous even when either part contains underscores. Without it,
-	 * `( 'mod', 'a_b' )` and `( 'mod_a', 'b' )` would both collapse to `mod_a_b` and
-	 * silently target the same WordPress transient.
+	 * Format: `<strlen(prefix)>:<prefix>_<key>`.
+	 * The length makes the boundary between prefix and key unambiguous, so `( 'mod', 'a_b' )`
+	 * and `( 'mod_a', 'b' )` give different names.
 	 *
-	 * A namespaced key longer than {@see Transients::MAX_NAME_LENGTH} is replaced by
-	 * `h:<md5 of the namespaced key>`. WordPress cannot store such a name: the
-	 * option rows are truncated, so the value is never found again (or, just past
-	 * the limit, its expiry is silently lost). Keys within the limit are unchanged,
-	 * and a hashed key can never equal an unhashed one, which always starts with
-	 * digits.
+	 * A name longer than {@see Transients::MAX_NAME_LENGTH} is replaced by
+	 * `h:<md5 of the name>`, because WordPress truncates the option rows and
+	 * would not find the value again. A hashed name cannot equal an unhashed one,
+	 * which always starts with a digit.
 	 *
-	 * Protected override seam (mirrors {@see Cache::resolve_group()}): subclass to
-	 * change the namespacing scheme, for instance a multisite / site-transient variant.
+	 * @param string $key Unprefixed key.
 	 *
-	 * @param string $key Logical key supplied by the caller.
-	 *
-	 * @return string Fully namespaced key passed to WordPress's transient API.
+	 * @return string Transient name passed to WordPress.
 	 */
 	protected function resolve_key( string $key ): string {
 		$name = strlen( $this->prefix ) . ':' . $this->prefix . '_' . $key;

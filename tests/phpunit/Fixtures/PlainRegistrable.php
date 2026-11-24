@@ -12,7 +12,7 @@ namespace rtCamp\WPPrimitives\Tests\Fixtures;
 use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
 
 /**
- * A plain Registrable — should always have register_hooks() called.
+ * Registrable that records whether register_hooks() ran.
  */
 final class PlainRegistrable implements Registrable {
 	public static bool $registered = false;

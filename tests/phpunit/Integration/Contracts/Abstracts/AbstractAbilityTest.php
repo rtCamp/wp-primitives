@@ -2,11 +2,6 @@
 /**
  * AbstractAbility tests.
  *
- * AbstractAbility is pure argument-mapping: it never calls the Abilities API
- * itself, so these tests run on every supported WordPress version. The
- * registration round-trip lives in AbstractAbilityRegistrarTest. Tests use
- * anonymous classes throughout so each scenario is self-contained.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 
@@ -24,14 +19,14 @@ use rtCamp\WPPrimitives\Tests\TestCase;
  */
 final class AbstractAbilityTest extends TestCase {
 	/**
-	 * Concrete AbstractAbility with every seam injectable.
+	 * Build a concrete AbstractAbility.
 	 *
 	 * @param string        $name          Ability name.
 	 * @param string        $category      Category slug.
 	 * @param array         $input_schema  Input schema.
 	 * @param array         $output_schema Output schema.
-	 * @param array         $meta          Meta override.
-	 * @param \Closure|null $permission    Optional permission() override.
+	 * @param array         $meta          Value for meta().
+	 * @param \Closure|null $permission    Replaces permission() when set.
 	 */
 	private function make_ability(
 		string $name = 'test-plugin/do-thing',
@@ -106,8 +101,7 @@ final class AbstractAbilityTest extends TestCase {
 	}
 
 	public function test_callbacks_are_safe_to_invoke_without_arguments(): void {
-		// Core invokes both callbacks with zero arguments when the ability
-		// declares no input schema; the closure wrappers absorb that.
+		// Core calls both callbacks with no arguments when the ability has no input schema.
 		$args = $this->make_ability()->args();
 
 		$this->assertSame( [ 'received' => null ], $args['execute_callback']() );

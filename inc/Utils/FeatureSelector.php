@@ -13,36 +13,21 @@ namespace rtCamp\WPPrimitives\Utils;
 /**
  * Feature-flag registry for a single package.
  *
- * Each instance is scoped to one context slug (a theme or plugin slug). All
- * flag states live together in a single WP option as a serialised associative
- * array, rather than one option row per flag. This keeps the options table clean
- * and makes it trivial to read, export, or reset all flags at once.
+ * Each instance belongs to one theme or plugin slug, its context. All flag
+ * states are stored in one option as an associative array.
  *
- * Flag resolution order in is_enabled():
- *   0. Registered?   — unregistered slugs are always off; nothing below runs
- *   1. PHP constant  — define in wp-config.php to lock a flag hard
- *   2. Stored array  — value from the shared option for this flag's key
- *   3. default true  — a registered flag is on unless explicitly turned off
+ * For the context "my-plugin" and the flag "dark-mode":
  *
- * Storage scheme (context "my-plugin"):
- *   option name   → my_plugin_features  (one row; value is an associative array)
- *   array key     → dark-mode           (flag slug, dashes preserved)
- *   constant name → MY_PLUGIN_FEATURE_DARK_MODE
- *
- * Context slugs are normalized with underscores (my_plugin_features). Flag
- * keys preserve dashes — only spaces and other non-[a-z0-9-] characters are
- * collapsed to a single dash. Constant names always use underscores (derived
- * independently via the underscore normalizer).
+ *   option name:   my_plugin_features
+ *   array key:     dark-mode
+ *   constant name: MY_PLUGIN_FEATURE_DARK_MODE
  *
  * Usage:
  *   $flags = new FeatureSelector( 'my-plugin' );
  *   $flags->register( [ 'dark-mode', 'beta-search' => [ 'name' => 'Beta search' ] ] );
  *   $flags->is_enabled( 'dark-mode' );
  *
- * Extend and implement as Shareable to share a single registry instance across
- * the framework container. Override shared_option_key() to change where flags
- * are stored; flag_key() and constant_name() are independent and must be
- * overridden separately if needed.
+ * Override shared_option_key() to store flags in another option.
  *
  * @since 1.0.0
  */
@@ -56,7 +41,7 @@ class FeatureSelector {
 	protected array $registered = [];
 
 	/**
-	 * Normalized flag key → original slug map for O(1) collision checks.
+	 * Original slugs keyed by normalized flag key, for collision checks.
 	 *
 	 * @var array<string, string>
 	 */
@@ -65,10 +50,8 @@ class FeatureSelector {
 	/**
 	 * Constructor.
 	 *
-	 * @param string $context Package slug — namespaces the shared option key
-	 *                        and override constants so flags from different
-	 *                        packages never collide. Omit only if you're certain
-	 *                        nothing else uses the bare `features` option name.
+	 * @param string $context Theme or plugin slug. Prefixes the option name and the override constants. When empty, the
+	 *                        option is named `features`.
 	 */
 	public function __construct(
 		protected string $context = '',
@@ -84,15 +67,14 @@ class FeatureSelector {
 	/**
 	 * Register one or more flags.
 	 *
-	 * Accepts a single slug string, a list of slugs, or a slug => metadata map —
-	 * or any mix of the three. Valid metadata keys: name (defaults to the slug),
-	 * description. Either may be a closure returning the string, so translated
-	 * text is only built when get_features() reads it, not at registration.
-	 * Malformed entries are silently skipped.
+	 * Accepts a slug, a list of slugs, a slug => metadata map, or a mix of
+	 * these. Metadata keys are `name`, which defaults to the slug, and
+	 * `description`. Either can be a closure that returns the string, which
+	 * get_features() calls. Malformed entries are skipped without a notice.
 	 *
-	 * First registration wins. Collision is checked on the normalized flag key
-	 * so two slugs that normalize identically ("beta-search" and "beta search")
-	 * are treated as duplicates and the second is rejected via _doing_it_wrong().
+	 * Slugs with the same {@see FeatureSelector::flag_key()}, such as
+	 * "beta-search" and "beta search", collide. The first registration is kept
+	 * and later ones trigger _doing_it_wrong().
 	 *
 	 * @param array<int|string, string|array{name?: string|\Closure(): string, description?: string|\Closure(): string}>|string $features Flags to register.
 	 */
@@ -138,14 +120,17 @@ class FeatureSelector {
 	/**
 	 * Check whether a flag is enabled.
 	 *
-	 * Resolves in order: registry check → PHP constant → stored array value → default true.
-	 * Unregistered slugs always return false (silently — no _doing_it_wrong()).
-	 * String 'false' constants (a common wp-config mistake) are treated as false.
+	 * Returns false for an unregistered slug, without a notice. Otherwise
+	 * returns the first of:
+	 *
+	 * 1. The override constant from constant_name(). A string 'false' counts as false.
+	 * 2. The stored value for the flag.
+	 * 3. True.
 	 *
 	 * @param string $flag Flag slug as passed to register().
 	 */
 	public function is_enabled( string $flag ): bool {
-		// Registry is authoritative: unregistered flags are always off.
+		// Unregistered flags are always off.
 		if ( ! isset( $this->flag_keys[ $this->flag_key( $flag ) ] ) ) {
 			return false;
 		}
@@ -169,7 +154,8 @@ class FeatureSelector {
 	 *
 	 * @param string $flag Flag slug.
 	 *
-	 * @return bool True if the change was persisted; false if the flag is not registered.
+	 * @return bool True if the option was updated. False if the flag is not registered or the stored value was already
+	 *              true.
 	 */
 	public function enable( string $flag ): bool {
 		if ( ! isset( $this->flag_keys[ $this->flag_key( $flag ) ] ) ) {
@@ -192,15 +178,12 @@ class FeatureSelector {
 	/**
 	 * Disable a flag and persist the change to the database.
 	 *
-	 * Unlike the old per-flag approach there's no update_option() no-op edge
-	 * case: we're always writing a changed array (the key is added or toggled),
-	 * and update_option() calls add_option() internally when the row is absent.
-	 *
-	 * A PHP constant override still wins at read time regardless of what's stored.
+	 * An override constant from constant_name() takes precedence over the stored value.
 	 *
 	 * @param string $flag Flag slug.
 	 *
-	 * @return bool True if the change was persisted; false if the flag is not registered.
+	 * @return bool True if the option was updated. False if the flag isn't registered or the stored value was already
+	 *              false.
 	 */
 	public function disable( string $flag ): bool {
 		if ( ! isset( $this->flag_keys[ $this->flag_key( $flag ) ] ) ) {
@@ -248,10 +231,9 @@ class FeatureSelector {
 	}
 
 	/**
-	 * The single WP option name that stores all flag states for this context.
+	 * Name of the option that stores all flag states for this context.
 	 *
-	 * Format: {context}_features (e.g. my_plugin_features).
-	 * Override this to change where flags are stored.
+	 * Format: {context}_features, e.g. my_plugin_features.
 	 */
 	public function shared_option_key(): string {
 		$context = $this->normalize( $this->context );
@@ -262,11 +244,8 @@ class FeatureSelector {
 	/**
 	 * Normalized array key for a flag within the stored option.
 	 *
-	 * Lowercases the slug and collapses any run of characters outside [a-z0-9-]
-	 * to a single dash, preserving existing dashes. This keeps stored keys
-	 * human-readable (e.g. dark-mode, beta-search) and consistent with typical
-	 * WP slug conventions. Contrast with normalize(), which uses underscores for
-	 * PHP option-name and constant-name contexts.
+	 * Lowercases the slug and replaces each run of characters outside [a-z0-9-]
+	 * with a single dash. Leading and trailing dashes are trimmed.
 	 *
 	 * @param string $flag Flag slug.
 	 */
@@ -275,9 +254,9 @@ class FeatureSelector {
 	}
 
 	/**
-	 * PHP constant name for a flag — define in wp-config.php to hard-lock it.
+	 * Name of the constant that overrides a flag's stored state.
 	 *
-	 * Format: {CONTEXT}_FEATURE_{FLAG} (e.g. MY_PLUGIN_FEATURE_DARK_MODE).
+	 * Format: {CONTEXT}_FEATURE_{FLAG}, e.g. MY_PLUGIN_FEATURE_DARK_MODE.
 	 *
 	 * @param string $flag Flag slug.
 	 */
@@ -285,19 +264,14 @@ class FeatureSelector {
 		$context = $this->normalize( $this->context );
 		$prefix  = '' === $context ? 'FEATURE_' : strtoupper( $context ) . '_FEATURE_';
 
-		// Derive the constant from flag_key() — the same partition used for storage
-		// — so two slugs that get distinct storage keys can't collapse to one
-		// constant. (normalize() collapses runs of dashes, so `beta-search` and
-		// `beta--search` would otherwise share MY_PLUGIN_FEATURE_BETA_SEARCH and one
-		// define() would lock both.) Unchanged for ordinary single-dash slugs.
+		// Built from flag_key() rather than normalize() which collapses multiple dashes into one.
 		return $prefix . strtoupper( str_replace( '-', '_', $this->flag_key( $flag ) ) );
 	}
 
 	/**
-	 * Lowercase + collapse anything outside [a-z0-9_] to a single underscore.
+	 * Lowercase and replace each run of characters outside [a-z0-9_] with a single underscore.
 	 *
-	 * Not sanitize_key() — that drops invalid characters instead of replacing them,
-	 * so "my.plugin" and "myplugin" would silently share the same key.
+	 * Unlike sanitize_key(), which drops those characters, this keeps "my.plugin" and "myplugin" distinct.
 	 *
 	 * @param string $value Context or flag slug.
 	 */

@@ -2,9 +2,9 @@
 /**
  * Abstract Block class.
  *
- * Provides a clean interface for registering dynamic WordPress blocks.
- * For static blocks (JSON-only, no server-side render), use the AssetLoader
- * class with `register_block_manifest()` directly.
+ * Base class for a dynamic WordPress block.
+ *
+ * For a static block with no server-side render, use {@see \rtCamp\WPPrimitives\AssetLoader::register_block_manifest()}.
  *
  * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since 1.0.0
@@ -32,8 +32,7 @@ abstract class AbstractBlock implements Registrable {
 	/**
 	 * Render the block on the server side.
 	 *
-	 * Public because WordPress calls it directly as the block's render_callback
-	 * (wired in register_block()); a protected method would fatal when core invokes it.
+	 * @internal Called by WordPress as the block's render_callback.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
 	 * @param string               $content    Block inner content.
@@ -53,12 +52,8 @@ abstract class AbstractBlock implements Registrable {
 	/**
 	 * Register the block type with WordPress.
 	 *
-	 * Registers from get_block_dir() when that directory holds a block.json, and
-	 * by name otherwise. A configured directory without a block.json (a fresh
-	 * clone or a CI run before `npm run build`, or a deploy that lost its build)
-	 * falls back to registering by name: the server-side render still works, and
-	 * WordPress no longer receives the directory path as a block name, which it
-	 * rejected with a "must contain a namespace prefix" notice on every request.
+	 * Registers from get_block_dir() when that directory contains a block.json, and by name otherwise,
+	 * so the server-side render still works before `npm run build`.
 	 */
 	public function register_block(): void {
 		$args = $this->get_block_args();

@@ -1,11 +1,6 @@
 <?php
 /**
- * Base test case for the framework's WordPress integration tests.
- *
- * Extends WP_UnitTestCase so tests run against a real WordPress instance
- * (provided by wp-env). Adds a few helpers for the patterns the framework's
- * tests need repeatedly: pointing the theme hierarchy at fixture directories
- * and reading back the real script/style/module registries.
+ * Base test case for WordPress integration tests.
  *
  * @package rtCamp\WPPrimitives\Tests
  */
@@ -23,17 +18,14 @@ use WP_UnitTestCase;
  */
 abstract class TestCase extends WP_UnitTestCase {
 	/**
-	 * Point WordPress' theme hierarchy at fixture directories.
+	 * Point the template and stylesheet directories and URIs at fixtures.
 	 *
-	 * Filters get_template_directory()/get_stylesheet_directory() (and their URI
-	 * variants) so the loaders resolve against on-disk fixtures instead of the
-	 * active test theme. When no child paths are given, the stylesheet (child)
-	 * directory equals the template (parent) directory — i.e. no child theme.
+	 * Without child paths, the stylesheet directory equals the template directory, which models a site with no child theme.
 	 *
-	 * @param string      $parent_dir Absolute path used as the (parent) template directory.
+	 * @param string      $parent_dir Absolute path used as the template directory.
 	 * @param string      $parent_uri URL used as the template directory URI.
-	 * @param string|null $child_dir  Optional absolute path used as the stylesheet (child) directory.
-	 * @param string|null $child_uri  Optional URL used as the stylesheet directory URI.
+	 * @param string|null $child_dir  Optional. Absolute path used as the stylesheet directory.
+	 * @param string|null $child_uri  Optional. URL used as the stylesheet directory URI.
 	 */
 	protected function set_theme_dirs( string $parent_dir, string $parent_uri, ?string $child_dir = null, ?string $child_uri = null ): void {
 		$stylesheet_dir = $child_dir ?? $parent_dir;
@@ -68,11 +60,9 @@ abstract class TestCase extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Read a registered script module from WP_Script_Modules' private registry.
+	 * Read a registered script module from WP_Script_Modules' private registry, using reflection.
 	 *
-	 * WordPress exposes no public getter for registered modules, so this reaches
-	 * the registry via reflection. The returned shape mirrors WordPress' own
-	 * normalisation (each dependency is `[ 'id' => string, 'import' => string ]`).
+	 * Each dependency in the result has the shape `[ 'id' => string, 'import' => string ]`.
 	 *
 	 * @param string $id Module identifier.
 	 *

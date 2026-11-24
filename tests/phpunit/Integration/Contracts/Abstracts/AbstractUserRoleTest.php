@@ -2,10 +2,6 @@
 /**
  * AbstractUserRole tests.
  *
- * Integration tests against real WordPress (wp-env): asserts the versioned
- * role registration — capabilities applied, version stored, gating on the
- * stored version, and full removal.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 

@@ -14,14 +14,6 @@ use rtCamp\WPPrimitives\Utils\Transients;
 
 /**
  * Tests for Transients.
- *
- * Runs against real WordPress (wp-env): get/set/delete hit the real transient API,
- * which — with no persistent object cache configured — is backed by the options
- * table and rolled back per test by WP_UnitTestCase's DB transaction.
- *
- * Each test uses a distinct prefix so that, even if a non-persistent object cache
- * holds entries across tests under `executionOrder="random"`, no two tests can
- * resolve to the same namespaced key.
  */
 final class TransientsTest extends TestCase {
 	public function test_set_then_get_round_trips_a_value(): void {
@@ -60,8 +52,7 @@ final class TransientsTest extends TestCase {
 	}
 
 	public function test_prefix_key_boundary_is_unambiguous(): void {
-		// Without the length-prefixed key format, ( 'mod', 'a_b' ) and ( 'mod_a', 'b' )
-		// would both collapse to mod_a_b and clobber each other.
+		// The length prefix keeps these two names from both resolving to rtb_x_y.
 		$one = new Transients( 'rtb' );      // 'rtb' + '_' + 'x_y'
 		$two = new Transients( 'rtb_x' );    // 'rtb_x' + '_' + 'y'
 
@@ -73,14 +64,12 @@ final class TransientsTest extends TestCase {
 	}
 
 	public function test_over_long_key_still_round_trips_through_the_database(): void {
-		// Regression: a namespaced name past 172 characters was truncated by the
-		// options table, so once the in-request option cache was gone (a new request)
-		// the value could never be read back. Flushing the object cache simulates that.
 		$store = new Transients( 'rt_long' );
 		$key   = str_repeat( 'k', 200 );
 
 		$this->assertTrue( $store->set( $key, 'long-value', HOUR_IN_SECONDS ) );
 
+		// Force the read to go to the database.
 		wp_cache_flush();
 
 		$this->assertSame( 'long-value', $store->get( $key ) );
@@ -124,7 +113,6 @@ final class TransientsTest extends TestCase {
 	public function test_value_is_stored_under_the_namespaced_key(): void {
 		( new Transients( 'rt_ns' ) )->set( 'thing', 'v' );
 
-		// The bare, unprefixed key must not resolve; the namespaced one must.
 		$this->assertFalse( get_transient( 'thing' ) );
 		$this->assertSame( 'v', get_transient( '5:rt_ns_thing' ) );
 	}

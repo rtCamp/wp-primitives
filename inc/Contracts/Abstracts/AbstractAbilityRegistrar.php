@@ -2,6 +2,9 @@
 /**
  * Abstract Ability Registrar.
  *
+ * Registers a group of {@see AbstractAbility} instances with the WordPress Abilities API (WordPress 6.9+).
+ * The category is registered on `wp_abilities_api_categories_init` and each ability on `wp_abilities_api_init`.
+ *
  * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since   1.0.0
  */
@@ -14,20 +17,6 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
 
 /**
  * Class AbstractAbilityRegistrar
- *
- * Registers a group of {@see AbstractAbility} services with the WordPress
- * Abilities API (WordPress 6.9+): the shared category on
- * `wp_abilities_api_categories_init`, then each ability on
- * `wp_abilities_api_init` — the only hooks those registrations are legal on.
- * Core fires both lazily, the first time the abilities registry is accessed.
- *
- * On cores older than 6.9 the hooks never fire, so the registrar is inert and
- * the package's WordPress floor is unchanged. The function_exists guards
- * inside the callbacks are belt-and-braces for partial backports.
- *
- * Category registration is idempotent: the wp_register_ability_category()
- * call is skipped when the slug is already registered, so several registrars
- * can share one category and load in any order.
  *
  * @since 1.0.0
  */
@@ -92,10 +81,7 @@ abstract class AbstractAbilityRegistrar implements Registrable {
 
 	/**
 	 * Return the category description.
-	 *
-	 * The Abilities API rejects a category without a non-empty description,
-	 * so there is no default. Written for the caller browsing the category —
-	 * for MCP-exposed abilities that caller is an AI agent.
+	 * Written for the caller browsing the category. For abilities exposed over MCP, that caller is an AI agent.
 	 *
 	 * @return string Category description.
 	 */
@@ -104,8 +90,7 @@ abstract class AbstractAbilityRegistrar implements Registrable {
 	/**
 	 * Return the human-readable category label.
 	 *
-	 * Defaults to a title-cased version of the slug ("my-plugin" → "My Plugin").
-	 * Override to provide a more descriptive name.
+	 * Defaults to the slug in title case, so "my-plugin" becomes "My Plugin".
 	 *
 	 * @return string Category label.
 	 */
@@ -116,8 +101,7 @@ abstract class AbstractAbilityRegistrar implements Registrable {
 	/**
 	 * Runs immediately before the abilities are registered.
 	 *
-	 * Empty by default. Override for one-time preparation the abilities
-	 * depend on — ensuring storage exists, priming options, and so on.
+	 * Empty by default. Override for setup the abilities depend on, such as creating storage or priming options.
 	 */
 	protected function before_register(): void {}
 }

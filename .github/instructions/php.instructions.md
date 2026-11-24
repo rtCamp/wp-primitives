@@ -23,9 +23,9 @@ Everything under `inc/Contracts/` is a **consumed contract**. New abstracts/inte
 
 ## Flag on review (priority order)
 
-1. 🚩 **MANDATORY: always post, exempt from dedupe/trim/budget:** a new or changed class/trait/interface shipped without a matching test in `tests/phpunit/Integration/`.
-2. 🚩 Backward-incompatible change to anything under `inc/Contracts/` (renamed/removed/retyped public method, changed abstract signature) without a documented migration. This breaks every consumer.
-3. 🚩 A new dependency added to `composer.json` `require` (must stay `php`-only; dev tools go in `require-dev`).
-4. 🚩 Missing `strict_types`/types/docblocks; PSR-4 mismatch; `self::` where `static::` is required.
-5. 🚩 Missing escape/sanitize where the utility touches WordPress output/input; raw `$wpdb` without `prepare()`.
-6. 🚩 New abstract/interface that doesn't follow the existing contract shape (e.g. an `Abstract*` not implementing `Registrable`, or duplicating a capability the `Loader`/`Container` already provides).
+1. **MANDATORY: always post, exempt from dedupe/trim/budget:** a new or changed class/trait/interface shipped without a matching test in `tests/phpunit/Integration/`.
+2. Backward-incompatible change to anything under `inc/Contracts/` (renamed/removed/retyped public method, changed abstract signature) without a documented migration. This breaks every consumer.
+3. A new dependency added to `composer.json` `require` (must stay `php`-only; dev tools go in `require-dev`).
+4. Missing `strict_types`/types/docblocks; PSR-4 mismatch; `self::` where `static::` is required.
+5. Missing escape/sanitize where the utility touches WordPress output/input; raw `$wpdb` without `prepare()`.
+6. New abstract/interface that doesn't follow the existing contract shape (e.g. an `Abstract*` not implementing `Registrable`, or duplicating a capability the `Loader`/`Container` already provides).

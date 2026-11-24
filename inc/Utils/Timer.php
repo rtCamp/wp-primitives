@@ -13,28 +13,18 @@ namespace rtCamp\WPPrimitives\Utils;
 /**
  * Class - Timer
  *
- * Named timing segments that persist across scopes within a single request: start a
- * timer in one hook or file and stop it in another, with no globals or hand-passed
- * `microtime( true )` values.
- *
- * Instance-based, not a singleton. The cross-scope sharing the start-here / stop-there
- * pattern needs is met by holding one instance and sharing it — register it as
- * `Shareable` in the consumer's container (the same pattern as {@see Cache}) so
- * every hook resolves the same object. A theme and a plugin
- * in the same process then each keep their own decoupled timer set, instead of writing
- * into one global instance:
+ * Named timers for one request. A timer can be started in one hook and stopped
+ * in another when both use the same instance.
  *
  *     $timer = new Timer();
  *     $timer->start( 'render' );
- *     // … later, in another hook holding the same instance …
- *     $elapsed = $timer->stop( 'render' ); // float seconds
+ *     // ... Later, in another hook with the same instance:
+ *     $elapsed = $timer->stop( 'render' );
  *
- * Misuse (empty/duplicate/never-started/already-stopped labels) is reported via
- * `_doing_it_wrong()` — the WordPress convention for developer error — rather than by
- * throwing. The read methods ({@see get()}, {@see get_all()}) stay silent and simply
- * return null / an empty entry, so inspecting timers never emits notices.
+ * start(), stop() and lap() report an empty, duplicate, unstarted or stopped
+ * label with `_doing_it_wrong()`. get() and get_all() emit no notices.
  *
- * Times are returned as float seconds, consistent with `$wpdb->queries` timing.
+ * Times are in seconds, as floats.
  *
  * @since 1.0.0
  */
@@ -49,8 +39,7 @@ class Timer {
 	/**
 	 * Start a named timer.
 	 *
-	 * No-op (plus `_doing_it_wrong()`) when the label is empty or already started — a
-	 * second start would otherwise silently discard the original start time.
+	 * No-op (plus `_doing_it_wrong()`)  when the label is empty or already started.
 	 *
 	 * @param string $label Unique identifier for this timer.
 	 */
@@ -87,15 +76,13 @@ class Timer {
 	/**
 	 * Stop a named timer and return its elapsed time.
 	 *
-	 * Return paths:
-	 *   - empty label        → 0.0 plus `_doing_it_wrong()`;
-	 *   - never-started label → 0.0 plus `_doing_it_wrong()`;
-	 *   - already-stopped    → cached elapsed plus `_doing_it_wrong()` (no recompute);
-	 *   - running            → fresh elapsed, and the timer is marked stopped.
+	 * An empty or unstarted label returns 0.0 and triggers `_doing_it_wrong()`.
+	 * A stopped timer returns its recorded elapsed time and triggers
+	 * `_doing_it_wrong()`.
 	 *
 	 * @param string $label Timer to stop.
 	 *
-	 * @return float Elapsed seconds (0.0 when never started or the label is empty).
+	 * @return float Elapsed seconds.
 	 */
 	public function stop( string $label ): float {
 		if ( '' === $label ) {
@@ -141,9 +128,9 @@ class Timer {
 	/**
 	 * Record an intermediate split on a running timer.
 	 *
-	 * Stores the elapsed seconds since start at the moment {@see lap()} is called.
-	 * Reports via `_doing_it_wrong()` (and records nothing) when either argument is
-	 * empty, the timer was never started, or it has already been stopped.
+	 * Stores the seconds elapsed since the timer started. Records nothing and
+	 * triggers `_doing_it_wrong()` when either argument is empty or the timer is
+	 * not running.
 	 *
 	 * @param string $label Timer label.
 	 * @param string $name  Lap name.
@@ -199,9 +186,8 @@ class Timer {
 	/**
 	 * Get timing data for a single timer.
 	 *
-	 * Silent read: returns null for an empty or unknown label, and never emits a
-	 * notice. For a still-running timer, `elapsed` is the time since start at the
-	 * moment {@see get()} is called, without stopping it.
+	 * Returns null for an empty or unknown label. For a running timer, `elapsed`
+	 * is the time since it started.
 	 *
 	 * @param string $label Timer label.
 	 *
@@ -229,10 +215,8 @@ class Timer {
 	/**
 	 * Get every recorded timer.
 	 *
-	 * Each entry carries a computed `elapsed`; for running timers that is the
-	 * time-since-start measured against a single snapshot taken when
-	 * {@see get_all()} is called, so every running timer is read against the same
-	 * "now" regardless of iteration order.
+	 * The `elapsed` value of every running timer is measured against the same
+	 * microtime() reading.
 	 *
 	 * @return array<string, array{start: float, end: float|null, elapsed: float, laps: array<string, float>}>
 	 */

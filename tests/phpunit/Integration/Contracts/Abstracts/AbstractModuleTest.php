@@ -2,10 +2,6 @@
 /**
  * AbstractModule tests.
  *
- * The module is an orchestrator: it has no WordPress registration of its own,
- * it delegates to the Registrable classes from get_classes() via the Loader
- * trait. Verified with the shared Loader fixtures.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 

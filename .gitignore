@@ -2,7 +2,7 @@
 /vendor/
 /node_modules/
 
-# macOS/IDE
+# OS and editor files
 .DS_Store
 Thumbs.db
 .idea/
@@ -16,7 +16,7 @@ Thumbs.db
 tests/_output/*
 !tests/_output/.gitkeep
 
-# Local Configs
+# Local config overrides
 /phpcs.xml
 /phpunit.xml
 /phpstan.neon

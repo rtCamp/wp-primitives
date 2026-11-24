@@ -7,17 +7,8 @@ body:
   - type: markdown
     attributes:
       value: >-
-        Thanks for the suggestion. Please search
-        [existing issues](https://github.com/rtCamp/wp-primitives/issues?q=is%3Aissue)
-        first.
-  - type: markdown
-    attributes:
-      value: >-
-        `inc/Contracts/` is public API: every rtCamp plugin and theme consumes
-        it, so changing a signature there is a breaking change. The package also
-        keeps zero Composer runtime dependencies.
-        [CONTRIBUTING.md](https://github.com/rtCamp/wp-primitives/blob/main/.github/CONTRIBUTING.md)
-        explains how to build it yourself.
+        Thanks for the suggestion. Please search [existing issues](https://github.com/rtCamp/wp-primitives/issues?q=is%3Aissue) first.
+        See [CONTRIBUTING.md](https://github.com/rtCamp/wp-primitives/blob/main/.github/CONTRIBUTING.md) for contribution guidelines.
   - type: dropdown
     id: area
     attributes:

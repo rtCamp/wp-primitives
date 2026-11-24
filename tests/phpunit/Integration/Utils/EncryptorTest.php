@@ -2,7 +2,7 @@
 /**
  * Encryptor tests.
  *
- * @package rtCamp\WPPrimitives\Tests\Integration
+ * @package rtCamp\WPPrimitives\Tests\Integration\Utils
  */
 
 declare( strict_types = 1 );
@@ -27,11 +27,9 @@ final class EncryptorTest extends TestCase {
 	}
 
 	/**
-	 * The key OpenSSL actually receives, so tests can assert on the derivation
-	 * directly rather than inferring it from roundtrip behaviour.
+	 * Return the key passed to OpenSSL.
 	 *
-	 * The cipher_key() method is deliberately private — it must not be part of the override
-	 * seam — so reach it by reflection rather than widening the API for tests.
+	 * Encryptor::cipher_key() is private, so this calls it by reflection.
 	 *
 	 * @param Encryptor $encryptor Instance to derive for.
 	 */
@@ -51,8 +49,7 @@ final class EncryptorTest extends TestCase {
 	}
 
 	public function test_each_encryption_produces_different_ciphertext(): void {
-		// GCM uses a random IV per call, so the same plaintext must never
-		// produce identical ciphertext — that's a hard correctness invariant.
+		// GCM uses a random IV per call.
 		$encryptor = $this->encryptor();
 
 		$a = $encryptor->encrypt( 'hello world' );
@@ -91,10 +88,6 @@ final class EncryptorTest extends TestCase {
 	}
 
 	public function test_decrypt_rejects_a_truncated_tag_for_every_tag_value(): void {
-		// Regression: a payload holding only the IV plus a 1-byte "tag" left the
-		// ciphertext empty, and OpenSSL authenticates a truncated GCM tag at its
-		// truncated length, so 1 of these 256 forgeries decrypted to ''. Every
-		// candidate must be rejected now, not just most of them.
 		$encryptor = $this->encryptor();
 		$iv        = str_repeat( "\x01", 12 );
 
@@ -127,8 +120,7 @@ final class EncryptorTest extends TestCase {
 	}
 
 	public function test_empty_plaintext_roundtrips(): void {
-		// The smallest legitimate payload is IV + full tag with no ciphertext;
-		// the length guard must still let it through.
+		// The smallest valid payload is the IV plus a full tag, with no ciphertext.
 		$encryptor = $this->encryptor();
 		$encrypted = $encryptor->encrypt( '' );
 
@@ -165,9 +157,7 @@ final class EncryptorTest extends TestCase {
 		$this->assertFalse( $encryptor->decrypt( $encrypted ) );
 	}
 
-	public function test_key_seam_can_be_overridden_by_a_subclass(): void {
-		// A subclass can source the key from anywhere via the key() seam, while
-		// reusing the crypto unchanged.
+	public function test_key_can_be_overridden_by_a_subclass(): void {
 		$encryptor = new class() extends Encryptor {
 			protected function key(): string {
 				return str_repeat( 'z', 32 );
@@ -186,8 +176,6 @@ final class EncryptorTest extends TestCase {
 	}
 
 	public function test_non_gcm_cipher_is_rejected(): void {
-		// The payload layout (IV + tag + ciphertext) is GCM-specific, so a
-		// non-AEAD cipher must be rejected at construction.
 		$this->expectException( \InvalidArgumentException::class );
 
 		new Encryptor( self::KEY, 'aes-256-cbc' );
@@ -207,8 +195,7 @@ final class EncryptorTest extends TestCase {
 	 * @param string $secret Secret of a length other than the cipher key length.
 	 */
 	public function test_any_length_secret_derives_a_full_cipher_length_key( string $secret ): void {
-		// OpenSSL would NUL-pad a short secret and truncate a long one; the
-		// derivation must instead map any length to the full key length.
+		// OpenSSL NUL-pads a short key and truncates a long one, so the secret is hashed to the cipher key length first.
 		$this->assertSame( 32, strlen( $this->derived_key( new Encryptor( $secret ) ) ) );
 
 		$encryptor = $this->encryptor( $secret );
@@ -236,9 +223,7 @@ final class EncryptorTest extends TestCase {
 	}
 
 	public function test_secrets_differing_only_past_the_key_length_are_not_equivalent(): void {
-		// Regression: OpenSSL truncates an over-long key, so rotating only the
-		// tail of a long secret used to be a silent no-op. Hashing must make the
-		// whole secret significant.
+		// OpenSSL truncates an over-long key, so without hashing only the first 32 bytes of the secret would count.
 		$shared = str_repeat( 'k', 32 );
 		$first  = $shared . 'tail-one';
 		$second = $shared . 'tail-two';
@@ -254,10 +239,6 @@ final class EncryptorTest extends TestCase {
 	}
 
 	public function test_subclass_key_override_still_goes_through_the_derivation(): void {
-		// Regression: the derivation used to live inside key(), the documented
-		// override seam, so a subclass sourcing its secret from a KMS or env var
-		// bypassed it and handed OpenSSL a raw wrong-length key. The seam now
-		// returns a raw secret and the derivation sits behind it.
 		$override = new class() extends Encryptor {
 			protected function key(): string {
 				return 'short';
@@ -266,8 +247,7 @@ final class EncryptorTest extends TestCase {
 
 		$this->assertSame( 32, strlen( $this->derived_key( $override ) ) );
 
-		// Same secret via either route must derive the same key, so ciphertext
-		// from one decrypts with the other.
+		// The same secret derives the same key from key() or the constructor.
 		$encrypted = $override->encrypt( 'via override' );
 		$this->assertIsString( $encrypted );
 		$this->assertSame( 'via override', $this->encryptor( 'short' )->decrypt( $encrypted ) );
@@ -285,15 +265,13 @@ final class EncryptorTest extends TestCase {
 		$encrypted = $first->encrypt( 'override rotation' );
 		$this->assertIsString( $encrypted );
 
-		// Rotating only the tail of an over-long secret must actually change the
-		// key even when the secret arrives through the override seam.
+		// Rotating only the tail of an over-long secret must actually change the key.
 		$this->assertFalse( $this->encryptor( $shared . 'tail-two' )->decrypt( $encrypted ) );
 		$this->assertSame( 'override rotation', $this->encryptor( $shared . 'tail-one' )->decrypt( $encrypted ) );
 	}
 
 	public function test_short_secret_is_not_equivalent_to_its_nul_padded_form(): void {
-		// Regression: OpenSSL NUL-pads a short key, which made 'secret' and
-		// 'secret' + NULs the same key and quietly weakened the cipher.
+		// OpenSSL NUL-pads a short key, so without hashing 'secret' and its NUL-padded form would be the same key.
 		$secret = 'secret';
 		$padded = $secret . str_repeat( "\0", 32 - strlen( $secret ) );
 

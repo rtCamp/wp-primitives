@@ -91,8 +91,6 @@ final class AbstractTaxonomyTest extends TestCase {
 	}
 
 	public function test_static_get_slug_and_object_types_are_accessible_without_instance(): void {
-		// One of the reasons we kept get_slug() static — code that wires the
-		// taxonomy into other systems shouldn't need to instantiate it first.
 		$tax = $this->basic_taxonomy();
 
 		$this->assertSame( 'genre', $tax::get_slug() );

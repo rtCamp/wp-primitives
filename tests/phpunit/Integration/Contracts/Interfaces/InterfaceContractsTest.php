@@ -2,10 +2,6 @@
 /**
  * Interface contract smoke tests.
  *
- * Reflection-based checks that the interface signatures haven't been
- * accidentally changed by a refactor. These are cheap and catch the
- * most common breakage (renames, missing methods, inheritance changes).
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Interfaces
  */
 

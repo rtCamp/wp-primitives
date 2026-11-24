@@ -2,10 +2,6 @@
 /**
  * Loader trait.
  *
- * Loads a list of classes: instantiates each, registers hooks for any
- * Registrable, and caches any Shareable instance in a per-host Container.
- * Plain classes (neither Registrable nor Shareable) are just instantiated.
- *
  * @package rtCamp\WPPrimitives\Contracts\Traits
  * @since 1.0.0
  */
@@ -31,10 +27,9 @@ trait Loader {
 	private ?Container $container = null;
 
 	/**
-	 * Instantiate each class; register hooks if Registrable; cache if Shareable.
+	 * Instantiate each class.
 	 *
-	 * The Registrable and Shareable checks are independent — a class may be
-	 * both, in which case its hooks are registered and its instance is cached.
+	 * Creates a new instance of each class, registers hooks for each Registrable, and caches each Shareable instance in a per-host Container.
 	 *
 	 * @param class-string[] $classes Classes to load.
 	 */
@@ -51,12 +46,14 @@ trait Loader {
 
 			$instance = new $class_name();
 
+			// Register hooks if the instance is Registrable.
 			if ( $instance instanceof Registrable ) {
 				if ( ! $instance instanceof ConditionallyRegistrable || $instance->can_register() ) {
 					$instance->register_hooks();
 				}
 			}
 
+			// Cache the instance if it is Shareable.
 			if ( $instance instanceof Shareable ) {
 				$this->container->set( $class_name, $instance );
 			}

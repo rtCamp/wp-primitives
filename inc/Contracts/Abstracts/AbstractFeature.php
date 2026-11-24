@@ -2,6 +2,11 @@
 /**
  * Abstract Feature.
  *
+ * Base class for a service that runs only when its feature flag is enabled.
+ * Each feature extends a consumer-defined intermediate class whose get_feature_registry() returns the shared FeatureSelector.
+ *
+ * The constructor adds the feature to the registry, which the settings page reads.
+ *
  * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since   1.0.0
  */
@@ -15,15 +20,6 @@ use rtCamp\WPPrimitives\Utils\FeatureSelector;
 
 /**
  * Class AbstractFeature
- *
- * Base class for feature-flag-gated services. Each concrete feature extends a
- * consumer-defined intermediate that supplies the shared FeatureSelector
- * registry via get_feature_registry().
- *
- * On construction the feature self-registers its slug, display name, and
- * description into the registry so the admin settings page discovers it
- * automatically. can_register() reads the same registry to decide whether
- * register_hooks() should run.
  *
  * @since 1.0.0
  */
@@ -45,8 +41,7 @@ abstract class AbstractFeature implements ConditionallyRegistrable {
 	/**
 	 * Return the human-readable label shown on the settings page.
 	 *
-	 * Defaults to a title-cased version of the slug ("author-bio" → "Author Bio").
-	 * Override to provide a more descriptive name.
+	 * Defaults to the slug in title case, so "author-bio" becomes "Author Bio".
 	 *
 	 * @return string Display name.
 	 */

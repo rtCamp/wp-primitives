@@ -19,9 +19,9 @@
 		How to scan: include CLI args so you don't need to pass them manually
 		Usage instructions: https://github.com/PHPCSStandards/PHP_CodeSniffer/wiki/Usage
 	-->
-	<!-- Show sniff and progress -->
+	<!-- Show sniff codes and progress. -->
 	<arg value="sp" />
-	<!-- Strip the file paths down to the relevant bit -->
+	<!-- Report file paths relative to the project root. -->
 	<arg name="basepath" value="./" />
 	<!-- Enable colors in report -->
 	<arg name="colors" />
@@ -63,7 +63,7 @@
 		</properties>
 	</rule>
 
-	<!-- Relax test rules for test files -->
+	<!-- Relax docblock and other rules for tests. -->
 	<rule ref="Squiz.Commenting.FunctionComment">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>

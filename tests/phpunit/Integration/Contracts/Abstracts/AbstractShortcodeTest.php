@@ -2,10 +2,6 @@
 /**
  * AbstractShortcode tests.
  *
- * Integration tests against real WordPress (wp-env): asserts the tag is
- * registered and that do_shortcode() renders through the callback with the
- * default attributes merged.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 

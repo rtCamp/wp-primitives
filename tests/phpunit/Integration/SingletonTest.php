@@ -30,9 +30,6 @@ final class SingletonTest extends TestCase {
 	}
 
 	public function test_constructor_runs_only_once_regardless_of_call_count(): void {
-		// Multiple calls to get_instance() must never construct more than once.
-		// Order-independent: tests run in random order, but the count is
-		// bounded at 1 for the lifetime of the process.
 		SingletonExample::get_instance();
 		SingletonExample::get_instance();
 		SingletonExample::get_instance();
@@ -58,20 +55,12 @@ final class SingletonTest extends TestCase {
 		$this->assertInstanceOf( BareSingleton::class, BareSingleton::get_instance() );
 	}
 
-	public function test_the_documented_early_assignment_guard_supports_reentrant_construction(): void {
-		// Regression: the trait documents that a heavy constructor should assign
-		// `static::$instance = $this;` first, so work done during construction (a
-		// Main running a Loader) can call get_instance() re-entrantly and receive
-		// the same object. This pins that contract — the property must stay
-		// protected and assignable, and the guard must short-circuit a second
-		// construction. Changing the storage broke a real consumer once already.
+	public function test_early_assignment_guard_supports_reentrant_construction(): void {
 		$instance = ReentrantSingleton::get_instance();
 
 		$this->assertSame( 1, ReentrantSingleton::$construct_count );
 		$this->assertSame( $instance, ReentrantSingleton::$seen_during_construction );
 
-		// The re-entrant caller saw the constructor's progress on this object,
-		// not a fresh copy with default property values.
 		$this->assertSame( 'yes', ReentrantSingleton::$seen_during_construction->ready );
 	}
 
@@ -85,9 +74,6 @@ final class SingletonTest extends TestCase {
 			$this->assertSame( 'construction failed', $e->getMessage() );
 		}
 
-		// Nothing is stored until the constructor returns, so the failed attempt
-		// cached nothing: once construction can succeed, get_instance() builds a
-		// fresh, working instance.
 		FlakySingleton::$fail = false;
 
 		$this->assertInstanceOf( FlakySingleton::class, FlakySingleton::get_instance() );

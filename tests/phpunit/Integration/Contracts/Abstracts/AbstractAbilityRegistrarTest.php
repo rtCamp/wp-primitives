@@ -2,15 +2,6 @@
 /**
  * AbstractAbilityRegistrar tests.
  *
- * These exercise the real Abilities API (WordPress 6.9+): the registrar's
- * hooks fire through core's lazy registry initialization, then abilities are
- * read back with wp_get_ability(). On older cores every test is skipped.
- * Both core registries are singletons, so they are reset via reflection
- * around every test (the suite runs in random order). The hooks each
- * registrar adds need no such cleanup — WP_UnitTestCase::tear_down() restores
- * $wp_filter wholesale after every test. Tests use anonymous classes
- * throughout so each scenario is self-contained.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 
@@ -46,8 +37,7 @@ final class AbstractAbilityRegistrarTest extends TestCase {
 	}
 
 	/**
-	 * Null both core registry singletons so each test starts from a cold,
-	 * uninitialized Abilities API.
+	 * Set both core registry singletons to null so the next access initializes the Abilities API again.
 	 */
 	private function reset_abilities_registries(): void {
 		foreach ( [ \WP_Abilities_Registry::class, \WP_Ability_Categories_Registry::class ] as $registry ) {
@@ -62,8 +52,9 @@ final class AbstractAbilityRegistrarTest extends TestCase {
 	}
 
 	/**
-	 * Initialize the Abilities API exactly like production: the first registry
-	 * access fires wp_abilities_api_categories_init, then wp_abilities_api_init.
+	 * Initialize the Abilities API.
+	 *
+	 * The first registry access fires wp_abilities_api_categories_init, then wp_abilities_api_init.
 	 */
 	private function init_abilities_api(): void {
 		\WP_Abilities_Registry::get_instance();
@@ -116,14 +107,14 @@ final class AbstractAbilityRegistrarTest extends TestCase {
 	}
 
 	/**
-	 * Concrete AbstractAbilityRegistrar with injectable seams.
+	 * Build a concrete AbstractAbilityRegistrar.
 	 *
-	 * The Abilities API rejects empty category descriptions, so the abstract
-	 * category_description() always returns a real string here.
+	 * The Abilities API rejects an empty category description, so
+	 * $description defaults to a non-empty string.
 	 *
 	 * @param string $slug        Category slug.
 	 * @param array  $abilities   Abilities to register.
-	 * @param string $label       Optional category_label() override.
+	 * @param string $label       Value for category_label(). Empty uses the parent default.
 	 * @param string $description Category description.
 	 */
 	private function make_registrar(
@@ -213,8 +204,7 @@ final class AbstractAbilityRegistrarTest extends TestCase {
 
 		$this->init_abilities_api();
 
-		// The first registrar wins; the second skips its wp_register_ability_category()
-		// call instead of triggering a duplicate-registration notice.
+		// The second registrar skips wp_register_ability_category(), which would otherwise raise a duplicate-registration notice.
 		$category = wp_get_ability_category( 'test-plugin' );
 
 		$this->assertInstanceOf( \WP_Ability_Category::class, $category );

@@ -1,13 +1,10 @@
 name: Dependabot auto-merge
 
-# GitHub's documented pattern: run on the Dependabot pull request itself (no
-# workflow_run, no checkout), read the update type from Dependabot's metadata and
-# enable auto-merge for minor and patch updates. Auto-merge then waits for every
-# ruleset requirement, so the "Test and Measure" jobs must be required status
-# checks for a red run to block the merge.
+# Enables auto-merge for Dependabot minor and patch updates.
 #
-# Repository prerequisites (Settings): "Allow auto-merge" enabled, and the main
-# ruleset's required reviews satisfiable for Dependabot pull requests.
+# Requires "Allow auto-merge" in the repository settings, and the "Test and Measure" jobs as required
+# status checks so a failing run blocks the merge.
+# @see https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions
 
 on: pull_request
 

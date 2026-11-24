@@ -15,12 +15,8 @@ namespace rtCamp\WPPrimitives\Utils;
 /**
  * Class - Encryptor
  *
- * Instance-based, configured with a key (and optional cipher) at construction —
- * so different domains can use different keys, and it is trivially testable.
- *
- * Designed to be a service: construct it with a key, register an instance as
- * Shareable in a consumer's container, or extend it to change the cipher or the
- * key source (e.g. KMS) by overriding the {@see Encryptor::key()} seam.
+ * Each instance has its own key and cipher. To read the key from another source such as a KMS,
+ * override {@see Encryptor::key()}.
  *
  * @since 1.0.0
  */
@@ -149,9 +145,7 @@ class Encryptor {
 	/**
 	 * Whether the OpenSSL extension is available.
 	 *
-	 * A seam rather than an inline extension_loaded() call so the "no OpenSSL"
-	 * path, which makes encrypt() and decrypt() fail closed, can be exercised by
-	 * a subclass in tests.
+	 * Tests override this to cover the path where encrypt() and decrypt() return false.
 	 *
 	 * @return bool True when OpenSSL can be used.
 	 */
@@ -162,13 +156,10 @@ class Encryptor {
 	/**
 	 * Resolve the raw secret.
 	 *
-	 * Override seam: a subclass can source the secret from elsewhere (KMS, a
-	 * rotated secret, an env var) without touching the crypto. Must never return
-	 * an empty secret — encryption must not proceed with a weak/missing key.
+	 * Subclasses override this to read the secret from another source, such as a KMS or an environment variable.
+	 * Overrides must throw rather than return an empty string.
 	 *
-	 * The return value is a *secret of any length*, not a cipher key: the
-	 * derivation in {@see Encryptor::cipher_key()} turns it into one, so an
-	 * override cannot accidentally hand OpenSSL a wrong-length key.
+	 * The secret can be any length. {@see Encryptor::cipher_key()} derives the cipher key from it.
 	 *
 	 * @return string The raw secret.
 	 *
@@ -185,20 +176,15 @@ class Encryptor {
 	}
 
 	/**
-	 * Derive the cipher key actually handed to OpenSSL.
+	 * Derive the cipher key passed to OpenSSL.
 	 *
-	 * Deliberately private and not part of the override seam: the derivation is
-	 * a correctness guarantee for every key source, including subclasses that
-	 * override {@see Encryptor::key()}. Were this folded into that seam, a KMS-
-	 * or env-backed override would bypass it and fall back to OpenSSL's silent
-	 * handling of a wrong-length key.
+	 * OpenSSL NUL-pads a short key and truncates a long one. For AES-256, a
+	 * 16-byte secret would become 16 secret bytes and 16 zero bytes, and
+	 * changing only the tail of a long secret would have no effect. Hashing
+	 * turns a secret of any length into a key of the cipher's length.
 	 *
-	 * OpenSSL NUL-pads a too-short key and truncates a too-long one, which would
-	 * quietly weaken the cipher (a 16-byte secret becomes 16 real bytes + 16 zero
-	 * bytes for AES-256) and make rotating only the tail of a long secret a no-op.
-	 * Hashing maps any-length secret to a full-strength, fixed-length key
-	 * deterministically. Only reached from encrypt()/decrypt(), which have already
-	 * confirmed the OpenSSL extension is loaded.
+	 * This method is private so that overrides of {@see Encryptor::key()} still
+	 * go through the derivation.
 	 *
 	 * @return string Key of exactly the cipher's key length.
 	 *

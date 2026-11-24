@@ -13,8 +13,7 @@ use rtCamp\WPPrimitives\Contracts\Interfaces\Registrable;
 use rtCamp\WPPrimitives\Contracts\Interfaces\Shareable;
 
 /**
- * Counts constructions and registrations so a duplicate entry in the class list
- * is observable — a boolean flag cannot tell "registered" from "registered twice".
+ * Shareable Registrable that counts constructions and register_hooks() calls.
  */
 final class CountingRegistrable implements Registrable, Shareable {
 	public static int $construct_count = 0;
