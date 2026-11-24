@@ -8,6 +8,7 @@
 	},
 	"scripts": {
 		"format": "wp-scripts format . '**/*.md'",
+		"format:check": "prettier --check --ignore-path .prettierignore '**/*.{cjs,cts,js,json,jsx,mjs,mts,ts,tsx,yml,yaml,md}'",
 		"lint:js": "wp-scripts lint-js",
 		"lint:js:fix": "wp-scripts lint-js --fix",
 		"lint:php": "composer run-script lint",
@@ -23,7 +24,8 @@
 		"@rtcamp/eslint-config": "2.0.0",
 		"@wordpress/env": "12.2.0",
 		"@wordpress/prettier-config": "5.2.0",
-		"@wordpress/scripts": "37.2.0"
+		"@wordpress/scripts": "37.2.0",
+		"prettier": "npm:wp-prettier@3.9.6"
 	},
 	"overrides": {
 		"@wp-playground/storage": {
@@ -32,6 +34,6 @@
 		"express": {
 			"qs": "6.16.2"
 		},
-		"prettier": "npm:wp-prettier@^3"
+		"prettier": "$prettier"
 	}
 }
