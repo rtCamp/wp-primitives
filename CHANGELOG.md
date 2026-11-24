@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Repository files for outside contributors. Bug report and feature request issue forms replace blank issues, and `config.yml` sends security reports to private vulnerability reporting. `.github/CODEOWNERS` requests reviews from the maintainers. `.github/labels.yml` records the label set shared across the rtCamp framework repositories, plus this repository's `Scope:` labels, for maintainers to apply with `gh label create --force`. `.github/release.yml` now groups GitHub's generated release notes by those labels. All of it stays under `.github/`, which the Composer archive already leaves out.
 
+## [2.1.1](https://github.com/rtCamp/wp-primitives/compare/v2.1.0...v2.1.1) (2026-11-24)
+
+
+### Fixed
+
+* remediate PHPStan level 8 issues ([#117](https://github.com/rtCamp/wp-primitives/issues/117)) ([d70ca3a](https://github.com/rtCamp/wp-primitives/commit/d70ca3a14d7b81cec0299287b6c85d1194f48430))
+
 ## [2.1.0] - 2026-10-02
 
 ### Added
