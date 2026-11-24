@@ -27,6 +27,7 @@ Run these before opening a pull request:
 composer lint
 composer analyse
 npm run lint:js
+npm run format:check
 npm run test:php
 ```
 
@@ -58,7 +59,7 @@ npm run wp-env stop
 - Add reusable test-only classes under `tests/phpunit/Tests/Fixtures/`.
 - Keep tests order-independent; PHPUnit runs them in random order.
 
-CI runs PHPCS, PHPStan, ESLint, and a PHP × WordPress integration-test matrix. The local commands above are the closest single-environment equivalent.
+CI runs PHPCS, PHPStan, ESLint, a Prettier formatting check, and a PHP × WordPress integration-test matrix. The local commands above are the closest single-environment equivalent.
 
 ## Changing the library
 

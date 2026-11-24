@@ -21,12 +21,13 @@ npm run wp-env start
 
 ## Before you open a PR
 
-Run all four checks locally — all of them must exit `0`:
+Run all five checks locally — all of them must exit `0`:
 
 ```bash
 composer lint
 composer analyse
 npm run lint:js
+npm run format:check
 npm run test:php
 ```
 
@@ -37,6 +38,7 @@ composer lint      # PHPCS against the rtCampWP standard (rtcamp/wp-phpcs)
 composer lint:fix  # auto-fix fixable violations
 composer analyse   # PHPStan static analysis
 npm run lint:js    # ESLint (@rtcamp/eslint-config) on bin/
+npm run format
 npm run test:php   # PHPUnit in the wp-env test container
 ```
 
@@ -46,7 +48,7 @@ Follow TDD: add a failing test under `tests/phpunit/Integration/` (which mirrors
 
 ## Pull request checklist
 
-- [ ] `composer lint`, `composer analyse`, `npm run lint:js`, and `npm run test:php` pass.
+- [ ] `composer lint`, `composer analyse`, `npm run lint:js`, `npm run format:check`, and `npm run test:php` pass.
 - [ ] New/changed behavior is covered by tests.
 - [ ] Any change to `inc/Contracts/` is flagged as breaking in the PR description.
 - [ ] Contract changes are reflected in `ai/primitives-php.instructions.md`.
