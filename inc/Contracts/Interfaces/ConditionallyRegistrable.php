@@ -2,13 +2,8 @@
 /**
  * Interface for Registrable classes whose registration is conditional.
  *
- * Implement this when a class should only register its hooks under certain
- * runtime conditions — e.g. behind a feature flag, when WP-CLI is active,
- * or only in admin requests. The Loader skips register_hooks() entirely
- * when can_register() returns false.
- *
- * Classes that always register can keep implementing the plain Registrable
- * interface instead; this one is strictly opt-in.
+ * Implement this when a class should only register its hooks under certain runtime conditions, such as feature flags,
+ * when WP-CLI is active, or an admin request.
  *
  * @package rtCamp\WPPrimitives\Contracts\Interfaces
  * @since 1.0.0

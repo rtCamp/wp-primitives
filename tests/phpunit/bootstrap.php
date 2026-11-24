@@ -14,7 +14,7 @@ if ( file_exists( TESTS_REPO_ROOT_DIR . '/vendor/autoload.php' ) ) {
 	require_once TESTS_REPO_ROOT_DIR . '/vendor/autoload.php';
 }
 
-// When run in the wp-env context, point at the test config it provides.
+// wp-env provides its own test config.
 if ( ! defined( 'WP_TESTS_CONFIG_FILE_PATH' ) && false !== getenv( 'WP_PHPUNIT__TESTS_CONFIG' ) ) {
 	define( 'WP_TESTS_CONFIG_FILE_PATH', getenv( 'WP_PHPUNIT__TESTS_CONFIG' ) );
 }

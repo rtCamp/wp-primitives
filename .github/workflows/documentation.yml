@@ -43,9 +43,8 @@ jobs:
 
       - name: Build documentation
         id: docs
-        # Pinned to a commit: the action's code only lives on the unmerged
-        # codex/documentation-workflow branch (rtCamp/action-docusaurus-build#1).
-        # Move to a release tag once that PR merges and is tagged.
+        # @todo Switch to a release tag commit once the Action is merged and tagged.
+        # @see https://github.com/rtCamp/action-docusaurus-build#1.
         uses: rtCamp/action-docusaurus-build@b671d6800c68a74da8913edb9321422fe8afaedc # codex/documentation-workflow, 2026-09-17
         with:
           site-title: ${{ vars.DOCS_SITE_TITLE }}

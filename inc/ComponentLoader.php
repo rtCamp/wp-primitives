@@ -2,13 +2,13 @@
 /**
  * Component loader for resolving and rendering PHP component partials.
  *
- * A component is a self-contained, render-only package (PHP + built CSS/JS).
- * The loader resolves it following the WordPress theme hierarchy — child theme
- * overrides parent theme overrides plugin — renders the PHP in an isolated
- * scope, and (by default) registers + enqueues its CSS/JS.
+ * A component is a PHP partial with optional built CSS and JS. The loader
+ * resolves it in theme hierarchy order (child theme, then parent theme, then
+ * plugin), renders the PHP in an isolated scope, and by default registers and
+ * enqueues its CSS and JS.
  *
- * Each consuming package (a theme, a plugin) loads its own subclass with a
- * distinct context, so their components and asset handles never collide.
+ * Each theme or plugin uses its own subclass with a distinct context, which
+ * namespaces its hooks and asset handles.
  *
  * @package rtCamp\WPPrimitives
  * @since   1.0.0
@@ -27,8 +27,8 @@ class ComponentLoader {
 	/**
 	 * Component PHP directory, relative to each source root in the hierarchy.
 	 *
-	 * A component resolves to `<root>/src/components/{Name}/{Name}.php`, searched
-	 * across get_asset_loaders() (child theme → parent theme → package).
+	 * A component resolves to `<root>/src/components/{Name}/{Name}.php`. The roots
+	 * come from {@see ComponentLoader::get_asset_loaders()}.
 	 *
 	 * @var string
 	 */
@@ -68,14 +68,14 @@ class ComponentLoader {
 	private array $component_data_cache = [];
 
 	/**
-	 * Asset loader for the package's own base — the owning theme or plugin root.
+	 * Asset loader for the owning theme or plugin root.
 	 *
 	 * @var AssetLoader|null
 	 */
 	private ?AssetLoader $asset_loader;
 
 	/**
-	 * Memoised asset loaders to search for component assets, override-precedence first.
+	 * Memoised result of get_asset_loaders().
 	 *
 	 * @var array<int, AssetLoader>|null
 	 */
@@ -84,24 +84,17 @@ class ComponentLoader {
 	/**
 	 * Constructor.
 	 *
-	 * @param AssetLoader|null $asset_loader Asset loader for the package's own
-	 *                                       base (its theme or plugin root) —
-	 *                                       typically the shared instance.
-	 *                                       Optional: a subclass loaded
-	 *                                       via the framework Loader instead
-	 *                                       overrides get_asset_loader() to resolve
-	 *                                       a shared instance lazily.
+	 * @param AssetLoader|null $asset_loader Asset loader for the parent theme or plugin root.
 	 */
 	public function __construct( ?AssetLoader $asset_loader = null ) {
 		$this->asset_loader = $asset_loader;
 	}
 
 	/**
-	 * Get the context slug identifying the package that owns this loader.
+	 * Get the context slug (prefix) identifying the package that owns this loader.
 	 *
-	 * Used to namespace asset handles and to target the component filters.
-	 * Subclasses override this to return their own slug (e.g. a theme/plugin
-	 * slug); the default keeps the framework's own namespace.
+	 * Prefixes asset handles and component hook names. Subclasses override it
+	 * with their theme or plugin slug.
 	 *
 	 * @return string Context slug.
 	 */
@@ -110,12 +103,7 @@ class ComponentLoader {
 	}
 
 	/**
-	 * Build a context-namespaced hook name so one package's component filters
-	 * don't fire for another's.
-	 *
-	 * The context is prefixed into the hook name (e.g. `my-plugin/component_before_render`),
-	 * mirroring TemplateLoader's prefixed hooks — the loader context slug is still
-	 * passed as an argument for handlers that want it.
+	 * Build a hook name prefixed with the context, e.g. `my-plugin/component_before_render`.
 	 *
 	 * @param non-empty-string $event Hook suffix (e.g. 'before_render').
 	 *
@@ -126,10 +114,9 @@ class ComponentLoader {
 	}
 
 	/**
-	 * Get the package's own asset loader — the owning theme or plugin.
+	 * Get the asset loader for the parent theme or plugin.
 	 *
-	 * Returns the injected loader. A subclass loaded without constructor
-	 * injection must override this to supply one (e.g. a shared instance).
+	 * Returns the loader passed to the constructor.
 	 *
 	 * @return AssetLoader Asset loader instance.
 	 *
@@ -148,16 +135,14 @@ class ComponentLoader {
 	/**
 	 * Asset loaders to search for a component asset, in override precedence.
 	 *
-	 * Follows the WordPress template hierarchy (child theme > parent theme >
-	 * plugin), but only includes the override layers that sit *above* the
-	 * package's own loader and that actually exist — so no redundant loaders are
-	 * spawned:
+	 * Follows the WordPress template hierarchy and includes only the layers that
+	 * take precedence over the owning package:
 	 *
-	 * - self is the parent theme → [ child?, self ]
-	 * - self is the child theme  → [ self ]
-	 * - self is a plugin         → [ child?, parent, self ]
+	 * - Owner is the parent theme: [ child?, owner ]
+	 * - Owner is the child theme: [ owner ]
+	 * - Owner is a plugin: [ child?, parent, owner ]
 	 *
-	 * where `child?` is present only when a distinct child theme is active.
+	 * `child?` is included only when a child theme is active.
 	 *
 	 * @return array<int, AssetLoader> Asset loaders, override-precedence first.
 	 */
@@ -175,17 +160,17 @@ class ComponentLoader {
 
 		$loaders = [];
 
-		// Child theme override layer: a distinct child theme exists and self isn't it.
+		// A child theme is active and is not the owner.
 		if ( $has_child && $self_dir !== $stylesheet ) {
 			$loaders[] = new AssetLoader( $stylesheet, get_stylesheet_directory_uri(), $assets_dir );
 		}
 
-		// Parent theme override layer: self is neither the parent nor the child theme.
+		// The owner is neither the parent nor the child theme.
 		if ( $self_dir !== $template && $self_dir !== $stylesheet ) {
 			$loaders[] = new AssetLoader( $template, get_template_directory_uri(), $assets_dir );
 		}
 
-		// The package's own loader is lowest precedence — overrides above win.
+		// The package's own loader has the lowest precedence.
 		$loaders[] = $self;
 
 		$this->asset_loaders = $loaders;
@@ -194,8 +179,9 @@ class ComponentLoader {
 	}
 
 	/**
-	 * Clear request-level lookup caches: resolved component metadata and the
-	 * memoised asset-loader hierarchy (so a mid-request theme change is picked up).
+	 * Clear the resolved component metadata and the memoised asset loaders.
+	 *
+	 * Useful after switch_theme() or switch_to_blog() on a long-lived instance.
 	 */
 	public function clear_cache(): void {
 		$this->component_data_cache = [];
@@ -204,9 +190,6 @@ class ComponentLoader {
 
 	/**
 	 * Render a component by name.
-	 *
-	 * Resolves the component file from child theme, parent theme, or plugin paths,
-	 * then includes it with the provided arguments available in scope.
 	 *
 	 * @param string               $name    Component name (e.g. 'Button', 'Card').
 	 * @param array<string, mixed> $args    Arguments to pass to the component.
@@ -225,9 +208,6 @@ class ComponentLoader {
 
 	/**
 	 * Get the rendered HTML of a component as a string.
-	 *
-	 * Uses output buffering to capture the component output instead of
-	 * sending it directly to the browser.
 	 *
 	 * @param string               $name    Component name (e.g. 'Button', 'Card').
 	 * @param array<string, mixed> $args    Arguments to pass to the component.
@@ -251,8 +231,7 @@ class ComponentLoader {
 	}
 
 	/**
-	 * Shared render pipeline backing render() and get(): resolve the component,
-	 * include its file, then register + enqueue its assets.
+	 * Resolve a component, include its file, then register and enqueue its assets.
 	 *
 	 * @param string               $name    Component name (e.g. 'Button', 'Card').
 	 * @param array<string, mixed> $args    Arguments to pass to the component.
@@ -289,9 +268,7 @@ class ComponentLoader {
 		 */
 		do_action( $this->component_hook( 'before_render' ), $name, $args, $context );
 
-		// Delegate to a private static method so the component file loads in an
-		// isolated scope with no access to $this. self:: (not static::) is
-		// deliberate — the loader must not late-bind to a subclass here.
+		// Load in an isolated scope.
 		self::load_template( (string) $component['file'], $args, $name, $options );
 
 		$this->enqueue_component_assets( $component, $options );
@@ -333,10 +310,7 @@ class ComponentLoader {
 	}
 
 	/**
-	 * Resolve a component's metadata (resolved file path + asset info).
-	 *
-	 * The component PHP is located across the source hierarchy (child theme →
-	 * parent theme → package), at `<root>/{php_dir}/{Name}/{Name}.php`.
+	 * Resolve a component's file path and asset names across the resolution hierarchy.
 	 *
 	 * @param string               $name    Component name.
 	 * @param array<string, mixed> $options Resolution options.
@@ -387,8 +361,7 @@ class ComponentLoader {
 	/**
 	 * Locate a component's PHP file across the resolution hierarchy.
 	 *
-	 * Searches each loader's base directory for `<base>/{php_dir}/{Name}/{Name}.php`,
-	 * first hit wins.
+	 * Returns the first readable `<base>/{php_dir}/{Name}/{Name}.php`.
 	 *
 	 * @param string $component_name Component name.
 	 * @param bool   $allow_override Whether theme/child overrides may win, or only the package's own dir.
@@ -412,9 +385,6 @@ class ComponentLoader {
 	/**
 	 * Loaders to search when resolving a component, in override precedence.
 	 *
-	 * The full override hierarchy when overrides are allowed, otherwise only the
-	 * package's own loader — so the component resolves from its own directory.
-	 *
 	 * @param bool $allow_override Whether theme/child overrides may win.
 	 *
 	 * @return array<int, AssetLoader> Loaders to search, override-precedence first.
@@ -426,9 +396,7 @@ class ComponentLoader {
 	/**
 	 * Resolve the asset filenames a component requests.
 	 *
-	 * Returns the asset name (relative to the assets directory, no extension)
-	 * for each requested type; existence and the override base are resolved at
-	 * registration time across get_asset_loaders().
+	 * Asset names are relative to the assets directory, without an extension.
 	 *
 	 * @param string               $component_name Component name.
 	 * @param array<string, mixed> $options        Component render options.
@@ -540,8 +508,7 @@ class ComponentLoader {
 	/**
 	 * Ensure a component asset is registered.
 	 *
-	 * Searches the asset loaders in override precedence and registers via the
-	 * first one that holds the file.
+	 * Resolves the asset through the first loader that has the file.
 	 *
 	 * @param non-empty-string $asset_type     'style' or 'script'.
 	 * @param non-empty-string $handle         Asset handle. Should be unique.
@@ -575,10 +542,6 @@ class ComponentLoader {
 	/**
 	 * Normalize and validate a component name before using it in filesystem paths.
 	 *
-	 * Trims whitespace, bounds the length, and allows only alphanumeric
-	 * characters, underscores and dashes — which inherently blocks empty names,
-	 * path separators and traversal sequences.
-	 *
 	 * @param string $name Component name to normalize and validate.
 	 *
 	 * @return string|false Normalized component name, or false when invalid.
@@ -594,11 +557,7 @@ class ComponentLoader {
 	}
 
 	/**
-	 * Isolate the scope for the required component file.
-	 *
-	 * The component receives $args, $name and the resolved $options in scope
-	 * (and no access to $this), so it can render and forward options to nested
-	 * components.
+	 * Require a component file in a static scope.
 	 *
 	 * @param string               $__file  Component file path.
 	 * @param array<string, mixed> $args    Component arguments.

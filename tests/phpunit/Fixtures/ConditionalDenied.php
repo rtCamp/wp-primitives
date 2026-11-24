@@ -12,7 +12,7 @@ namespace rtCamp\WPPrimitives\Tests\Fixtures;
 use rtCamp\WPPrimitives\Contracts\Interfaces\ConditionallyRegistrable;
 
 /**
- * A ConditionallyRegistrable that opts out — register_hooks() must NOT fire.
+ * ConditionallyRegistrable whose can_register() returns false.
  */
 final class ConditionalDenied implements ConditionallyRegistrable {
 	public static bool $registered = false;

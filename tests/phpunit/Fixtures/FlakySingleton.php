@@ -1,9 +1,6 @@
 <?php
 /**
- * Singleton fixture whose constructor throws on the first attempt.
- *
- * Exercises the rollback path: a failed construction must not leave a
- * half-built instance published, and a later call must construct again.
+ * Singleton fixture whose constructor throws while FlakySingleton::$fail is true.
  *
  * @package rtCamp\WPPrimitives\Tests\Fixtures
  */

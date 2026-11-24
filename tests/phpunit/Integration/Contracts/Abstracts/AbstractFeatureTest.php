@@ -2,10 +2,6 @@
 /**
  * AbstractFeature tests.
  *
- * AbstractFeature is a framework contract: the concrete FeatureSelector and
- * the abstract get_slug() / get_feature_registry() are the moving parts.
- * Tests use anonymous classes throughout so each scenario is self-contained.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 
@@ -25,15 +21,15 @@ use rtCamp\WPPrimitives\Utils\FeatureSelector;
  */
 final class AbstractFeatureTest extends TestCase {
 	/**
-	 * Concrete AbstractFeature backed by a local FeatureSelector.
+	 * Build a concrete AbstractFeature that registers into $registry.
 	 *
-	 * Constructor promotion assigns $registry before parent::__construct() runs,
-	 * so get_feature_registry() is safe to call from the parent constructor.
+	 * PHP assigns promoted properties before parent::__construct() runs, so the
+	 * parent constructor can call get_feature_registry().
 	 *
-	 * @param FeatureSelector $registry    Selector instance to register into.
+	 * @param FeatureSelector $registry    Selector to register into.
 	 * @param string          $slug        Flag slug.
-	 * @param string          $name        Optional override for get_name().
-	 * @param string          $description Optional override for get_description().
+	 * @param string          $name        Value for get_name(). Empty uses the parent default.
+	 * @param string          $description Value for get_description(). Empty uses the parent default.
 	 */
 	private function make_feature(
 		FeatureSelector $registry,

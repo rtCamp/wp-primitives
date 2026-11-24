@@ -21,7 +21,7 @@ Detailed rules: `.github/instructions/php.instructions.md`.
 
 ## Review conduct
 
-- **One comment per distinct issue** Distinct problems get separate comments, even on the same line. A single root cause spanning lines → posted once at the clearest line.
+- **One comment per distinct issue.** Distinct problems get separate comments, even on the same line. Post a single root cause spanning lines once, at the clearest line.
 - **Always post the missing-tests finding** when a new/changed class ships without a matching test in `tests/phpunit/Integration/`. Mandatory; exempt from dedupe/trim/comment-budget.
 - **Order by impact:** backward-compatibility/contract break → correctness → security → style.
 - **On a correct, deliberate implementation, don't manufacture findings.** Prefer zero comments over low-value ones. A clean PR comes back clean.

@@ -2,11 +2,6 @@
 /**
  * AbstractAdminPage tests.
  *
- * Integration tests against real WordPress (wp-env): asserts top-level and
- * submenu pages are registered with WordPress' admin-menu globals. add_menu_page()
- * lives in wp-admin/includes/plugin.php and checks the current user's capability,
- * so both are set up here.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 

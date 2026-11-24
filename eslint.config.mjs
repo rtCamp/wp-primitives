@@ -1,9 +1,8 @@
 /**
- * rtCamp shared ESLint flat config.
+ * ESLint flat config.
  *
- * Extends `@rtcamp/eslint-config` (which bundles `@wordpress/eslint-plugin`,
- * eslint-comments, and the jest config for test files). Only the
- * project-specific ignores are layered on top.
+ * Extends `@rtcamp/eslint-config`.
+ * @see https://github.com/rtCamp/wp-tooling/tree/main/node-packages/eslint-config
  */
 import rtCampConfig from '@rtcamp/eslint-config';
 

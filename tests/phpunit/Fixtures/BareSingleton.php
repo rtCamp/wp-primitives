@@ -1,9 +1,6 @@
 <?php
 /**
- * Singleton fixture that does NOT override the trait constructor.
- *
- * Exercises the trait's default protected __construct (SingletonExample
- * overrides it, so the default body would otherwise never run).
+ * Singleton fixture that keeps the trait's default constructor.
  *
  * @package rtCamp\WPPrimitives\Tests\Fixtures
  */

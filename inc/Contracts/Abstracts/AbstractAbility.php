@@ -1,6 +1,9 @@
 <?php
 /**
- * Abstract Ability.
+ * Base class for a WordPress Abilities API ability (WordPress 6.9+).
+ *
+ * Registration itself is performed by an {@see AbstractAbilityRegistrar}, which registers the shared
+ * category and loops its abilities on the Abilities API init hooks.
  *
  * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since   1.0.0
@@ -13,25 +16,13 @@ namespace rtCamp\WPPrimitives\Contracts\Abstracts;
 /**
  * Class AbstractAbility
  *
- * Base class for a WordPress Abilities API ability (WordPress 6.9+). A
- * subclass declares the pieces of an ability — name, label, description,
- * category, schemas, and the execute callback — and args() maps them to the
- * argument array wp_register_ability() expects. Registration itself is
- * performed by an {@see AbstractAbilityRegistrar}, which registers the shared
- * category and loops its abilities on the Abilities API init hooks.
- *
- * Exposure is opt-in: meta() defaults to empty, so an ability is not exposed
- * over REST and carries no MCP flag unless the subclass says so. The
- * permission gate defaults to `manage_options` (fail-closed).
- *
  * @since 1.0.0
  */
 abstract class AbstractAbility {
 	/**
 	 * Return the fully-qualified ability name, e.g. "my-plugin/do-thing".
 	 *
-	 * Must match the Abilities API name pattern `^[a-z0-9-]+/[a-z0-9-]+$`
-	 * (namespace prefix, a slash, then the ability slug).
+	 * Must match the Abilities API name pattern `<namespace prefix>/<ability slug>`.
 	 *
 	 * @return lowercase-string&non-falsy-string Ability name.
 	 */
@@ -47,8 +38,8 @@ abstract class AbstractAbility {
 	/**
 	 * Return the description of what the ability does.
 	 *
-	 * Written for the caller deciding whether to invoke the ability — for an
-	 * MCP-exposed ability that caller is an AI agent choosing a tool.
+	 * Written for the caller deciding whether to invoke the ability. For an ability exposed over MCP, that caller is
+	 * the AI agent choosing a tool.
 	 *
 	 * @return string Description.
 	 */
@@ -58,28 +49,23 @@ abstract class AbstractAbility {
 	 * Return the slug of the category this ability belongs to.
 	 *
 	 * The Abilities API requires every ability to name a registered category.
-	 * The {@see AbstractAbilityRegistrar} that registers this ability
-	 * registers the category first, so the two normally return the same slug.
+	 * The {@see AbstractAbilityRegistrar} that registers this ability registers the category first, so the two normally return the same slug.
 	 *
 	 * @return string Category slug.
 	 */
 	abstract protected function category(): string;
 
 	/**
-	 * Return the JSON Schema describing the ability input.
+	 * The JSON Schema describing the ability input.
 	 *
-	 * Return an empty array for an ability that takes no input; args() then
-	 * omits the key entirely.
+	 * Return an empty array for an ability that takes no input.
 	 *
 	 * @return array<string, mixed> Input schema.
 	 */
 	abstract protected function input_schema(): array;
 
 	/**
-	 * Return the JSON Schema describing the ability output.
-	 *
-	 * Return an empty array to leave the output unspecified; args() then
-	 * omits the key entirely.
+	 * The JSON Schema describing the ability output.
 	 *
 	 * @return array<string, mixed> Output schema.
 	 */
@@ -95,25 +81,21 @@ abstract class AbstractAbility {
 	abstract public function execute( mixed $input ): mixed;
 
 	/**
-	 * Decide whether the current user may execute the ability.
-	 *
-	 * Defaults to `manage_options` — fail-closed, administrators only.
-	 * Override to gate on a different capability or on the input.
+	 * Whether the current user may execute the ability.
 	 *
 	 * @param mixed $input Input the ability is being called with.
 	 *
 	 * @return bool|\WP_Error True to allow; false or a WP_Error to deny.
 	 */
-	protected function permission( mixed $input = null ): bool|\WP_Error { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- $input is the override seam; the default gate ignores it.
+	protected function permission( mixed $input = null ): bool|\WP_Error { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- Available for overrides that use $input.
 		return current_user_can( 'manage_options' );
 	}
 
 	/**
 	 * Return the ability meta.
 	 *
-	 * Defaults to empty, which keeps the Abilities API defaults — not exposed
-	 * over REST, no MCP flag. Override to opt in, e.g.
-	 * `[ 'show_in_rest' => true ]`.
+	 * Leave empty to keep the Abilities API defaults. Override to change them, e.g.
+	 * `[ 'show_in_rest' => true ]`
 	 *
 	 * @return array<string, mixed> Meta.
 	 */
@@ -122,14 +104,7 @@ abstract class AbstractAbility {
 	}
 
 	/**
-	 * Build the registration arguments for wp_register_ability().
-	 *
-	 * The schema and meta keys are included only when non-empty, so the
-	 * Abilities API applies its own defaults otherwise. Both callbacks are
-	 * wrapped in closures with a defaulted parameter: when an ability
-	 * declares no input schema, core invokes its callbacks with no arguments
-	 * at all, and the wrappers keep that call safe for the required
-	 * execute() signature (and keep permission() protected).
+	 * Builds the registration arguments for wp_register_ability().
 	 *
 	 * @return array<string, mixed> Registration args.
 	 */

@@ -30,4 +30,6 @@
 /CLAUDE.md    linguist-documentation export-ignore
 /CHANGELOG.md linguist-documentation export-ignore
 
-# Ship on purpose: README.md and LICENSE.md, inc/, plus ai/ and bin/sync-ai-instructions.js, which consumers run from vendor/ via `npm run sync-ai`.
+# These are intentionally shipped.
+/LICENSE.md linguist-documentation
+/README.md  linguist-documentation

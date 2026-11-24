@@ -2,14 +2,12 @@
 /**
  * Asset loader.
  *
- * Concrete, injectable asset loader for WordPress scripts, styles, script
- * modules and block manifests. A plain class (not a trait) so the loading
- * behaviour has an instance identity that can be passed around and shared —
- * consumers either extend it or, when their base-class slot is taken, hold one.
+ * Registers WordPress scripts, styles, script modules and block manifests.
+ * Consumers extend it or hold an instance.
  *
- * Registers an asset by name relative to the instance's assets directory, set at
- * construction: the source URL is built from the base URL and the dependency +
- * version metadata is read from the sibling `*.asset.php` manifest on disk.
+ * Assets are registered by name relative to the assets directory passed to the
+ * constructor. The source URL is built from the base URL, and the dependencies
+ * and version are read from the sibling `*.asset.php` manifest.
  *
  * @package rtCamp\WPPrimitives
  *
@@ -27,14 +25,14 @@ namespace rtCamp\WPPrimitives;
  */
 class AssetLoader {
 	/**
-	 * Default asset handle prefix. Subclasses override this constant to namespace
-	 * their handles; handle() reads it via late static binding.
+	 * Asset handle prefix used by handle().
+	 *
+	 * Subclasses override it to namespace their handles.
 	 */
 	public const HANDLE_PREFIX = 'wp-primitives-';
 
 	/**
-	 * Base directory path (plugin or theme root). Readable by subclasses that
-	 * need to resolve their own paths (e.g. a block build directory).
+	 * Base directory path (plugin or theme root).
 	 *
 	 * @var string
 	 */
@@ -77,10 +75,7 @@ class AssetLoader {
 	}
 
 	/**
-	 * Prefix a short name with HANDLE_PREFIX to form an asset handle. With the
-	 * default prefix, handle( 'frontend' ) returns 'wp-primitives-frontend'.
-	 * Subclasses namespace their handles by overriding the HANDLE_PREFIX
-	 * constant; uniqueness is the caller's responsibility (pass distinct names).
+	 * Prefix a short name with HANDLE_PREFIX to form an asset handle.
 	 *
 	 * @param string $name Short handle name.
 	 *
@@ -108,8 +103,6 @@ class AssetLoader {
 	 * @return bool True if the asset file exists.
 	 */
 	public function has_asset( string $filename, string $extension ): bool {
-		// Mirror get_asset_meta()'s traversal guard: this is public API and may be
-		// called directly with consumer-supplied values.
 		if ( ! $this->is_safe_asset_path( $filename, $extension ) ) {
 			return false;
 		}
@@ -122,11 +115,11 @@ class AssetLoader {
 	/**
 	 * Whether a filename/extension pair is safe to interpolate into a path.
 	 *
-	 * Both parts matter. The extension is joined after a literal dot, so a
-	 * leading-dot extension forms `..` out of two values that each look clean:
-	 * `has_asset( '/', './outside' )` would otherwise build `<base>//../outside`
-	 * and probe outside the assets directory. An extension is a bare suffix, so
-	 * path separators in it are always wrong.
+	 * The extension is joined after a literal dot, so a leading-dot extension
+	 * forms `..` from two values that pass the `..` check on their own.
+	 *
+	 * For example, `has_asset( '/', './outside' )` would build `<base>//../outside`.
+	 * Path separators are rejected in the extension.
 	 *
 	 * @param string $filename  Asset path relative to the assets directory, excluding the extension.
 	 * @param string $extension Asset file extension (e.g. 'js', 'css').
@@ -165,10 +158,6 @@ class AssetLoader {
 	/**
 	 * Resolve the effective dependencies and version for a registration.
 	 *
-	 * Explicit arguments win; otherwise values are inherited from $meta. The
-	 * version is normalised to `string|false` so it passes straight to the
-	 * wp_register_* functions (which read `false` as "no version").
-	 *
 	 * @param array{version: string, dependencies?: array<int, non-empty-string>} $meta Resolved asset metadata.
 	 * @param array<non-empty-string>                                             $deps Caller dependencies (empty to inherit).
 	 * @param ?string                                                             $ver  Caller version (null to inherit).
@@ -187,12 +176,6 @@ class AssetLoader {
 
 	/**
 	 * Register a block collection from its manifest file.
-	 *
-	 * Uses the block metadata-collection API (`wp_register_block_types_from_metadata_collection()`)
-	 * when available — WordPress 6.8+ — which registers every block from a single
-	 * manifest without reading each block.json. On the supported 6.5–6.7 range
-	 * that function does not exist, so each block is registered from its own
-	 * block.json on disk instead: slower, but functionally equivalent.
 	 *
 	 * @param string $block_path    Relative path to the block collection. E.g. `build/blocks`.
 	 * @param string $manifest_file Path to the manifest file, relative to the base directory. E.g. `build/blocks-manifest.php`.
@@ -216,9 +199,7 @@ class AssetLoader {
 			return;
 		}
 
-		// Fallback for WordPress 6.5–6.7: register each block from disk. The
-		// manifest is keyed by block directory name; the block.json lives in the
-		// built block directory under $blocks_dir.
+		// Fallback for WordPress 6.5 to 6.7: register each block from its own block.json.
 		// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- Existence checked above.
 		$manifest = require $manifest_path;
 
@@ -294,11 +275,11 @@ class AssetLoader {
 	 *
 	 * @param string                                                $handle   Name of the script module. Should be unique.
 	 * @param string                                                $filename Path of the module relative to the assets directory, excluding the .js extension.
-	 * @param array<int, string|array{id: string, import?: string}> $deps     Optional. Module dependencies — each a module-ID string or an [id, import] array. Inherited from the asset file if empty.
+	 * @param array<int, string|array{id: string, import?: string}> $deps     Optional. Module dependencies, each a module ID string or an [id, import] array. Inherited from the asset file if empty.
 	 * @param ?string                                               $ver      Optional. Version string. Inherited from the asset file (or filemtime) if null.
 	 *
-	 * @return bool False if the asset file is missing; otherwise true. (wp_register_script_module()
-	 *              returns void, so success past the file check cannot be reported.)
+	 * @return bool False if the asset file is missing, otherwise true. wp_register_script_module()
+	 *              returns void, so a failure after the file check is not reported.
 	 */
 	public function register_script_module( string $handle, string $filename, array $deps = [], ?string $ver = null ): bool {
 		$meta = $this->get_asset_meta( $filename, 'js' );
@@ -309,8 +290,7 @@ class AssetLoader {
 
 		$module_deps = empty( $deps ) ? ( $meta['dependencies'] ?? [] ) : $deps;
 
-		// wp_register_script_module() expects each dependency in id/import form;
-		// normalise plain module-ID strings while leaving array entries intact.
+		// wp_register_script_module() expects each dependency as an [id, import] array.
 		$module_deps = array_map(
 			static fn ( string|array $dep ): array => is_array( $dep ) ? $dep : [ 'id' => $dep ],
 			$module_deps
@@ -331,9 +311,8 @@ class AssetLoader {
 	/**
 	 * Resolve asset metadata for an asset by name (relative path + extension).
 	 *
-	 * Returns null if the filename is rejected for path traversal, or — with a
-	 * warning — if the asset file itself is missing. The `.asset.php` manifest is
-	 * optional, and an invalid one is ignored with a warning (see read_asset_manifest()).
+	 * Triggers a _doing_it_wrong() notice when the asset file is missing. The
+	 * `.asset.php` manifest is optional; see {@see AssetLoader::read_asset_manifest()}.
 	 *
 	 * @param string $filename  Asset path relative to the assets directory, excluding the extension.
 	 * @param string $extension Asset file extension (e.g. 'js', 'css').
@@ -341,10 +320,7 @@ class AssetLoader {
 	 * @return array{version: string, dependencies?: array<int, non-empty-string>}|null Metadata, or null if the filename is rejected (path traversal) or the asset file is missing.
 	 */
 	private function get_asset_meta( string $filename, string $extension ): ?array {
-		// $filename feeds a require() in read_asset_manifest(); reject traversal
-		// in either part up front. The in-tree callers pre-sanitise and pass a
-		// literal extension, but this class is public API and may be called
-		// directly, so the guard covers both values.
+		// $filename feeds a require() in read_asset_manifest().
 		if ( ! $this->is_safe_asset_path( $filename, $extension ) ) {
 			return null;
 		}
@@ -353,7 +329,7 @@ class AssetLoader {
 		$manifest_file = sprintf( '%s/%s.asset.php', $base, $filename );
 		$asset_file    = sprintf( '%s/%s.%s', $base, $filename, $extension );
 
-		// The actual asset file is required — if it's missing, there is nothing to register.
+		// Without an asset file, there's nothing to register.
 		if ( ! file_exists( $asset_file ) ) {
 			_doing_it_wrong(
 				static::class,
@@ -373,6 +349,8 @@ class AssetLoader {
 
 	/**
 	 * Read an optional `.asset.php` manifest, falling back to the asset's filemtime.
+	 *
+	 * An invalid manifest triggers a _doing_it_wrong() notice and is ignored.
 	 *
 	 * @param string $manifest_file Absolute path to the `.asset.php` manifest.
 	 * @param string $asset_file    Absolute path to the asset file the version falls back to.

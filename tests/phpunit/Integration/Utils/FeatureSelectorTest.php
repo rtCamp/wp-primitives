@@ -2,7 +2,7 @@
 /**
  * FeatureSelector utility tests.
  *
- * @package rtCamp\WPPrimitives\Tests\Integration
+ * @package rtCamp\WPPrimitives\Tests\Integration\Utils
  */
 
 declare( strict_types = 1 );
@@ -14,16 +14,6 @@ use rtCamp\WPPrimitives\Utils\FeatureSelector;
 
 /**
  * Tests for FeatureSelector.
- *
- * Integration tests against real WordPress (wp-env): toggles persist through the
- * options API and each test's writes are rolled back by WP_UnitTestCase. The
- * loud `_doing_it_wrong()` paths are asserted with setExpectedIncorrectUsage();
- * a path that should stay silent simply omits it (an unexpected notice fails the
- * test).
- *
- * Constants are process-global and immutable, so every constant-precedence test
- * uses a flag slug unique to that test and a guarded define() to stay idempotent
- * across re-runs in the same process.
  */
 final class FeatureSelectorTest extends TestCase {
 	/**
@@ -124,7 +114,6 @@ final class FeatureSelectorTest extends TestCase {
 		$this->selector->register( [ 'my-flag' => [ 'name' => 'Original' ] ] );
 		$this->selector->register( [ 'my-flag' => [ 'name' => 'Updated' ] ] );
 
-		// First write wins; the duplicate is ignored and flagged loudly.
 		$this->assertSame( 'Original', $this->selector->get_features()['my-flag']['name'] );
 	}
 
@@ -134,14 +123,11 @@ final class FeatureSelectorTest extends TestCase {
 		$this->selector->register( [ 'beta-search' ] );
 		$this->selector->register( [ 'beta search' ] ); // Normalizes to the same key.
 
-		// First registration wins; the colliding slug is rejected and flagged.
 		$this->assertSame( [ 'beta-search' ], $this->selector->get_registered() );
 	}
 
 	public function test_register_skips_malformed_entries(): void {
-		// Malformed: int key with array value, string key with string value.
-		// No setExpectedIncorrectUsage(): skipping is silent, so an unexpected
-		// _doing_it_wrong() here would fail the test.
+		// An int key with an array value and a string key with a string value are both skipped without a _doing_it_wrong() notice.
 		$this->selector->register(
 			[
 				0          => [ 'name' => 'Nameless' ],
@@ -173,8 +159,6 @@ final class FeatureSelectorTest extends TestCase {
 	}
 
 	public function test_enable_refuses_and_warns_for_an_unregistered_flag(): void {
-		// A typo'd toggle is a programming error: nothing is persisted, and the
-		// caller is flagged loudly rather than silently believing it took effect.
 		$this->setExpectedIncorrectUsage( 'rtCamp\WPPrimitives\Utils\FeatureSelector::enable' );
 
 		$this->assertFalse( $this->selector->enable( 'drak-mode' ) );
@@ -191,11 +175,10 @@ final class FeatureSelectorTest extends TestCase {
 	public function test_disable_turns_off_a_never_stored_default_on_flag(): void {
 		$this->selector->register( [ 'fresh-flag' ] );
 
-		// Enabled by default, with no option ever written.
+		// Enabled by default, with no option written.
 		$this->assertTrue( $this->selector->is_enabled( 'fresh-flag' ) );
 		$this->assertFalse( get_option( 'my_plugin_features', false ) );
 
-		// disable() must persist `false` even though no row existed yet.
 		$this->selector->disable( 'fresh-flag' );
 
 		$this->assertFalse( $this->selector->is_enabled( 'fresh-flag' ) );
@@ -208,8 +191,6 @@ final class FeatureSelectorTest extends TestCase {
 		$this->selector->enable( 'feature-a' );
 		$this->selector->disable( 'feature-b' );
 
-		// All toggles live in one option (a single autoloaded row), not one
-		// option per flag.
 		$this->assertSame(
 			[
 				'feature-a' => true,
@@ -224,8 +205,6 @@ final class FeatureSelectorTest extends TestCase {
 	public function test_unregistered_flag_fails_closed(): void {
 		$this->selector->register( [ 'dark-mode' ] );
 
-		// A mistyped or never-registered slug returns false rather than inheriting
-		// the default-on, and the read stays silent (no _doing_it_wrong()).
 		$this->assertFalse( $this->selector->is_enabled( 'drak-mode' ) );
 		$this->assertFalse( $this->selector->is_enabled( 'totally-unknown' ) );
 	}
@@ -235,9 +214,7 @@ final class FeatureSelectorTest extends TestCase {
 			define( 'MY_PLUGIN_FEATURE_PHANTOM', true );
 		}
 
-		// The registry is authoritative: a flag that was never registered stays
-		// off even if a matching override constant happens to be defined — the
-		// registry check runs before the constant lookup.
+		// The registry check runs before the constant lookup.
 		$this->assertFalse( $this->selector->is_enabled( 'phantom' ) );
 	}
 
@@ -248,7 +225,6 @@ final class FeatureSelectorTest extends TestCase {
 
 		$this->selector->register( [ 'forced-on' ] );
 
-		// Even with the option explicitly set to false, the constant wins.
 		$this->selector->disable( 'forced-on' );
 
 		$this->assertTrue( $this->selector->is_enabled( 'forced-on' ) );
@@ -273,8 +249,7 @@ final class FeatureSelectorTest extends TestCase {
 
 		$this->selector->register( [ 'string-off' ] );
 
-		// A constant typed as the string 'false' (a common wp-config mistake)
-		// must disable the flag — a bare `(bool) 'false'` would be true.
+		// wp-config.php users often write 'false' as a string, and `(bool) 'false'` is true.
 		$this->assertFalse( $this->selector->is_enabled( 'string-off' ) );
 	}
 
@@ -287,10 +262,6 @@ final class FeatureSelectorTest extends TestCase {
 	}
 
 	public function test_slugs_with_repeated_dashes_get_distinct_constants(): void {
-		// Regression: the constant used to be derived via normalize(), which
-		// collapses runs of dashes, so these two slugs shared one constant and a
-		// single define() would lock both. flag_key() keeps them apart, and the
-		// constant must follow the same partition as storage.
 		$this->assertNotSame(
 			$this->selector->flag_key( 'beta-search' ),
 			$this->selector->flag_key( 'beta--search' )
@@ -306,9 +277,6 @@ final class FeatureSelectorTest extends TestCase {
 	}
 
 	public function test_constant_name_follows_the_same_partition_as_storage(): void {
-		// Two slugs that flag_key() maps to the same storage key must also map to
-		// the same constant — otherwise a flag could be locked under one spelling
-		// and read under another.
 		$this->assertSame(
 			$this->selector->flag_key( 'Dark Mode' ),
 			$this->selector->flag_key( 'dark-mode' )
@@ -329,13 +297,12 @@ final class FeatureSelectorTest extends TestCase {
 	}
 
 	public function test_context_is_normalized(): void {
-		// Context normalization uses underscores for the option name.
 		$this->assertSame(
 			'my_plugin_features',
 			( new FeatureSelector( 'My-Plugin' ) )->shared_option_key()
 		);
 
-		// Runs of spaces/dots and other invalid characters collapse to one underscore.
+		// Runs of spaces, dots and other invalid characters collapse to one underscore.
 		$this->assertSame(
 			'my_plugin_v2_0_features',
 			( new FeatureSelector( 'My Plugin v2.0' ) )->shared_option_key()
@@ -348,8 +315,6 @@ final class FeatureSelectorTest extends TestCase {
 		$this->selector->register( [ 'shared-flag' ] );
 		$other->register( [ 'shared-flag' ] );
 
-		// Same slug, opposite states: each context reads its own option key,
-		// so toggling one cannot affect the other.
 		$this->selector->enable( 'shared-flag' );
 		$other->disable( 'shared-flag' );
 

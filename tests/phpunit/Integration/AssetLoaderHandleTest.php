@@ -35,7 +35,7 @@ final class AssetLoaderHandleTest extends TestCase {
 }
 
 /**
- * Subclass overriding HANDLE_PREFIX, to prove the override is honoured.
+ * Subclass with a custom HANDLE_PREFIX.
  */
 final class AssetLoaderWithPluginPrefix extends AssetLoader {
 

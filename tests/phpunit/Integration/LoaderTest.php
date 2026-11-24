@@ -2,13 +2,6 @@
 /**
  * Loader trait tests.
  *
- * Verifies the load() contract:
- *   - Plain Registrable → register_hooks() called
- *   - ConditionallyRegistrable + can_register()=true → register_hooks() called
- *   - ConditionallyRegistrable + can_register()=false → register_hooks() skipped
- *   - Shareable → instance cached, retrievable via get_shared()
- *   - A class that is both Shareable and Registrable gets both treatments
- *
  * @package rtCamp\WPPrimitives\Tests\Integration
  */
 
@@ -53,9 +46,6 @@ final class LoaderTest extends TestCase {
 	}
 
 	public function test_a_class_listed_twice_is_loaded_once(): void {
-		// Without de-duplication the class is constructed twice and registers its
-		// hooks on two separate instances, so the hook body runs twice while the
-		// container keeps only the last instance.
 		$loader = new LoaderRunner();
 		$loader->run( [ CountingRegistrable::class, CountingRegistrable::class ] );
 
@@ -64,8 +54,6 @@ final class LoaderTest extends TestCase {
 	}
 
 	public function test_the_shared_instance_is_the_one_that_registered_hooks(): void {
-		// The de-duplication must keep a single instance, not quietly replace the
-		// registered one with a second construction.
 		$loader = new LoaderRunner();
 		$loader->run( [ CountingRegistrable::class, CountingRegistrable::class ] );
 

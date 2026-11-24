@@ -2,7 +2,7 @@
 /**
  * FeatureSelectorSettingsPage utility tests.
  *
- * @package rtCamp\WPPrimitives\Tests\Integration
+ * @package rtCamp\WPPrimitives\Tests\Integration\Utils
  */
 
 declare( strict_types = 1 );
@@ -15,10 +15,6 @@ use rtCamp\WPPrimitives\Utils\FeatureSelectorSettingsPage;
 
 /**
  * Tests for FeatureSelectorSettingsPage.
- *
- * Integration tests against real WordPress (wp-env): hooks, the registered
- * setting, the admin submenu, and settings sections/fields are read back from
- * WordPress' own registries rather than stubs.
  */
 final class FeatureSelectorSettingsPageTest extends TestCase {
 
@@ -51,9 +47,7 @@ final class FeatureSelectorSettingsPageTest extends TestCase {
 	}
 
 	public function tear_down(): void {
-		// Several tests simulate an options.php form save by setting this
-		// superglobal. Clear it here so a failing assertion mid-test cannot
-		// leak the form-save context into whichever test runs next.
+		// Several tests set this to simulate an options.php form save.
 		unset( $_POST['option_page'] );
 
 		parent::tear_down();
@@ -62,8 +56,7 @@ final class FeatureSelectorSettingsPageTest extends TestCase {
 	/**
 	 * Instantiate a concrete FeatureSelectorSettingsPage backed by $selector.
 	 *
-	 * FeatureSelectorSettingsPage is abstract (get_selector() must be provided by
-	 * the consumer), so tests use an anonymous class to supply the implementation.
+	 * The anonymous class implements the abstract get_selector().
 	 *
 	 * @param FeatureSelector $selector Selector to back the page.
 	 */
@@ -115,8 +108,7 @@ final class FeatureSelectorSettingsPageTest extends TestCase {
 		$this->assertNotFalse( has_action( 'admin_init', [ $this->page, 'register_settings' ] ) );
 		$this->assertNotFalse( has_action( 'rest_api_init', [ $this->page, 'register_settings' ] ) );
 
-		// add_settings_section/field are undefined during REST requests —
-		// register_fields must be wired to admin_init only.
+		// add_settings_section() and add_settings_field() are undefined during REST requests.
 		$this->assertNotFalse( has_action( 'admin_init', [ $this->page, 'register_fields' ] ) );
 		$this->assertFalse( has_action( 'rest_api_init', [ $this->page, 'register_fields' ] ) );
 	}
@@ -161,17 +153,15 @@ final class FeatureSelectorSettingsPageTest extends TestCase {
 
 		$registered = get_registered_settings();
 
-		// All flags share one option: the page registers exactly one setting and
-		// no per-flag settings.
+		// All flags share one option.
 		$this->assertArrayHasKey( 'my_plugin_features', $registered );
 		$this->assertArrayNotHasKey( 'my_plugin_feature_dark_mode', $registered );
 
 		$this->assertSame( 'array', $registered['my_plugin_features']['type'] );
 		$this->assertSame( [], $registered['my_plugin_features']['default'] );
 
-		// On a genuine options.php form save the sanitize callback rebuilds the
-		// stored array: a checked flag becomes true, an unchecked (absent) flag
-		// becomes false. Simulate that form-save context.
+		// On an options.php form save, sanitize_settings() stores a checked flag as
+		// true and an absent flag as false.
 		$_POST['option_page'] = 'my_plugin_features';
 
 		$this->assertSame(
@@ -195,16 +185,14 @@ final class FeatureSelectorSettingsPageTest extends TestCase {
 
 		$this->page->register_fields();
 
-		// Saving the page (nothing submitted) rebuilds the stored array: the free
-		// flag follows the empty form and turns off, but the locked flag carries
-		// no field, so its stored value is preserved rather than reset to false.
+		// An empty form save turns the free flag off and keeps the stored value of the flag locked by a constant.
 		$_POST['option_page'] = 'my_plugin_features';
 		$sanitized            = $this->page->sanitize_settings( [] );
 
 		$this->assertTrue( $sanitized['reg-locked'] );
 		$this->assertFalse( $sanitized['free-flag'] );
 
-		// It still renders as a (disabled) field so the lock stays visible.
+		// The locked flag still renders, as a disabled field.
 		$this->assertArrayHasKey(
 			'reg-locked',
 			$GLOBALS['wp_settings_fields']['my-plugin-features']['my_plugin_features_section']
@@ -212,11 +200,6 @@ final class FeatureSelectorSettingsPageTest extends TestCase {
 	}
 
 	public function test_programmatic_enable_after_register_settings_does_not_reset_other_flags(): void {
-		// Regression: sanitize_settings() is a sanitize_option_{key} filter that
-		// fires on EVERY write of the shared option. register_settings() installs
-		// it (as it would on any admin/REST request), then a programmatic enable()
-		// writes the option. That write must NOT route through the form rebuild and
-		// reset the other default-on, never-stored flags to false.
 		$this->selector->register( [ 'feature-a', 'feature-b', 'feature-c' ] );
 		$this->page->register_settings();
 
@@ -228,9 +211,6 @@ final class FeatureSelectorSettingsPageTest extends TestCase {
 	}
 
 	public function test_flags_registered_after_hooks_still_appear(): void {
-		// Consumers register flags at plugins_loaded/init — after register_hooks()
-		// but before admin_init fires register_fields(). The field list must be
-		// read lazily at that point, not captured when the hooks were wired.
 		$this->page->register_hooks();
 		$this->selector->register( [ 'late-flag' ] );
 
@@ -288,7 +268,7 @@ final class FeatureSelectorSettingsPageTest extends TestCase {
 
 	public function test_render_field_prints_description_when_present(): void {
 		$this->selector->register( [ 'dark-mode' => [ 'description' => 'Switch the UI to dark.' ] ] );
-		$this->selector->disable( 'dark-mode' ); // Default is on; force off so "unchecked" is meaningful.
+		$this->selector->disable( 'dark-mode' ); // Flags default to on.
 
 		$output = $this->render_field_output( 'dark-mode' );
 
@@ -306,7 +286,7 @@ final class FeatureSelectorSettingsPageTest extends TestCase {
 		$output = $this->render_field_output( 'locked-flag' );
 
 		$this->assertStringContainsString( 'disabled', $output );
-		$this->assertStringContainsString( 'checked', $output ); // Constant value is reflected.
+		$this->assertStringContainsString( 'checked', $output ); // The checkbox shows the constant's value.
 		$this->assertStringContainsString( 'MY_PLUGIN_FEATURE_LOCKED_FLAG', $output );
 	}
 

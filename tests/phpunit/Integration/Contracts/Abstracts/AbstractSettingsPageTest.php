@@ -2,11 +2,6 @@
 /**
  * AbstractSettingsPage tests.
  *
- * Integration tests against real WordPress (wp-env): asserts the three hooks
- * are wired, settings register with the Settings API, the page is added as a
- * submenu under its parent, and the get_menu_slug() seam redirects the slug
- * registered with the admin menu.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 
@@ -85,9 +80,8 @@ final class AbstractSettingsPageTest extends TestCase {
 	}
 
 	public function test_register_hooks_aligns_the_save_capability_with_get_capability(): void {
-		// options.php gates the save on option_page_capability_{group}, which
-		// defaults to manage_options. A page that lowers get_capability() would
-		// otherwise render for a user who then silently fails to save.
+		// options.php checks option_page_capability_{group}, which defaults to
+		// manage_options, before saving.
 		$page = new class() extends AbstractSettingsPage {
 			public static function get_slug(): string {
 				return 'wpf-test-settings';
@@ -123,7 +117,6 @@ final class AbstractSettingsPageTest extends TestCase {
 	public function test_save_capability_filter_is_scoped_to_this_pages_option_group(): void {
 		$this->settings_page()->register_hooks();
 
-		// Another plugin's option group must be left untouched.
 		$this->assertSame(
 			'manage_options',
 			apply_filters( 'option_page_capability_some_other_group', 'manage_options' )
@@ -164,7 +157,6 @@ final class AbstractSettingsPageTest extends TestCase {
 
 		$page->register_page();
 
-		// get_menu_slug() overrides the static get_slug() as the admin-menu slug.
 		$slugs = wp_list_pluck( $GLOBALS['submenu']['options-general.php'] ?? [], 2 );
 		$this->assertContains( 'wpf-test-overridden-slug', $slugs );
 		$this->assertNotContains( self::SLUG, $slugs );

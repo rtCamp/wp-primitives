@@ -14,15 +14,6 @@ use rtCamp\WPPrimitives\Utils\Logger;
 
 /**
  * Tests for Logger.
- *
- * Runs against real WordPress (wp-env), where WP_DEBUG is true — so the default logger
- * writes, and wp_json_encode() is the real function rather than a stub. Output is
- * captured by pointing PHP's error_log at a per-test temp file. The "silent in
- * production" path is exercised through a subclass that overrides the is_enabled() seam
- * to return false, since the WP_DEBUG constant cannot be toggled mid-request.
- *
- * Assertions match on the unique message each test logs rather than on an empty file,
- * so unrelated error_log noise from the environment can't make a test flaky.
  */
 final class LoggerTest extends TestCase {
 
@@ -115,8 +106,6 @@ final class LoggerTest extends TestCase {
 	}
 
 	public function test_default_logger_is_enabled_under_wp_debug(): void {
-		// The wp-env test environment defines WP_DEBUG = true, so the default
-		// is_enabled() gate is open and the line is written.
 		$this->assertTrue( defined( 'WP_DEBUG' ) && WP_DEBUG, 'wp-env should run tests with WP_DEBUG enabled.' );
 
 		( new Logger( 'enabled' ) )->info( 'written-because-debug' );
@@ -125,8 +114,7 @@ final class LoggerTest extends TestCase {
 	}
 
 	public function test_unencodable_context_is_dropped_without_trailing_space(): void {
-		// INF can't be JSON-encoded, so wp_json_encode() returns false. The message
-		// must still log, with the context dropped and no stray trailing space.
+		// wp_json_encode() returns false for INF.
 		( new Logger( 'p' ) )->error( 'enc-fail', [ 'x' => INF ] );
 
 		$contents = $this->captured();

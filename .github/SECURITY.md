@@ -9,11 +9,11 @@
 
 ## Reporting a vulnerability
 
-Please do not report security issues in public issues, pull requests or discussions.
+In the interest of responsible disclosure, please **do not** report security issues in public issues, pull requests or discussions.
 
-Report them privately through GitHub instead: open the repository's **Security** tab and choose **Report a vulnerability**, or go straight to <https://github.com/rtCamp/wp-primitives/security/advisories/new>. The report stays visible only to you and the maintainers, and the fix, the release and the advisory are coordinated in that same thread.
+Instead, report security issues privately through GitHub: open the repository's **Security** tab and choose **Report a vulnerability**, or go to <https://github.com/rtCamp/wp-primitives/security/advisories/new>.
 
-Include what you can of:
+Make sure to include as much as you can of:
 
 - the affected class or method and the package version;
 - the impact, and the conditions an attacker needs;

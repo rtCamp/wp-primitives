@@ -2,10 +2,6 @@
 /**
  * AbstractRESTController tests.
  *
- * Integration tests against real WordPress (wp-env): asserts routes register
- * on rest_api_init, the endpoint dispatches, and the base register_routes()
- * throws to force subclass implementation.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 

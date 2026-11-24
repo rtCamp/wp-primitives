@@ -2,10 +2,6 @@
 /**
  * AbstractPostType tests.
  *
- * Asserts the option-building contract (defaults, label assembly, the
- * get_custom_options() override merge) and the real WordPress registration:
- * register() actually registers the post type and associates its taxonomies.
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Contracts\Abstracts
  */
 

@@ -1,29 +1,19 @@
 <?php
 /**
- * Concrete, injectable loader for WordPress template parts with theme overrides.
+ * Loader for WordPress template parts with theme overrides.
  *
- * A package ships template files that the active theme may override, following
- * the WordPress template hierarchy — child theme > parent theme > package.
- * Unlike a render-only component, a template part is loaded via WordPress'
- * load_template(), so the global query/post are in scope.
+ * Allows plugins or child themes to override templates.
  *
- * Works for both plugin and theme packages. A plugin's own templates live
- * outside the theme, so all three layers apply. A theme's own templates already
- * sit inside the (parent) theme, so the package layer collapses into the theme
- * override layer automatically — self-aware, like ComponentLoader.
+ * Usage:
  *
- * Consumers extend this class with their own config and share it through the
- * container (implements Shareable), mirroring the AssetLoader / ComponentLoader
- * pattern. Render wrappers typically live in the consumer's helper class.
- *
- *   // Plugin: own templates in the plugin, theme overrides at theme/my-plugin/.
+ *   // Plugin: templates in the plugin, theme overrides at theme/my-plugin/.
  *   final class Templates extends TemplateLoader implements Shareable {
  *       public function __construct() {
  *           parent::__construct( 'my_plugin', MY_PLUGIN_PATH . 'templates', 'my-plugin' );
  *       }
  *   }
  *
- *   // Theme: own templates in the theme, child theme overrides at the same path.
+ *   // Theme: templates in the theme, child theme overrides at the same path.
  *   final class Templates extends TemplateLoader implements Shareable {
  *       public function __construct() {
  *           parent::__construct( 'my_theme', get_template_directory() . '/templates', 'templates' );
@@ -101,9 +91,8 @@ class TemplateLoader {
 	/**
 	 * Render a template part, echoing its output.
 	 *
-	 * Resolves the highest-priority template across child theme, parent theme,
-	 * then the package, and loads it via load_template() with the (filtered)
-	 * arguments in scope. No-op when no template is found.
+	 * Resolves the template from the child theme, parent theme or package, and loads it with load_template()
+	 * and the filtered arguments. Does nothing when no template is found.
 	 *
 	 * @param non-empty-string     $slug Template slug.
 	 * @param string|null          $name Optional. Template variation name.
@@ -164,9 +153,6 @@ class TemplateLoader {
 
 	/**
 	 * Locate a template part's file without rendering it.
-	 *
-	 * The low-level escape hatch for callers that only need to know whether a
-	 * template exists, or want its path. Most callers want render() or get().
 	 *
 	 * @param non-empty-string $slug Template slug.
 	 * @param string|null      $name Optional. Template variation name.
@@ -260,10 +246,7 @@ class TemplateLoader {
 	private function find_template( array $templates ): string|false {
 		$paths = $this->get_template_paths();
 
-		// Key on the resolved paths as well as the candidate names: the paths depend
-		// on the active theme (get_stylesheet_directory()/get_template_directory()),
-		// so a Shareable loader reused across a switch_theme()/switch_to_blog() in
-		// one request must not serve the previous theme's cached hit.
+		// Use the active theme paths to prevent a cross-theme cache collision.
 		$cache_key = md5( implode( '|', $paths ) . "\0" . implode( '|', $templates ) );
 
 		if ( array_key_exists( $cache_key, $this->location_cache ) ) {
@@ -272,9 +255,7 @@ class TemplateLoader {
 
 		$found = false;
 
-		// Template names are the outer loop so a more specific name (e.g. the
-		// {slug}-{name} variant) wins across layers, matching WordPress'
-		// locate_template() precedence — name dominates location.
+		// Per locate_template(), a `{slug}-{name}.php` in any path beats `{slug}.php` in a higher-precedence path.
 		foreach ( $templates as $template ) {
 			$template = ltrim( $template, '/\\' );
 
@@ -296,10 +277,9 @@ class TemplateLoader {
 	/**
 	 * Get the ordered, trailing-slashed search paths (child > parent > package).
 	 *
-	 * Works for both plugin and theme packages. Only the theme layers that sit
-	 * ABOVE the package can override it: a package inside the parent theme is
-	 * overridden only by the child theme, and a package inside the child theme
-	 * has no override layer at all. Mirrors ComponentLoader's hierarchy.
+	 * Only the theme layers above the package are included. Templates inside the
+	 * parent theme are overridden only by the child theme, and templates inside
+	 * the child theme have no override layer.
 	 *
 	 * @return array<int, string> Paths in resolution order, most specific first.
 	 */
@@ -309,25 +289,23 @@ class TemplateLoader {
 		$package    = trailingslashit( $this->template_dir );
 		$has_child  = $stylesheet !== $template;
 
-		// Where the package's own templates live decides which theme layers sit
-		// above it (and can therefore override it).
+		// Where the package's own templates live decides which theme layers can override them.
 		$in_child  = str_starts_with( $package, $stylesheet );
 		$in_parent = str_starts_with( $package, $template );
 
 		$paths = [];
 
-		// Child theme override layer: a distinct child theme exists and the
-		// package isn't itself in it.
+		// A child theme is active and the package is not in it.
 		if ( $has_child && ! $in_child ) {
 			$paths[1] = $stylesheet . $this->template_theme_dir;
 		}
 
-		// Parent theme override layer: the package is in neither theme.
+		// The package is in neither theme.
 		if ( ! $in_parent && ! $in_child ) {
 			$paths[10] = $template . $this->template_theme_dir;
 		}
 
-		// The package's own templates — lowest precedence.
+		// The package's own templates have the lowest precedence.
 		$paths[100] = $this->template_dir;
 
 		/**

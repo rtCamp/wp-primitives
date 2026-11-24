@@ -14,25 +14,17 @@ use rtCamp\WPPrimitives\Utils\Timer;
 
 /**
  * Tests for Timer.
- *
- * Runs against real WordPress (wp-env) so `_doing_it_wrong()` routes through WP's real
- * handler and the polyfilled setExpectedIncorrectUsage() picks misuse up without
- * stubbing. Timer is instance-based, so each test gets a fresh instance — no process
- * state leaks between tests (unlike the old singleton form).
- *
- * usleep() may sleep slightly longer than asked depending on scheduler load, so timing
- * assertions only check `> 0.0` with `< 1.0` as a runaway guard — never an exact value.
  */
 final class TimerTest extends TestCase {
 	/**
-	 * Fresh timer per test.
+	 * Timer under test.
 	 *
 	 * @var Timer
 	 */
 	private Timer $timer;
 
 	/**
-	 * Build a fresh, isolated Timer for each test.
+	 * Create a new Timer for each test.
 	 */
 	protected function setUp(): void {
 		parent::setUp();
@@ -62,7 +54,7 @@ final class TimerTest extends TestCase {
 		$first = $this->timer->get( 'double_start' );
 
 		usleep( 5000 );
-		$this->timer->start( 'double_start' ); // Warns; first start wins.
+		$this->timer->start( 'double_start' );
 		$second = $this->timer->get( 'double_start' );
 
 		$this->assertSame( $first['start'], $second['start'] );
@@ -89,7 +81,7 @@ final class TimerTest extends TestCase {
 
 		usleep( 5000 );
 		$this->setExpectedIncorrectUsage( Timer::class . '::stop' );
-		$second = $this->timer->stop( 'stop_twice' ); // Warns; returns cached elapsed.
+		$second = $this->timer->stop( 'stop_twice' );
 
 		$this->assertSame( $first, $second );
 	}

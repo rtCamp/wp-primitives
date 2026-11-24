@@ -2,12 +2,6 @@
 /**
  * Component loader tests.
  *
- * Runs against a real WordPress instance (wp-env): the theme hierarchy is
- * pointed at fixture directories via TestCase::set_theme_dirs, assets are
- * asserted by reading the real wp_scripts()/wp_styles() registries, render
- * hooks are captured with a real add_action() recorder, and incorrect usage
- * via WP_UnitTestCase::setExpectedIncorrectUsage().
- *
  * @package rtCamp\WPPrimitives\Tests\Integration\Components
  */
 
@@ -57,14 +51,13 @@ final class ComponentLoaderTest extends TestCase {
 		// A distinct child theme is active by default.
 		$this->set_theme_dirs( $this->parent_dir, $this->parent_uri, $this->child_dir, $this->child_uri );
 
-		// Start each test from clean dependency registries (WP_UnitTestCase does
-		// not reset these between tests).
+		// WP_UnitTestCase does not reset these registries between tests.
 		$GLOBALS['wp_scripts'] = null;
 		$GLOBALS['wp_styles']  = null;
 
 		TestComponentLoader::$test_context = 'wp-primitives';
 
-		// Record the render actions so tests can assert they fired.
+		// Record each render action as it fires.
 		$this->rendered_hooks = [];
 		foreach ( [ 'before', 'after' ] as $phase ) {
 			$hook = "wp-primitives/component_{$phase}_render";
@@ -76,7 +69,7 @@ final class ComponentLoaderTest extends TestCase {
 			);
 		}
 
-		// Default loader: its own (self) base is the parent (template) theme.
+		// The default loader's own base is the parent theme.
 		$this->loader = new TestComponentLoader( $this->theme_asset_loader() );
 		$this->loader->clear_cache();
 	}
@@ -127,9 +120,6 @@ final class ComponentLoaderTest extends TestCase {
 	}
 
 	public function test_render_hooks_are_isolated_per_loader_context(): void {
-		// The point of namespacing the hooks is that one package's listeners do not
-		// fire for another's loader. Asserting only the default `wp-primitives`
-		// names would pass even if the context were ignored entirely.
 		$this->write_parent_component( 'alert', '<?php echo "alert";' );
 
 		$fired = [];
@@ -175,8 +165,7 @@ final class ComponentLoaderTest extends TestCase {
 	public function test_default_context_listeners_do_not_fire_for_another_context(): void {
 		$this->write_parent_component( 'alert', '<?php echo "alert";' );
 
-		// set_up() already registered recorders on the default `wp-primitives`
-		// hooks; a loader in another context must leave them untouched.
+		// set_up() records the default `wp-primitives` hooks into $rendered_hooks.
 		TestComponentLoader::$test_context = 'other-package';
 		$other                             = new TestComponentLoader( $this->theme_asset_loader() );
 		$other->clear_cache();
@@ -298,7 +287,6 @@ final class ComponentLoaderTest extends TestCase {
 	}
 
 	public function test_resolves_asset_when_no_child_theme_is_active(): void {
-		// No child theme: stylesheet directory equals template directory.
 		$this->use_single_theme();
 
 		$this->write_parent_component( 'alert', '<?php echo "alert";' );
@@ -315,7 +303,7 @@ final class ComponentLoaderTest extends TestCase {
 		$plugin_dir = $this->temp_dir . '/plugin';
 		$loader     = new TestComponentLoader( $this->plugin_asset_loader( $plugin_dir ) );
 
-		// PHP + its own style ship in the plugin; the style is overridden in the parent theme.
+		// The plugin ships the component and its style. The parent theme overrides the style.
 		$this->write_plugin_component( $plugin_dir, 'alert', '<?php echo "alert";' );
 		$this->write_plugin_asset( $plugin_dir, 'css/components/alert.css', '.plugin{}' );
 		$this->write_parent_asset( 'css/components/alert.css', '.parent{}' );
@@ -331,13 +319,12 @@ final class ComponentLoaderTest extends TestCase {
 		$plugin_dir = $this->temp_dir . '/plugin';
 		$loader     = new TestComponentLoader( $this->plugin_asset_loader( $plugin_dir ) );
 
-		// Component PHP + style in the plugin, and overridden in the parent theme.
+		// The plugin ships the component and its style. The parent theme overrides both.
 		$this->write_plugin_component( $plugin_dir, 'alert', '<?php echo "plugin";' );
 		$this->write_plugin_asset( $plugin_dir, 'css/components/alert.css', '.plugin{}' );
 		$this->write_parent_component( 'alert', '<?php echo "theme";' );
 		$this->write_parent_asset( 'css/components/alert.css', '.theme{}' );
 
-		// allow_override = false → resolve PHP + assets from the plugin (self) only.
 		$html = $loader->get(
 			'alert',
 			[],
@@ -358,7 +345,7 @@ final class ComponentLoaderTest extends TestCase {
 		$plugin_dir = $this->temp_dir . '/plugin';
 		$loader     = new TestComponentLoader( $this->plugin_asset_loader( $plugin_dir ) );
 
-		// PHP + both assets in the plugin; CSS overridden in parent, JS in child.
+		// The plugin ships both assets. The parent theme overrides the CSS and the child theme overrides the JS.
 		$this->write_plugin_component( $plugin_dir, 'alert', '<?php echo "alert";' );
 		$this->write_plugin_asset( $plugin_dir, 'css/components/alert.css', '.plugin{}' );
 		$this->write_plugin_asset( $plugin_dir, 'js/components/alert.js', 'plugin' );
@@ -461,7 +448,7 @@ final class ComponentLoaderTest extends TestCase {
 
 		$this->expectException( \RuntimeException::class );
 
-		// No loader injected and get_asset_loader() not overridden.
+		// No asset loader is injected and get_asset_loader() is not overridden.
 		( new ComponentLoader() )->get( 'alert' );
 	}
 
@@ -489,8 +476,6 @@ final class ComponentLoaderTest extends TestCase {
 	}
 
 	public function test_clear_cache_resets_the_memoised_asset_loader_hierarchy(): void {
-		// Resolving a component memoises the child -> parent -> package loader
-		// list; clear_cache() must drop it so a later theme change is picked up.
 		$this->write_parent_component( 'alert', '<?php echo "alert";' );
 		$this->loader->get(
 			'alert',

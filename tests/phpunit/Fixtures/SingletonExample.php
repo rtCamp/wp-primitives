@@ -19,7 +19,7 @@ class SingletonExample {
 	use Singleton;
 
 	/**
-	 * Tracks how many times the constructor ran — a true singleton runs it once.
+	 * Number of times the constructor ran.
 	 */
 	public static int $construct_count = 0;
 

@@ -2,8 +2,8 @@
 /**
  * Abstract Module class.
  *
- * A module groups related Registrable classes together, acting as an
- * intermediary between the plugin's Main class and individual services.
+ * A module groups related Registrable classes together, acting as an intermediary between the plugin's Main class and
+ * individual services.
  *
  * @package rtCamp\WPPrimitives\Contracts\Abstracts
  * @since 1.0.0

@@ -46,9 +46,7 @@ abstract class AbstractRESTController extends WP_REST_Controller implements Regi
 	/**
 	 * Register the controller's REST routes.
 	 *
-	 * The base throws to force a subclass override. A missing implementation is a
-	 * programming error, so this raises `\LogicException` (was a bare `\Exception`).
-	 * Implement it with `register_rest_route()` calls under `$this->namespace`.
+	 * Subclasses must override this with `register_rest_route()` calls under `$this->namespace`.
 	 *
 	 * @throws \LogicException Always, unless a subclass overrides it.
 	 *

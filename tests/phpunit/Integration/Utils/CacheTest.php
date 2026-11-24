@@ -14,11 +14,6 @@ use rtCamp\WPPrimitives\Utils\Cache;
 
 /**
  * Tests for Cache.
- *
- * Runs against real WordPress (wp-env). With no persistent object cache
- * configured, wp_cache_* is backed by the in-process non-persistent cache; it is
- * flushed in set_up so no entry leaks between tests under random execution order.
- * Each test also uses a distinct context/group so namespaced keys never collide.
  */
 final class CacheTest extends TestCase {
 	/**
@@ -105,7 +100,7 @@ final class CacheTest extends TestCase {
 
 		$this->assertFalse(
 			wp_cache_get( 'k_lock', 'ctx-swr-throw:g' ),
-			'A throwing callback must still release the lock (finally), not strand it for LOCK_TTL.'
+			'A throwing callback must still release the lock.'
 		);
 	}
 
@@ -131,7 +126,7 @@ final class CacheTest extends TestCase {
 		$returned = $cache->remember_swr( 'k', static fn (): string => 'new', 'g', 100 );
 
 		$this->assertSame( 'old', $returned, 'a losing caller is served stale immediately' );
-		$this->assertFalse( wp_cache_get( 'k', 'ctx-swr-locked:g' ), 'the loser must not regenerate — that is the stampede prevention' );
+		$this->assertFalse( wp_cache_get( 'k', 'ctx-swr-locked:g' ), 'the loser must not regenerate' );
 	}
 
 	public function test_empty_context_passes_groups_through_verbatim(): void {
@@ -151,7 +146,7 @@ final class CacheTest extends TestCase {
 		$cache->set( 'b', 2, 'g' );
 		$cache->set( 'c', 3, 'other' );
 
-		// Core's non-persistent cache supports group flushing (WordPress 6.1+).
+		// Core's non-persistent cache supports flush_group since WordPress 6.1.
 		$this->assertTrue( wp_cache_supports( 'flush_group' ), 'precondition: core cache supports flush_group' );
 		$this->assertTrue( $cache->flush_group( 'g' ) );
 
@@ -184,7 +179,6 @@ final class CacheTest extends TestCase {
 
 	public function test_remember_swr_cold_start_falls_back_to_the_callback_when_the_lock_never_frees(): void {
 		$cache = new Cache( 'ctx-swr-wait' );
-		// Another process holds the lock on a cold start (no fresh, no stale) and never finishes: after the bounded wait the caller regenerates itself.
 		//phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime.LowCacheTime
 		$this->assertTrue( wp_cache_add( 'k_lock', 1, 'ctx-swr-wait:g', 30 ), 'precondition: hold the lock' );
 
@@ -206,8 +200,7 @@ final class CacheTest extends TestCase {
 	}
 
 	public function test_remember_swr_cold_start_waits_for_the_lock_holder_to_publish(): void {
-		// Simulate the lock holder finishing during our wait: the second read of
-		// the fresh key (the first retry) finds the value it published.
+		// The lock holder publishes the value before the second read of the fresh key, which is the first retry.
 		$cache = new class( 'ctx-swr-publish' ) extends Cache {
 
 			/**
